@@ -15,11 +15,7 @@ struct ContentView {
 
     /// The YouTube Player
     @State
-    var youTubePlayer: YouTubePlayer = .init(
-        source: .init(
-            url: "https://www.youtube.com/watch?v=psL_5RIBqnY&t=3181"
-        )
-    )
+    var youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY&t=3181"
     
 }
 
