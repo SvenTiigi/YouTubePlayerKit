@@ -7,7 +7,7 @@
 <h1 align="center">YouTubePlayerKit</h1>
 
 <p align="center">
-    A Swift Package to play YouTube videos on iOS with ease
+    A Swift Package to easily play YouTube videos on iOS
 </p>
 
 <p align="center">
