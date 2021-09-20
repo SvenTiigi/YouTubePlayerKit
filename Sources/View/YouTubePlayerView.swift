@@ -41,7 +41,7 @@ extension YouTubePlayerView: View {
     /// The content and behavior of the view
     public var body: some View {
         ZStack {
-            YouTubePlayerViewController
+            YouTubePlayerWebView
                 .Representable(player: self.player)
             self.overlay(self.state)
         }
@@ -56,38 +56,35 @@ extension YouTubePlayerView: View {
     
 }
 
-// MARK: - YouTubePlayerViewController+Representable
+// MARK: - YouTubePlayerWebView+Representable
 
-private extension YouTubePlayerViewController {
+private extension YouTubePlayerWebView {
     
-    /// The YouTubePlayer ViewController SwiftUI Representable
-    struct Representable: UIViewControllerRepresentable {
+    /// The YouTubePlayer UIView SwiftUI Representable
+    struct Representable: UIViewRepresentable {
         
         /// The YouTube Player
         let player: YouTubePlayer
         
-        /// Creates the view controller object and configures its initial state.
+        /// Make YouTubePlayerWebView
         /// - Parameter context: The Context
-        func makeUIViewController(
+        /// - Returns: The YouTubePlayerWebView
+        func makeUIView(
             context: Context
-        ) -> YouTubePlayerViewController {
+        ) -> YouTubePlayerWebView {
             .init(
                 player: self.player
             )
         }
         
-        /// Updates the state of the specified view controller with new information from SwiftUI.
+        /// Update YouTubePlayerWebView
         /// - Parameters:
-        ///   - uiViewController: The YouTubePlayer ViewController
-        func updateUIViewController(
-            _ uiViewController: YouTubePlayerViewController,
+        ///   - uiView: The YouTubePlayerWebView
+        ///   - context: The Context
+        func updateUIView(
+            _ uiView: YouTubePlayerWebView,
             context: Context
-        ) {
-            guard self.player != uiViewController.player else {
-                return
-            }
-            uiViewController.player = self.player
-        }
+        ) {}
         
     }
     
