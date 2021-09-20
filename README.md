@@ -1,4 +1,8 @@
 <br/>
+<p align="center">
+    <img src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/logo.png?token=ACZQQFS3DO5PMLZUDKA3VT3BKHYS4" width="30%" alt="logo">
+</p>
+
 
 <h1 align="center">YouTubePlayerKit</h1>
 
