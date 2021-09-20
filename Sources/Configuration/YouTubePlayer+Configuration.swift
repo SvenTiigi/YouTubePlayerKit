@@ -167,8 +167,11 @@ extension YouTubePlayer.Configuration: Encodable {
         case showFullscreenButton = "fs"
         case language = "hl"
         case showAnnotations = "iv_load_policy"
+        case list
+        case listType
         case loop
         case modestBranding = "modestbranding"
+        case origin
         case playInline = "playsinline"
         case showRelatedVideos = "rel"
         case startTime = "start"
