@@ -10,7 +10,7 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: Properties
     
     /// The YouTubePlayer
-    var player: YouTubePlayer
+    let player: YouTubePlayer
     
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle
@@ -61,6 +61,13 @@ final class YouTubePlayerWebView: WKWebView {
         self.scrollView.bounces = false
         self.navigationDelegate = self
         self.uiDelegate = self
+        // Load Player and retain result
+        let isPlayerLoaded = self.loadPlayer()
+        // Check if Player is not loaded
+        if !isPlayerLoaded {
+            // Send setup failed error
+            self.stateSubject.send(.error(.setupFailed))
+        }
     }
     
     /// Initializer with NSCoder always returns nil
@@ -76,6 +83,33 @@ final class YouTubePlayerWebView: WKWebView {
         self.evaluate(
             javaScript: "player.destroy();"
         )
+    }
+    
+}
+
+// MARK: - YouTubePlayerWebView+loadPlayer
+
+private extension YouTubePlayerWebView {
+    
+    /// Load Player
+    /// - Returns: A Bool value if the YouTube player was successfully loaded
+    @discardableResult
+    func loadPlayer() -> Bool {
+        // Verify YouTube Player HTML is available
+        guard let youTubePlayerHTML = YouTubePlayer.HTML.contents(
+            for: self.player,
+            originURL: self.originURL
+        ) else {
+            // Otherwise return failure
+            return false
+        }
+        // Load HTML string
+        self.loadHTMLString(
+            youTubePlayerHTML,
+            baseURL: self.originURL
+        )
+        // Return success
+        return true
     }
     
 }
