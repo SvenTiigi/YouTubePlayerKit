@@ -51,6 +51,9 @@ final class YouTubePlayerWebView: WKWebView {
             }()
         )
         self.player.api = self
+        self.player.configuration.isUserInteractionEnabled.flatMap {
+            self.isUserInteractionEnabled = $0
+        }
         self.backgroundColor = .clear
         self.isOpaque = false
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]

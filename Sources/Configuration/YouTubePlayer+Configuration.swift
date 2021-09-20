@@ -10,6 +10,10 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
+        /// A Boolean value that determines whether
+        /// user events are ignored and removed from the event queue.
+        public var isUserInteractionEnabled: Bool?
+        
         /// This parameter specifies whether the initial video
         /// will automatically start to play when the player loads
         public var autoPlay: Bool?
@@ -83,6 +87,7 @@ public extension YouTubePlayer {
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
         public init(
+            isUserInteractionEnabled: Bool? = nil,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
             captionLoadPolicy: Bool? = nil,
@@ -101,6 +106,7 @@ public extension YouTubePlayer {
             startTime: UInt? = nil,
             referrer: String? = nil
         ) {
+            self.isUserInteractionEnabled = isUserInteractionEnabled
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
             self.captionLoadPolicy = captionLoadPolicy
