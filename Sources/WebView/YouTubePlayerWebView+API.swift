@@ -40,6 +40,52 @@ extension YouTubePlayerWebView: YouTubePlayerEventAPI {
 
 extension YouTubePlayerWebView: YouTubePlayerVideoAPI {
     
+    /// Load YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to load
+    func load(
+        source: YouTubePlayer.Source
+    ) {
+        switch source {
+        case .video(let id, let startSeconds, let endSeconds):
+            var parameters = ["videoId": "'\(id)'"]
+            if let startSeconds = startSeconds {
+                parameters["startSeconds"] = .init(startSeconds)
+            }
+            if let endSeconds = endSeconds {
+                parameters["endSeconds"] = .init(endSeconds)
+            }
+            let parameterObject = parameters
+                .map { "\($0): \($1)" }
+                .joined(separator: ", ")
+            self.evaluate(
+                javaScript: "player.loadVideoById({\(parameterObject)});"
+            )
+        case .playlist(let id, let index, let startSeconds),
+             .channel(let id, let index, let startSeconds):
+            var parameters: [String: String] = .init()
+            parameters["list"] = "'\(id)'"
+            parameters["listType"] = {
+                if case .playlist = source {
+                    return "'playlist'"
+                } else {
+                    return "'user_uploads'"
+                }
+            }()
+            if let index = index {
+                parameters["index"] = .init(index)
+            }
+            if let startSeconds = startSeconds {
+                parameters["startSeconds"] = .init(startSeconds)
+            }
+            let parameterObject = parameters
+                .map { "\($0): \($1)" }
+                .joined(separator: ", ")
+            self.evaluate(
+                javaScript: "player.loadPlaylist({\(parameterObject)});"
+            )
+        }
+    }
+    
     /// Plays the currently cued/loaded video
     func play() {
         self.evaluate(

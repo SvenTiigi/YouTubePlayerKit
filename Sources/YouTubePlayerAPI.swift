@@ -40,6 +40,12 @@ public protocol YouTubePlayerEventAPI: AnyObject {
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Playback_controls
 public protocol YouTubePlayerVideoAPI: AnyObject {
     
+    /// Load YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to load
+    func load(
+        source: YouTubePlayer.Source
+    )
+    
     /// Plays the currently cued/loaded video
     func play()
     

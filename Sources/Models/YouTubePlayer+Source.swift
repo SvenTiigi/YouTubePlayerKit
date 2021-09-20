@@ -7,11 +7,23 @@ public extension YouTubePlayer {
     /// The YouTubePlayer Source
     enum Source: Hashable {
         /// Video
-        case video(id: String, startTime: UInt? = nil)
+        case video(
+            id: String,
+            startSeconds: UInt? = nil,
+            endSeconds: UInt? = nil
+        )
         /// Playlist
-        case playlist(id: String)
+        case playlist(
+            id: String,
+            index: UInt? = nil,
+            startSeconds: UInt? = nil
+        )
         /// Channel
-        case channel(id: String)
+        case channel(
+            id: String,
+            index: UInt? = nil,
+            startSeconds: UInt? = nil
+        )
     }
     
 }
@@ -23,9 +35,9 @@ extension YouTubePlayer.Source: Identifiable {
     /// The stable identity of the entity associated with this instance
     public var id: String {
         switch self {
-        case .video(let id, _),
-             .playlist(let id),
-             .channel(let id):
+        case .video(let id, _, _),
+             .playlist(let id, _, _),
+             .channel(let id, _, _):
             return id
         }
     }
@@ -42,14 +54,14 @@ public extension YouTubePlayer.Source {
         _ url: String
     ) -> Self? {
         let urlComponents = URLComponents(string: url)
-        let startTime = urlComponents?.queryItems?["t"].flatMap(UInt.init)
+        let startSeconds = urlComponents?.queryItems?["t"].flatMap(UInt.init)
         let url = URL(string: url)
         let pathComponents = url?.pathComponents.dropFirst()
         if url?.host?.hasSuffix("youtu.be") == true {
             if let videoId = pathComponents?.first {
                 return .video(
                     id: videoId,
-                    startTime: startTime
+                    startSeconds: startSeconds
                 )
             }
         } else {
@@ -61,7 +73,7 @@ public extension YouTubePlayer.Source {
                 if let videoId = urlComponents?.queryItems?["v"] {
                     return .video(
                         id: videoId,
-                        startTime: startTime
+                        startSeconds: startSeconds
                     )
                 }
             case "embed":
@@ -69,7 +81,7 @@ public extension YouTubePlayer.Source {
                     let videoId = url?.pathComponents[1] {
                     return .video(
                         id: videoId,
-                        startTime: startTime
+                        startSeconds: startSeconds
                     )
                 }
             case "channel":

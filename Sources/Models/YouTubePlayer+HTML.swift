@@ -69,22 +69,22 @@ private extension YouTubePlayer {
         ]
         // Switch on Source
         switch self.source {
-        case .video(let id, let startTime):
+        case .video(let id, let startSeconds, _):
             // Set video id
             configuration["videoId"] = id
-            // Check if a start time is available
-            if let startTime = startTime {
+            // Check if a start seconds are available
+            if let startSeconds = startSeconds {
                 // Set start time on player configuration
                 playerConfiguration[
                     YouTubePlayer.Configuration.CodingKeys.startTime.rawValue
-                ] = startTime
+                ] = startSeconds
             }
-        case .playlist(let id):
+        case .playlist(let id, _, _):
             // Set playlist
             playerConfiguration["listType"] = "playlist"
             // Set playlist id
             playerConfiguration["list"] = id
-        case .channel(let id):
+        case .channel(let id, _, _):
             // Set user uploads
             playerConfiguration["listType"] = "user_uploads"
             // Set channel id
