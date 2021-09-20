@@ -14,8 +14,7 @@ import YouTubePlayerKit
 struct ContentView {
 
     /// The YouTube Player
-    @State
-    var youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY&t=3181"
+    let youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY&t=3181"
     
 }
 
