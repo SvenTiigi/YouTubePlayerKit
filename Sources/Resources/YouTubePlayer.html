@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        .embed-container iframe,
+        .embed-container object,
+        .embed-container embed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- YouTube Player iFrame Container -->
+    <div class="embed-container">
+        <div id="player"></div>
+    </div>
+    <!-- YouTube iFrame JS API -->
+    <script src="https://www.youtube.com/iframe_api"
+        onerror="window.location.href='youtubeplayer://onIframeAPIFailedToLoad'">
+    </script>
+    <!-- Custom JS -->
+    <script>
+        // The YouTube Player instance
+        var player;
+
+        // Bool if an error occured
+        var error = false;
+
+        // Configure YouTube Player
+        YT.ready(function () {
+            // Initialize YouTube Player
+            player = new YT.Player(
+                'player',
+                YOUTUBE_PLAYER_CONFIGURATION
+            );
+            // Set initial size
+            player.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+            // Update location
+            window.location.href = 'youtubeplayer://onIframeAPIReady';
+            // Retrieve current time of player
+            function getCurrentTime() {
+                var state = player.getPlayerState();
+                if (state == YT.PlayerState.PLAYING) {
+                    time = player.getCurrentTime()
+                    window.location.href = 'youtubeplayer://onPlayTime?data=' + time;
+                }
+            }
+            // Set interval to retrieve the current time
+            window.setInterval(
+                getCurrentTime,
+                500
+            );
+        });
+
+        // YouTube Player onReady event callback
+        function onReady(event) {
+            window.location.href = 'youtubeplayer://onReady?data=' + event.data;
+        }
+
+        // YouTube Player onStateChange event callback
+        function onStateChange(event) {
+            if (!error) {
+                window.location.href = 'youtubeplayer://onStateChange?data=' + event.data;
+            } else {
+                error = false;
+            }
+        }
+
+        // YouTube Player onPlaybackQualityChange event callback
+        function onPlaybackQualityChange(event) {
+            window.location.href = 'youtubeplayer://onPlaybackQualityChange?data=' + event.data;
+        }
+
+        // YouTube Player onPlaybackRateChange event callback
+        function onPlaybackRateChange(event) {
+            window.location.href = 'youtubeplayer://onPlaybackRateChange?data=' + event.data;
+        }
+
+        // YouTube Player onError event callback
+        function onError(event) {
+            if (event.data == 100) {
+                error = true;
+            }
+            window.location.href = 'youtubeplayer://onError?data=' + event.data;
+        }
+
+        // On window resize
+        window.onresize = function () {
+            // Set Player size
+            player.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+        }
+    </script>
+</body>
+
+</html>
