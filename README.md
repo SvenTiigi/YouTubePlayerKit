@@ -41,7 +41,9 @@ struct ContentView: View {
 ## Features
 
 - [x] Play YouTube videos with just one line of code 📺
-- [x] Advanced YouTube iFrame API implementation ✅
+- [x] YouTube [Terms of Service](https://www.youtube.com/t/terms) compliant implementation ✅
+- [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
+- [x] Support for SwiftUI and UIKit 📱
 
 ## Installation
 
