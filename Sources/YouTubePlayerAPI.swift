@@ -5,7 +5,8 @@ import Foundation
 
 /// The YouTubePlayerAPI
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Functions
-public typealias YouTubePlayerAPI = YouTubePlayerEventAPI
+public typealias YouTubePlayerAPI = YouTubePlayerLoadAPI
+    & YouTubePlayerEventAPI
     & YouTubePlayerVideoAPI
     & YouTubePlayer360DegreePerspectiveAPI
     & YouTubePlayerPlaylistAPI
@@ -14,9 +15,24 @@ public typealias YouTubePlayerAPI = YouTubePlayerEventAPI
     & YouTubePlayerPlaybackAPI
     & YouTubePlayerVideoInformationAPI
 
+// MARK: - YouTubePlayerLoadAPI
+
+/// The YouTubePlayerLoadAPI
+/// - Read more: https://developers.google.com/youtube/iframe_api_reference#Queueing_Functions
+public protocol YouTubePlayerLoadAPI: AnyObject {
+    
+    /// Load YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to load
+    func load(
+        source: YouTubePlayer.Source
+    )
+    
+}
+
 // MARK: - YouTubePlayerEventAPI
 
 /// The YouTubePlayerEventAPI
+/// - Read more: https://developers.google.com/youtube/iframe_api_reference#Events
 public protocol YouTubePlayerEventAPI: AnyObject {
     
     /// A Publisher that emits the current YouTubePlayer State
@@ -39,12 +55,6 @@ public protocol YouTubePlayerEventAPI: AnyObject {
 /// Playback controls and player settings
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Playback_controls
 public protocol YouTubePlayerVideoAPI: AnyObject {
-    
-    /// Load YouTubePlayer Source
-    /// - Parameter source: The YouTubePlayer Source to load
-    func load(
-        source: YouTubePlayer.Source
-    )
     
     /// Plays the currently cued/loaded video
     func play()

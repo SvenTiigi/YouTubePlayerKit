@@ -71,6 +71,20 @@ extension YouTubePlayer: Equatable {
 
 }
 
+// MARK: - YouTubePlayerLoadAPI
+
+extension YouTubePlayer: YouTubePlayerLoadAPI {
+    
+    /// Load YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to load
+    public func load(
+        source: YouTubePlayer.Source
+    ) {
+        self.api?.load(source: source)
+    }
+    
+}
+
 // MARK: - YouTubePlayerEventAPI
 
 extension YouTubePlayer: YouTubePlayerEventAPI {
@@ -120,14 +134,6 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
 // MARK: - YouTubePlayerVideoAPI
 
 extension YouTubePlayer: YouTubePlayerVideoAPI {
-    
-    /// Load YouTubePlayer Source
-    /// - Parameter source: The YouTubePlayer Source to load
-    public func load(
-        source: YouTubePlayer.Source
-    ) {
-        self.api?.load(source: source)
-    }
     
     /// Plays the currently cued/loaded video
     public func play() {

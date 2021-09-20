@@ -2,43 +2,9 @@ import Combine
 import Foundation
 import WebKit
 
-// MARK: - YouTubePlayerEventAPI
+// MARK: - YouTubePlayerLoadAPI
 
-extension YouTubePlayerWebView: YouTubePlayerEventAPI {
-    
-    /// A Publisher that emits the current YouTubePlayer State
-    var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
-        self.stateSubject
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-    
-    /// A Publisher that emits the current YouTubePlayer VideoState
-    var videoStatePublisher: AnyPublisher<YouTubePlayer.VideoState, Never> {
-        self.videoStateSubject
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-    
-    /// A Publisher that emits the current YouTubePlayer PlaybackQuality
-    var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> {
-        self.playbackQualitySubject
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-    
-    /// A Publisher that emits the current YouTubePlayer PlaybackRate
-    var playbackRatePublisher: AnyPublisher<YouTubePlayer.PlaybackRate, Never> {
-        self.playbackRateSubject
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-    
-}
-
-// MARK: - YouTubePlayerVideoAPI
-
-extension YouTubePlayerWebView: YouTubePlayerVideoAPI {
+extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
     
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load
@@ -85,6 +51,46 @@ extension YouTubePlayerWebView: YouTubePlayerVideoAPI {
             )
         }
     }
+    
+}
+
+// MARK: - YouTubePlayerEventAPI
+
+extension YouTubePlayerWebView: YouTubePlayerEventAPI {
+    
+    /// A Publisher that emits the current YouTubePlayer State
+    var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
+        self.stateSubject
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+    }
+    
+    /// A Publisher that emits the current YouTubePlayer VideoState
+    var videoStatePublisher: AnyPublisher<YouTubePlayer.VideoState, Never> {
+        self.videoStateSubject
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+    }
+    
+    /// A Publisher that emits the current YouTubePlayer PlaybackQuality
+    var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> {
+        self.playbackQualitySubject
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+    }
+    
+    /// A Publisher that emits the current YouTubePlayer PlaybackRate
+    var playbackRatePublisher: AnyPublisher<YouTubePlayer.PlaybackRate, Never> {
+        self.playbackRateSubject
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+    }
+    
+}
+
+// MARK: - YouTubePlayerVideoAPI
+
+extension YouTubePlayerWebView: YouTubePlayerVideoAPI {
     
     /// Plays the currently cued/loaded video
     func play() {
