@@ -47,7 +47,7 @@ extension YouTubePlayer: ExpressibleByStringLiteral {
         stringLiteral value: String
     ) {
         self.init(
-            source: .init(url: value)
+            source: .url(value)
         )
     }
     
