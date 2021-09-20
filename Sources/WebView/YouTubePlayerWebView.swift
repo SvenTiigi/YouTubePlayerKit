@@ -10,7 +10,11 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: Properties
     
     /// The YouTubePlayer
-    let player: YouTubePlayer
+    var player: YouTubePlayer
+    
+    /// The updated YouTubePlayer Source which has
+    /// been set by the `load(source:)` API
+    var updatedSource: YouTubePlayer.Source?
     
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle
@@ -77,19 +81,15 @@ final class YouTubePlayerWebView: WKWebView {
     
     /// Deinit
     deinit {
-        // Stop Player
-        self.stop()
         // Destroy Player
-        self.evaluate(
-            javaScript: "player.destroy();"
-        )
+        self.destroyPlayer()
     }
     
 }
 
 // MARK: - YouTubePlayerWebView+loadPlayer
 
-private extension YouTubePlayerWebView {
+extension YouTubePlayerWebView {
     
     /// Load Player
     /// - Returns: A Bool value if the YouTube player was successfully loaded
@@ -110,6 +110,28 @@ private extension YouTubePlayerWebView {
         )
         // Return success
         return true
+    }
+    
+}
+
+// MARK: - YouTubePlayerWebView+destroyPlayer
+
+extension YouTubePlayerWebView {
+    
+    /// Destroy Player
+    /// - Parameter completion: The optional completion closure. Default value `nil`
+    func destroyPlayer(
+        completion: (() -> Void)? = nil
+    ) {
+        // Stop Player
+        self.stop()
+        // Destroy Player
+        self.evaluate(
+            javaScript: "player.destroy();"
+        ) { _ in
+            // Invoke completion if available
+            completion?()
+        }
     }
     
 }

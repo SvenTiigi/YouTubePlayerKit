@@ -5,7 +5,8 @@ import Foundation
 
 /// The YouTubePlayerAPI
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Functions
-public typealias YouTubePlayerAPI = YouTubePlayerLoadAPI
+public typealias YouTubePlayerAPI = YouTubePlayerConfigurationAPI
+    & YouTubePlayerLoadAPI
     & YouTubePlayerEventAPI
     & YouTubePlayerVideoAPI
     & YouTubePlayer360DegreePerspectiveAPI
@@ -14,6 +15,21 @@ public typealias YouTubePlayerAPI = YouTubePlayerLoadAPI
     & YouTubePlayerPlaybackRateAPI
     & YouTubePlayerPlaybackAPI
     & YouTubePlayerVideoInformationAPI
+
+// MARK: - YouTubePlayerConfigurationAPI
+
+/// The YouTubePlayerConfigurationAPI
+/// - Note: A custom YouTubePlayer API definition
+public protocol YouTubePlayerConfigurationAPI: AnyObject {
+    
+    /// Update YouTubePlayer Configuration
+    /// - Note: Updating the Configuration will result in a reload of the entire YouTubePlayer
+    /// - Parameter configuration: The YouTubePlayer Configuration
+    func update(
+        configuration: YouTubePlayer.Configuration
+    )
+    
+}
 
 // MARK: - YouTubePlayerLoadAPI
 

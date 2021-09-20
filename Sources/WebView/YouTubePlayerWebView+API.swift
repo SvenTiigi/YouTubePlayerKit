@@ -2,6 +2,30 @@ import Combine
 import Foundation
 import WebKit
 
+// MARK: - YouTubePlayerConfigurationAPI
+
+extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
+    
+    /// Update YouTubePlayer Configuration
+    /// - Note: Updating the Configuration will result in a reload of the entire YouTubePlayer
+    /// - Parameter configuration: The YouTubePlayer Configuration
+    func update(
+        configuration: YouTubePlayer.Configuration
+    ) {
+        // Destroy Player
+        self.destroyPlayer { [weak self] in
+            // Update Player
+            self?.player = .init(
+                source: self?.updatedSource ?? self?.player.source,
+                configuration: configuration
+            )
+            // Re-Load Player
+            self?.loadPlayer()
+        }
+    }
+    
+}
+
 // MARK: - YouTubePlayerLoadAPI
 
 extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
@@ -11,6 +35,9 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
     func load(
         source: YouTubePlayer.Source
     ) {
+        // Retain updated Source
+        self.updatedSource = source
+        // Switch on Source
         switch source {
         case .video(let id, let startSeconds, let endSeconds):
             var parameters = ["videoId": "'\(id)'"]

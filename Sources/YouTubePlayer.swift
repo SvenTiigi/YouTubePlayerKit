@@ -71,6 +71,21 @@ extension YouTubePlayer: Equatable {
 
 }
 
+// MARK: - YouTubePlayerConfigurationAPI
+
+extension YouTubePlayer: YouTubePlayerConfigurationAPI {
+    
+    /// Update YouTubePlayer Configuration
+    /// - Note: Updating the Configuration will result in a reload of the entire YouTubePlayer
+    /// - Parameter configuration: The YouTubePlayer Configuration
+    public func update(
+        configuration: YouTubePlayer.Configuration
+    ) {
+        self.api?.update(configuration: configuration)
+    }
+    
+}
+
 // MARK: - YouTubePlayerLoadAPI
 
 extension YouTubePlayer: YouTubePlayerLoadAPI {
