@@ -56,6 +56,8 @@ final class YouTubePlayerWebView: WKWebView {
                 configuration.allowsInlineMediaPlayback = true
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = []
+                // Enable PiP-Playback
+                configuration.allowsPictureInPictureMediaPlayback = true
                 // Return configuration
                 return configuration
             }()
