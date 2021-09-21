@@ -102,7 +102,7 @@ public protocol YouTubePlayer360DegreePerspectiveAPI: AnyObject {
     /// Retrieves properties that describe the viewer's current perspective
     /// - Parameter completion: The completion closure
     func get360DegreePerspective(
-        completion: @escaping (Result<YouTubePlayer.Perspective360Degree, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.Perspective360Degree, YouTubePlayerAPIError>) -> Void
     )
     
     /// Sets the video orientation for playback of a 360° video
@@ -149,13 +149,13 @@ public protocol YouTubePlayerPlaylistAPI: AnyObject {
     /// This function returns an array of the video IDs in the playlist as they are currently ordered
     /// - Parameter completion: The completion closure
     func getPlaylist(
-        completion: @escaping (Result<[String], Error>) -> Void
+        completion: @escaping (Result<[String], YouTubePlayerAPIError>) -> Void
     )
     
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
     func getPlayistIndex(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     )
     
 }
@@ -176,13 +176,13 @@ public protocol YouTubePlayerVolumeAPI: AnyObject {
     /// Returns Bool value if the player is muted
     /// - Parameter completion: The completion closure
     func isMuted(
-        completion: @escaping (Result<Bool, Error>) -> Void
+        completion: @escaping (Result<Bool, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the player's current volume, an integer between 0 and 100
     /// - Parameter completion: The completion closure
     func getVolume(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     )
     
     /// Sets the volume.
@@ -204,7 +204,7 @@ public protocol YouTubePlayerPlaybackRateAPI: AnyObject {
     /// This function retrieves the playback rate of the currently playing video
     /// - Parameter completion: The completion closure
     func getPlaybackRate(
-        completion: @escaping (Result<YouTubePlayer.PlaybackRate, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.PlaybackRate, YouTubePlayerAPIError>) -> Void
     )
     
     /// This function sets the suggested playback rate for the current video
@@ -216,7 +216,7 @@ public protocol YouTubePlayerPlaybackRateAPI: AnyObject {
     /// This function returns the set of playback rates in which the current video is available
     /// - Parameter completion: The completion closure
     func getAvailablePlaybackRates(
-        completion: @escaping (Result<[YouTubePlayer.PlaybackRate], Error>) -> Void
+        completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
     )
     
 }
@@ -231,19 +231,19 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
     /// - Parameter completion: The completion closure
     func getVideoLoadedFraction(
-        completion: @escaping (Result<Double, Error>) -> Void
+        completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the state of the player video
     /// - Parameter completion: The completion closure
     func getVideoState(
-        completion: @escaping (Result<YouTubePlayer.VideoState, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.VideoState, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     func getCurrentTime(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     )
     
 }
@@ -258,19 +258,60 @@ public protocol YouTubePlayerVideoInformationAPI: AnyObject {
     /// Returns the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the YouTube.com URL for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     func getVideoURL(
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the embed code for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     func getVideoEmbedCode(
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     )
+    
+}
+
+// MARK: - YouTubePlayerAPIError
+
+/// A YouTubePlayerAPI Error
+public struct YouTubePlayerAPIError: Error {
+    
+    // MARK: Properties
+    
+    /// The JavaScript that has been executed and caused the Error
+    public let javaScript: String
+    
+    /// The optional JavaScript response object
+    public let javaScriptResponse: Any?
+    
+    /// The optional underlying Error
+    public let underlyingError: Error?
+    
+    /// The optional error reason message
+    public let reason: String?
+    
+    // MARK: Initializer
+    
+    /// Creates a new instance of `YouTubePlayerAPIError`
+    /// - Parameters:
+    ///   - javaScript: The JavaScript that has been executed and caused the Error
+    ///   - javaScriptResponse: The optional JavaScript response object. Default value `nil`
+    ///   - underlyingError: The optional underlying Error. Default value `nil`
+    ///   - reason: The optional error reason message. Default value `nil`
+    public init(
+        javaScript: String,
+        javaScriptResponse: Any? = nil,
+        underlyingError: Error? = nil,
+        reason: String? = nil
+    ) {
+        self.javaScript = javaScript
+        self.javaScriptResponse = javaScriptResponse
+        self.underlyingError = underlyingError
+        self.reason = reason
+    }
     
 }

@@ -54,7 +54,6 @@ final class YouTubePlayerWebView: WKWebView {
                 return configuration
             }()
         )
-        self.player.api = self
         self.backgroundColor = .clear
         self.isOpaque = false
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -92,6 +91,8 @@ extension YouTubePlayerWebView {
     /// - Returns: A Bool value if the YouTube player was successfully loaded
     @discardableResult
     func loadPlayer() -> Bool {
+        // Set YouTubePlayerAPI on current Player
+        self.player.api = self
         // Update user interaction enabled state.
         // If no configuration is provided `true` value will be used
         self.isUserInteractionEnabled = self.player.configuration.isUserInteractionEnabled ?? true
@@ -135,7 +136,7 @@ extension YouTubePlayerWebView {
         // Destroy Player
         self.evaluate(
             javaScript: "player.destroy();"
-        ) { _ in
+        ) { _, _ in
             // Invoke completion if available
             completion?()
         }
@@ -147,36 +148,73 @@ extension YouTubePlayerWebView {
 
 extension YouTubePlayerWebView {
     
-    /// Evaluates the specified JavaScript string
+    /// Evaluates the given JavaScript
     /// - Parameters:
     ///   - javaScript: The JavaScript string
     ///   - completion: The optional completion closure
     func evaluate(
         javaScript: String,
-        completion: ((Result<Any?, Error>) -> Void)? = nil
+        completion: ((Result<Any?, YouTubePlayerAPIError>, String) -> Void)? = nil
     ) {
         self.evaluateJavaScript(
             javaScript
         ) { result, error in
             completion?(
-                error.flatMap { .failure($0) }
-                    ?? .success(result)
+                error
+                    .flatMap { error in
+                        .failure(
+                            .init(
+                                javaScript: javaScript,
+                                underlyingError: error
+                            )
+                        )
+                    }
+                    ?? .success(result),
+                javaScript
             )
         }
     }
     
-}
-
-// MARK: - YouTubePlayerWebView+JavaScriptError
-
-extension YouTubePlayerWebView {
-    
-    /// A JavaScript Error
-    struct JavaScriptError: Error {
-        
-        /// The reason
-        let reason: String
-        
+    /// Evaluates the given JavaScript and tries to convert the response value to given `Response` type
+    /// - Parameters:
+    ///   - javaScript: The JavaScript string
+    ///   - responseType: The Response type
+    ///   - completion: The completion closure
+    func evaluate<Response>(
+        javaScript: String,
+        responseType: Response.Type,
+        completion: @escaping (Result<Response, YouTubePlayerAPIError>, String) -> Void
+    ) {
+        self.evaluate(
+            javaScript: javaScript
+        ) { result, javaScript in
+            switch result {
+            case .success(let responseValue):
+                // Verify response value can be casted to the Response type
+                guard let response = responseValue as? Response else {
+                    // Otherwise complete with failure
+                    return completion(
+                        .failure(
+                            .init(
+                                javaScript: javaScript,
+                                javaScriptResponse: responseValue,
+                                reason: [
+                                    "Malformed response",
+                                    "Expected a type of: \(String(describing: Response.self))"
+                                ]
+                                .joined(separator: ". ")
+                            )
+                        ),
+                        javaScript
+                    )
+                }
+                // Complete with success
+                completion(.success(response), javaScript)
+            case .failure(let error):
+                // Complete with failure
+                completion(.failure(error), javaScript)
+            }
+        }
     }
     
 }

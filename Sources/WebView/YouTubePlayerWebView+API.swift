@@ -162,26 +162,38 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
     /// Retrieves properties that describe the viewer's current perspective
     /// - Parameter completion: The completion closure
     func get360DegreePerspective(
-        completion: @escaping (Result<YouTubePlayer.Perspective360Degree, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.Perspective360Degree, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getSphericalProperties();"
-        ) { result in
+            javaScript: "player.getSphericalProperties();",
+            responseType: String.self
+        ) { result, javaScript in
             switch result {
-            case .success(let value):
-                guard let object = value as? String,
-                      let perspective360Degree = try? JSONDecoder().decode(
+            case .success(let string):
+                // Declare a YouTubePlayer Perspective360Degree
+                let perspective360Degree: YouTubePlayer.Perspective360Degree
+                do {
+                    // Try to decode JSON object as YouTubePlayer Perspective360Degree
+                    perspective360Degree = try JSONDecoder().decode(
                         YouTubePlayer.Perspective360Degree.self,
-                        from: .init(object.utf8)
-                      )  else {
+                        from: .init(string.utf8)
+                    )
+                } catch {
+                    // Complete with failure
                     return completion(
                         .failure(
-                            JavaScriptError(reason: "Perspective360Degree unavailable")
+                            .init(
+                                javaScript: javaScript,
+                                javaScriptResponse: string,
+                                underlyingError: error
+                            )
                         )
                     )
                 }
+                // Complete with success
                 completion(.success(perspective360Degree))
             case .failure(let error):
+                // Complete with failure
                 completion(.failure(error))
             }
         }
@@ -192,9 +204,12 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
     func set(
         perspective360Degree: YouTubePlayer.Perspective360Degree
     ) {
+        // Verify YouTubePlayer Perspective360Degree can be decoded
         guard let jsonData = try? JSONEncoder().encode(perspective360Degree) else {
+            // Otherwise return out of function
             return
         }
+        // Initialize JSON string from data
         let jsonString = String(decoding: jsonData, as: UTF8.self)
         self.evaluate(
             javaScript: "player.setSphericalProperties(\(jsonString));"
@@ -256,48 +271,28 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     /// This function returns an array of the video IDs in the playlist as they are currently ordered
     /// - Parameter completion: The completion closure
     func getPlaylist(
-        completion: @escaping (Result<[String], Error>) -> Void
+        completion: @escaping (Result<[String], YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getPlaylist();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let playlistIds = value as? [String] else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Playlist identifiers are unavailable")
-                        )
-                    )
-                }
-                completion(.success(playlistIds))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getPlaylist();",
+            responseType: [String].self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
     func getPlayistIndex(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getPlaylistIndex();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let index = value as? Int else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Playlist index is unavailable")
-                        )
-                    )
-                }
-                completion(.success(.init(index)))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getPlaylistIndex();",
+            responseType: Int.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result.map(UInt.init))
         }
     }
     
@@ -324,48 +319,28 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     /// Returns Bool value if the player is muted
     /// - Parameter completion: The completion closure
     func isMuted(
-        completion: @escaping (Result<Bool, Error>) -> Void
+        completion: @escaping (Result<Bool, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.isMuted();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let isMuted = value as? Bool else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "isMuted is unavailable")
-                        )
-                    )
-                }
-                completion(.success(isMuted))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.isMuted();",
+            responseType: Bool.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
     /// Returns the player's current volume, an integer between 0 and 100
     /// - Parameter completion: The completion closure
     func getVolume(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getVolume();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let volume = value as? Int else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Volume is unavailable")
-                        )
-                    )
-                }
-                completion(.success(.init(volume)))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getVolume();",
+            responseType: Int.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result.map(UInt.init))
         }
     }
     
@@ -389,24 +364,14 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     /// This function retrieves the playback rate of the currently playing video
     /// - Parameter completion: The completion closure
     func getPlaybackRate(
-        completion: @escaping (Result<YouTubePlayer.PlaybackRate, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.PlaybackRate, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getPlaybackRate();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let playbackRate = value as? Double else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "PlaybackRate is unavailable")
-                        )
-                    )
-                }
-                completion(.success(playbackRate))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getPlaybackRate();",
+            responseType: Double.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
@@ -423,24 +388,14 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     /// This function returns the set of playback rates in which the current video is available
     /// - Parameter completion: The completion closure
     func getAvailablePlaybackRates(
-        completion: @escaping (Result<[YouTubePlayer.PlaybackRate], Error>) -> Void
+        completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getAvailablePlaybackRates();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let playbackRates = value as? [Double] else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "PlaybackRates are unavailable")
-                        )
-                    )
-                }
-                completion(.success(playbackRates))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getAvailablePlaybackRates();",
+            responseType: [Double].self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
@@ -453,47 +408,45 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
     /// - Parameter completion: The completion closure
     func getVideoLoadedFraction(
-        completion: @escaping (Result<Double, Error>) -> Void
+        completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getVideoLoadedFraction();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let fraction = value as? Double else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Fraction is unavailable")
-                        )
-                    )
-                }
-                completion(.success(fraction))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getVideoLoadedFraction();",
+            responseType: Double.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
     /// Returns the state of the player video
     /// - Parameter completion: The completion closure
     func getVideoState(
-        completion: @escaping (Result<YouTubePlayer.VideoState, Error>) -> Void
+        completion: @escaping (Result<YouTubePlayer.VideoState, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getPlayerState();"
-        ) { result in
+            javaScript: "player.getPlayerState();",
+            responseType: Int.self
+        ) { result, javaScript in
             switch result {
             case .success(let value):
-                guard let value = value as? Int,
-                      let videoState = YouTubePlayer.VideoState(rawValue: value) else {
+                // Verify VideoState enum can be initialized from raw value
+                guard let videoState = YouTubePlayer.VideoState(rawValue: value) else {
+                    // Otherwise complete with failure
                     return completion(
                         .failure(
-                            JavaScriptError(reason: "VideoState is unavailable")
+                            .init(
+                                javaScript: javaScript,
+                                javaScriptResponse: value,
+                                reason: "Unknown VideoState: \(value)"
+                            )
                         )
                     )
                 }
+                // Complete with success
                 completion(.success(videoState))
             case .failure(let error):
+                // Complete with failure
                 completion(.failure(error))
             }
         }
@@ -502,24 +455,14 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     /// Returns the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     func getCurrentTime(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getCurrentTime();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let currentTime = value as? Int else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "CurrentTime is unavailable")
-                        )
-                    )
-                }
-                completion(.success(.init(currentTime)))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getCurrentTime();",
+            responseType: Int.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result.map(UInt.init))
         }
     }
     
@@ -532,72 +475,42 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     /// Returns the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
-        completion: @escaping (Result<UInt, Error>) -> Void
+        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getDuration();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let duration = value as? Int else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Duration is unavailable")
-                        )
-                    )
-                }
-                completion(.success(.init(duration)))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getDuration();",
+            responseType: Int.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result.map(UInt.init))
         }
     }
     
     /// Returns the YouTube.com URL for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     func getVideoURL(
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getVideoUrl();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let videoUrl = value as? String else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Video URL is unavailable")
-                        )
-                    )
-                }
-                completion(.success(videoUrl))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getVideoUrl();",
+            responseType: String.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
     /// Returns the embed code for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     func getVideoEmbedCode(
-        completion: @escaping (Result<String, Error>) -> Void
+        completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
-            javaScript: "player.getVideoEmbedCode();"
-        ) { result in
-            switch result {
-            case .success(let value):
-                guard let embedCode = value as? String else {
-                    return completion(
-                        .failure(
-                            JavaScriptError(reason: "Embed Code is unavailable")
-                        )
-                    )
-                }
-                completion(.success(embedCode))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+            javaScript: "player.getVideoEmbedCode();",
+            responseType: String.self
+        ) { result, _ in
+            // Invoke completion
+            completion(result)
         }
     }
     
