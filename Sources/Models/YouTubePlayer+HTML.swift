@@ -44,7 +44,7 @@ extension YouTubePlayer.HTML {
         }
         // Replace Tokenizer with Options
         html = html.replacingOccurrences(
-            of: "YOUTUBE_PLAYER_CONFIGURATION",
+            of: "YOUTUBE_PLAYER_OPTIONS",
             with: options.json
         )
         // Initialize HTML contents
