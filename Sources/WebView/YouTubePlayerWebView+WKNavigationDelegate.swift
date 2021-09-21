@@ -143,7 +143,10 @@ private extension YouTubePlayerWebView {
             let match = validURLRegularExpression.firstMatch(
                 in: url.absoluteString,
                 options: .init(),
-                range: .init(location: 0, length: url.absoluteString.count)
+                range: .init(
+                    location: 0,
+                    length: url.absoluteString.count
+                )
             )
             // Check if a match is available
             if match != nil {
