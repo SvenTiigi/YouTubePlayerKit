@@ -47,6 +47,10 @@ struct ContentView: View {
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI and UIKit 📱
 
+## Example
+
+Check out the example application to see `YouTubePlayerKit` in action. Simply open the `Example/Example.xcodeproj` and run the `Example` scheme.
+
 ## Installation
 
 ### Swift Package Manager
