@@ -76,6 +76,19 @@ extension ContentView: View {
                 .padding()
             }
             .navigationBarTitle(" WWDC Keynotes")
+            .navigationBarItems(
+                trailing: Link(
+                    destination: URL(
+                        string: "https://github.com/SvenTiigi/YouTubePlayerKit"
+                    )!,
+                    label: {
+                        Image(
+                            systemName: "play.rectangle.fill"
+                        )
+                        .imageScale(.large)
+                    }
+                )
+            )
             .background(
                 Color(
                     self.colorScheme == .dark
