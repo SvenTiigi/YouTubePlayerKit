@@ -51,14 +51,26 @@ public protocol YouTubePlayerLoadAPI: AnyObject {
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Events
 public protocol YouTubePlayerEventAPI: AnyObject {
     
+    /// The current YouTubePlayer State, if available
+    var state: YouTubePlayer.State? { get }
+    
     /// A Publisher that emits the current YouTubePlayer State
     var statePublisher: AnyPublisher<YouTubePlayer.State, Never> { get }
+    
+    /// The current YouTubePlayer VideoState, if available
+    var videoState: YouTubePlayer.VideoState? { get }
     
     /// A Publisher that emits the current YouTubePlayer VideoState
     var videoStatePublisher: AnyPublisher<YouTubePlayer.VideoState, Never> { get }
     
+    /// The current YouTubePlayer PlaybackQuality, if available
+    var playbackQuality: YouTubePlayer.PlaybackQuality? { get }
+    
     /// A Publisher that emits the current YouTubePlayer PlaybackQuality
     var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> { get }
+    
+    /// The current YouTubePlayer PlaybackRate, if available
+    var playbackRate: YouTubePlayer.PlaybackRate? { get }
     
     /// A Publisher that emits the current YouTubePlayer PlaybackRate
     var playbackRatePublisher: AnyPublisher<YouTubePlayer.PlaybackRate, Never> { get }

@@ -85,11 +85,21 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
 
 extension YouTubePlayerWebView: YouTubePlayerEventAPI {
     
+    /// The current YouTubePlayer State, if available
+    var state: YouTubePlayer.State? {
+        self.stateSubject.value
+    }
+    
     /// A Publisher that emits the current YouTubePlayer State
     var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
         self.stateSubject
             .compactMap { $0 }
             .eraseToAnyPublisher()
+    }
+    
+    /// The current YouTubePlayer VideoState, if available
+    var videoState: YouTubePlayer.VideoState? {
+        self.videoStateSubject.value
     }
     
     /// A Publisher that emits the current YouTubePlayer VideoState
@@ -99,11 +109,21 @@ extension YouTubePlayerWebView: YouTubePlayerEventAPI {
             .eraseToAnyPublisher()
     }
     
+    /// The current YouTubePlayer PlaybackQuality, if available
+    var playbackQuality: YouTubePlayer.PlaybackQuality? {
+        self.playbackQualitySubject.value
+    }
+    
     /// A Publisher that emits the current YouTubePlayer PlaybackQuality
     var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> {
         self.playbackQualitySubject
             .compactMap { $0 }
             .eraseToAnyPublisher()
+    }
+    
+    /// The current YouTubePlayer PlaybackRate, if available
+    var playbackRate: YouTubePlayer.PlaybackRate? {
+        self.playbackRateSubject.value
     }
     
     /// A Publisher that emits the current YouTubePlayer PlaybackRate
