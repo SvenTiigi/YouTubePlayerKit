@@ -40,7 +40,7 @@ public protocol YouTubePlayerLoadAPI: AnyObject {
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load
     func load(
-        source: YouTubePlayer.Source
+        source: YouTubePlayer.Source?
     )
     
 }

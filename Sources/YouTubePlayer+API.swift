@@ -23,7 +23,7 @@ extension YouTubePlayer: YouTubePlayerLoadAPI {
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load
     public func load(
-        source: YouTubePlayer.Source
+        source: YouTubePlayer.Source?
     ) {
         self.api?.load(source: source)
     }

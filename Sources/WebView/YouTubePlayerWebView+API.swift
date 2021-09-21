@@ -30,8 +30,13 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load
     func load(
-        source: YouTubePlayer.Source
+        source: YouTubePlayer.Source?
     ) {
+        // Verify YouTubePlayer Source is available
+        guard let source = source else {
+            // Otherwise return out of function
+            return
+        }
         // Update YouTubePlayer Source
         self.player.source = source
         // Switch on Source
