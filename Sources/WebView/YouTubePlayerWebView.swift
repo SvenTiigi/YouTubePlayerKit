@@ -136,7 +136,12 @@ extension YouTubePlayerWebView {
         // Destroy Player
         self.evaluate(
             javaScript: "player.destroy();"
-        ) { _, _ in
+        ) { [weak self] _, _ in
+            // Reset all CurrentValueSubjects
+            self?.stateSubject.send(nil)
+            self?.videoStateSubject.send(nil)
+            self?.playbackQualitySubject.send(nil)
+            self?.playbackRateSubject.send(nil)
             // Invoke completion if available
             completion?()
         }
