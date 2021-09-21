@@ -88,12 +88,6 @@ final class YouTubePlayerWebView: WKWebView {
         nil
     }
     
-    /// Deinit
-    deinit {
-        // Destroy Player
-        self.destroyPlayer()
-    }
-    
 }
 
 // MARK: - YouTubePlayerWebView+loadPlayer
