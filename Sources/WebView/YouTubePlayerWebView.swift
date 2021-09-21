@@ -44,22 +44,35 @@ final class YouTubePlayerWebView: WKWebView {
     init(
         player: YouTubePlayer
     ) {
+        // Set player
         self.player = player
+        // Super init
         super.init(
             frame: .zero,
             configuration: {
+                // Initialize WebView Configuration
                 let configuration = WKWebViewConfiguration()
+                // Allows inline media playback
                 configuration.allowsInlineMediaPlayback = true
+                // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = []
+                // Return configuration
                 return configuration
             }()
         )
+        // Set clear background color
         self.backgroundColor = .clear
+        // Disable opaque
         self.isOpaque = false
+        // Set autoresizing masks
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        // Disable scrolling
         self.scrollView.isScrollEnabled = false
+        // Disable bounces of ScrollView
         self.scrollView.bounces = false
+        // Set navigation delegate
         self.navigationDelegate = self
+        // Set ui delegate
         self.uiDelegate = self
         // Load Player and retain result
         let isPlayerLoaded = self.loadPlayer()
