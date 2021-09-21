@@ -11,11 +11,8 @@
 </p>
 
 <p align="center">
-   <a href="https://developer.apple.com/swift/">
-      <img src="https://img.shields.io/badge/Swift-5.4-orange.svg?style=flat" alt="Swift 5.4">
-   </a>
-    <a href="https://sventiigi.github.io/YouTubePlayerKit">
-      <img src="https://github.com/SvenTiigi/YouTubePlayerKit/blob/gh-pages/badge.svg" alt="Documentation">
+   <a href="https://github.com/apple/swift-package-manager">
+      <img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" alt="SPM">
    </a>
    <a href="https://twitter.com/SvenTiigi/">
       <img src="https://img.shields.io/badge/Twitter-@SvenTiigi-blue.svg?style=flat" alt="Twitter">
