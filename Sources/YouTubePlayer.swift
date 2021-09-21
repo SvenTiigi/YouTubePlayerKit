@@ -13,7 +13,7 @@ public final class YouTubePlayer: ObservableObject {
     /// The YouTubePlayer Configuration
     public internal(set) var configuration: Configuration
     
-    /// The  YouTubePlayerAPI
+    /// The YouTubePlayerAPI
     weak var api: YouTubePlayerAPI? {
         didSet {
             self.objectWillChange.send()
