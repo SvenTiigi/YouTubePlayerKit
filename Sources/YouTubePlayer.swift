@@ -8,9 +8,11 @@ public final class YouTubePlayer: ObservableObject {
     // MARK: Properties
     
     /// The optional YouTubePlayer Source
+    @Published
     public internal(set) var source: Source?
     
     /// The YouTubePlayer Configuration
+    @Published
     public internal(set) var configuration: Configuration
     
     /// The YouTubePlayerAPI
