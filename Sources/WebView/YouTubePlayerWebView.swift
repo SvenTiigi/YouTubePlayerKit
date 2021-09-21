@@ -179,7 +179,9 @@ extension YouTubePlayerWebView {
                         .failure(
                             .init(
                                 javaScript: javaScript,
-                                underlyingError: error
+                                underlyingError: error,
+                                reason: (error as NSError)
+                                    .userInfo["WKJavaScriptExceptionMessage"] as? String
                             )
                         )
                     }
