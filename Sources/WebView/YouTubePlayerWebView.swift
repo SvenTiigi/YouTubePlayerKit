@@ -10,7 +10,7 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: Properties
     
     /// The YouTubePlayer
-    var player: YouTubePlayer
+    let player: YouTubePlayer
     
     /// The updated YouTubePlayer Source which has
     /// been set by the `load(source:)` API

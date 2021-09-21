@@ -8,10 +8,10 @@ public final class YouTubePlayer: ObservableObject {
     // MARK: Properties
     
     /// The optional YouTubePlayer Source
-    public let source: Source?
+    public internal(set) var source: Source?
     
     /// The YouTubePlayer Configuration
-    public let configuration: Configuration
+    public internal(set) var configuration: Configuration
     
     /// The  YouTubePlayerAPI
     weak var api: YouTubePlayerAPI? {

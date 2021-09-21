@@ -14,11 +14,8 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
     ) {
         // Destroy Player
         self.destroyPlayer { [weak self] in
-            // Update Player
-            self?.player = .init(
-                source: self?.updatedSource ?? self?.player.source,
-                configuration: configuration
-            )
+            // Update YouTubePlayer Configuration
+            self?.player.configuration = configuration
             // Re-Load Player
             self?.loadPlayer()
         }
@@ -35,8 +32,8 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
     func load(
         source: YouTubePlayer.Source
     ) {
-        // Retain updated Source
-        self.updatedSource = source
+        // Update YouTubePlayer Source
+        self.player.source = source
         // Switch on Source
         switch source {
         case .video(let id, let startSeconds, let endSeconds):
