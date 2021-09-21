@@ -14,7 +14,16 @@ import YouTubePlayerKit
 struct ContentView {
 
     /// The YouTube Player
-    let youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY&t=3181"
+    private let youTubePlayer = YouTubePlayer(
+        source: .url(WWDCKeynote.wwdc2021.youTubeURL)
+    )
+    
+    /// All  WWDC Keynotes
+    private let wwdcKeynotes: [WWDCKeynote] = WWDCKeynote.all.sorted(by: >)
+    
+    /// The color scheme
+    @Environment(\.colorScheme)
+    private var colorScheme
     
 }
 
@@ -25,18 +34,57 @@ extension ContentView: View {
     /// The content and behavior of the view
     var body: some View {
         NavigationView {
-            VStack {
+            ScrollView {
                 YouTubePlayerView(
                     self.youTubePlayer,
                     placeholderOverlay: {
                         ProgressView()
                     }
                 )
-                .frame(height: 200)
-                Spacer()
+                .frame(height: 220)
+                .background(Color(.systemBackground))
+                .shadow(
+                    color: .black.opacity(0.1),
+                    radius: 46,
+                    x: 0,
+                    y: 15
+                )
+                VStack(spacing: 20) {
+                    ForEach(self.wwdcKeynotes) { wwdcKeynote in
+                        Button(
+                            action: {
+                                self.youTubePlayer.load(
+                                    source: .url(wwdcKeynote.youTubeURL)
+                                )
+                            },
+                            label: {
+                                YouTubePlayerView(
+                                    .init(
+                                        source: .url(wwdcKeynote.youTubeURL),
+                                        configuration: .init(
+                                            isUserInteractionEnabled: false
+                                        )
+                                    )
+                                )
+                                .frame(height: 150)
+                                .background(Color(.systemBackground))
+                                .cornerRadius(12)
+                            }
+                        )
+                    }
+                }
+                .padding()
             }
-            .navigationBarTitle(" WWDC Events")
+            .navigationBarTitle(" WWDC Keynotes")
+            .background(
+                Color(
+                    self.colorScheme == .dark
+                        ? .secondarySystemGroupedBackground
+                        : .systemGroupedBackground
+                )
+            )
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
     
 }
