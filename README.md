@@ -22,6 +22,9 @@
    </a>
 </p>
 
+
+<img align="right" width="307" src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/example-app.png?token=ACZQQFQCQOW4BAQ5BX3Q4Q3BKLRI2" alt="Example application">
+
 ```swift
 import SwiftUI
 import YouTubePlayerKit
