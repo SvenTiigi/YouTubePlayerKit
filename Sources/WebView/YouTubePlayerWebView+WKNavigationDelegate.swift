@@ -113,6 +113,7 @@ private extension YouTubePlayerWebView {
 private extension YouTubePlayerWebView {
     
     /// The valid URL RegularExpressions
+    /// Source: https://github.com/youtube/youtube-ios-player-helper/blob/ff5991e6e3188867fe2738aa92913a37127f8f1d/Classes/YTPlayerView.m#L59
     static let validURLRegularExpressions: [NSRegularExpression] = [
         "^http(s)://(www.)youtube.com/embed/(.*)$",
         "^http(s)://pubads.g.doubleclick.net/pagead/conversion/",
