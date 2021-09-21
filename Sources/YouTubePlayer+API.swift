@@ -34,6 +34,31 @@ extension YouTubePlayer: YouTubePlayerLoadAPI {
 
 extension YouTubePlayer: YouTubePlayerEventAPI {
     
+    /// Retrieve Publisher from API by a given KeyPath
+    /// - Parameter keyPath: The KeyPath to a Publisher
+    private func apiPublisher<P: Publisher>(
+        _ keyPath: KeyPath<YouTubePlayerAPI, P>
+    ) -> AnyPublisher<P.Output, P.Failure>
+    where P.Output: Equatable, P.Failure == Never {
+        Just(
+            self.api
+        )
+        .append(
+            self.objectWillChange
+                .map { [weak self] in
+                    self?.api
+                }
+        )
+        .flatMap { api in
+            api?[keyPath: keyPath]
+                .eraseToAnyPublisher()
+                ?? Empty()
+                .eraseToAnyPublisher()
+        }
+        .removeDuplicates()
+        .eraseToAnyPublisher()
+    }
+    
     /// The current YouTubePlayer State, if available
     public var state: YouTubePlayer.State? {
         self.api?.state
@@ -41,12 +66,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer State
     public var statePublisher: AnyPublisher<State, Never> {
-        self.objectWillChange
-            .flatMap { [weak self] in
-                self?.api?.statePublisher
-                    ?? Empty().eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        self.apiPublisher(\.statePublisher)
     }
     
     /// The current YouTubePlayer VideoState, if available
@@ -56,12 +76,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
 
     /// A Publisher that emits the current YouTubePlayer VideoState
     public var videoStatePublisher: AnyPublisher<VideoState, Never> {
-        self.objectWillChange
-            .flatMap { [weak self] in
-                self?.api?.videoStatePublisher
-                    ?? Empty().eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        self.apiPublisher(\.videoStatePublisher)
     }
     
     /// The current YouTubePlayer PlaybackQuality, if available
@@ -71,12 +86,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer PlaybackQuality
     public var playbackQualityPublisher: AnyPublisher<PlaybackQuality, Never> {
-        self.objectWillChange
-            .flatMap { [weak self] in
-                self?.api?.playbackQualityPublisher
-                    ?? Empty().eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        self.apiPublisher(\.playbackQualityPublisher)
     }
     
     /// The current YouTubePlayer PlaybackRate, if available
@@ -86,12 +96,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer PlaybackRate
     public var playbackRatePublisher: AnyPublisher<PlaybackRate, Never> {
-        self.objectWillChange
-            .flatMap { [weak self] in
-                self?.api?.playbackRatePublisher
-                    ?? Empty().eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        self.apiPublisher(\.playbackRatePublisher)
     }
     
 }
