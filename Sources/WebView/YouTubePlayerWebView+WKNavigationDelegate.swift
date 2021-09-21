@@ -113,7 +113,7 @@ private extension YouTubePlayerWebView {
 private extension YouTubePlayerWebView {
     
     /// The valid URL RegularExpressions
-    static let validURLRegularExpressions = [
+    static let validURLRegularExpressions: [NSRegularExpression] = [
         "^http(s)://(www.)youtube.com/embed/(.*)$",
         "^http(s)://pubads.g.doubleclick.net/pagead/conversion/",
         "^http(s)://accounts.google.com/o/oauth2/(.*)$",
@@ -121,7 +121,7 @@ private extension YouTubePlayerWebView {
         "^https://tpc.googlesyndication.com/sodar/(.*).html$"
     ]
     .compactMap { pattern in
-        try? NSRegularExpression(
+        try? .init(
             pattern: pattern,
             options: .caseInsensitive
         )
