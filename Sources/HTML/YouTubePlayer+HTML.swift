@@ -38,17 +38,17 @@ extension YouTubePlayer.HTML {
             )
         }
         // Verify HTML contents is available
-        guard var html = html else {
+        guard var htmlContents = html else {
             // Otherwise return nil
             return nil
         }
         // Replace Tokenizer with Options
-        html = html.replacingOccurrences(
+        htmlContents = htmlContents.replacingOccurrences(
             of: Constants.javaScriptOptionsTokenizer,
             with: options.json
         )
         // Initialize HTML contents
-        self.contents = html
+        self.contents = htmlContents
     }
     
 }
