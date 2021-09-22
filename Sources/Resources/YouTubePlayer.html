@@ -44,9 +44,9 @@
         var player;
 
         // Configure YouTube Player
-        YT.ready(function () {
+        window.YT.ready(() => {
             // Initialize YouTube Player
-            player = new YT.Player(
+            player = new window.YT.Player(
                 'player',
                 YOUTUBE_PLAYER_OPTIONS
             );
@@ -57,53 +57,46 @@
             );
             // Update location
             window.location.href = 'youtubeplayer://onIframeAPIReady';
-            // Retrieve current time of player
-            function getCurrentTime() {
-                var state = player.getPlayerState();
-                if (state == YT.PlayerState.PLAYING) {
-                    time = player.getCurrentTime()
-                    window.location.href = 'youtubeplayer://onPlayTime?data=' + time;
-                }
-            }
-            // Set interval to retrieve the current time
-            window.setInterval(
-                getCurrentTime,
-                500
-            );
         });
 
-        // YouTube Player onReady event callback
-        function onReady(event) {
-            window.location.href = 'youtubeplayer://onReady?data=' + event.data;
-        }
-
-        // YouTube Player onStateChange event callback
-        function onStateChange(event) {
-            window.location.href = 'youtubeplayer://onStateChange?data=' + event.data;
-        }
-
-        // YouTube Player onPlaybackQualityChange event callback
-        function onPlaybackQualityChange(event) {
-            window.location.href = 'youtubeplayer://onPlaybackQualityChange?data=' + event.data;
-        }
-
-        // YouTube Player onPlaybackRateChange event callback
-        function onPlaybackRateChange(event) {
-            window.location.href = 'youtubeplayer://onPlaybackRateChange?data=' + event.data;
-        }
-
-        // YouTube Player onError event callback
-        function onError(event) {
-            window.location.href = 'youtubeplayer://onError?data=' + event.data;
-        }
-
         // On window resize
-        window.onresize = function () {
+        window.onresize = () => {
             // Set Player size
             player.setSize(
                 window.innerWidth,
                 window.innerHeight
             );
+        }
+
+        // Emit Event with name and data
+        function emitEvent(name, data) {
+            // Update window location with custom youtubeplayer scheme url
+            window.location.href = `youtubeplayer://${name}?data=${data}`;
+        }
+
+        // YouTube Player onReady event callback
+        function onReady(event) {
+            emitEvent('onReady', event.data);
+        }
+
+        // YouTube Player onStateChange event callback
+        function onStateChange(event) {
+            emitEvent('onStateChange', event.data);
+        }
+
+        // YouTube Player onPlaybackQualityChange event callback
+        function onPlaybackQualityChange(event) {
+            emitEvent('onPlaybackQualityChange', event.data);
+        }
+
+        // YouTube Player onPlaybackRateChange event callback
+        function onPlaybackRateChange(event) {
+            emitEvent('onPlaybackRateChange', event.data);
+        }
+
+        // YouTube Player onError event callback
+        function onError(event) {
+            emitEvent('onError', event.data);
         }
     </script>
 </body>
