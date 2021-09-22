@@ -11,10 +11,13 @@
 </p>
 
 <p align="center">
-   <img src="https://img.shields.io/badge/platform-iOS%20%7C%20macOS-lightgrey" alt="Platform">
+   <a href="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/ci.yml">
+       <img src="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/ci.yml/badge.svg" alt="CI status">
+   </a>
    <a href="https://sventiigi.github.io/YouTubePlayerKit">
       <img src="https://github.com/SvenTiigi/YouTubePlayerKit/blob/gh-pages/badge.svg" alt="Documentation">
    </a>
+   <img src="https://img.shields.io/badge/platform-iOS%20%7C%20macOS-lightgrey" alt="Platform">
    <a href="https://twitter.com/SvenTiigi/">
       <img src="https://img.shields.io/badge/Twitter-@SvenTiigi-blue.svg?style=flat" alt="Twitter">
    </a>
