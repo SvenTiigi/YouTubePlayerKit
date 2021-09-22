@@ -12,6 +12,7 @@ public extension YouTubePlayer {
         
         /// A Boolean value that determines whether
         /// user events are ignored and removed from the event queue.
+        /// - Note: This property is excluded from encoding
         public var isUserInteractionEnabled: Bool?
         
         /// This parameter specifies whether the initial video
