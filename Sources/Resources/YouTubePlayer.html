@@ -43,9 +43,6 @@
         // The YouTube Player instance
         var player;
 
-        // Bool if an error occured
-        var error = false;
-
         // Configure YouTube Player
         YT.ready(function () {
             // Initialize YouTube Player
@@ -82,11 +79,7 @@
 
         // YouTube Player onStateChange event callback
         function onStateChange(event) {
-            if (!error) {
-                window.location.href = 'youtubeplayer://onStateChange?data=' + event.data;
-            } else {
-                error = false;
-            }
+            window.location.href = 'youtubeplayer://onStateChange?data=' + event.data;
         }
 
         // YouTube Player onPlaybackQualityChange event callback
@@ -101,9 +94,6 @@
 
         // YouTube Player onError event callback
         function onError(event) {
-            if (event.data == 100) {
-                error = true;
-            }
             window.location.href = 'youtubeplayer://onError?data=' + event.data;
         }
 
