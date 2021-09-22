@@ -48,7 +48,18 @@ extension YouTubePlayer.Options {
         var configuration: [String: Any] = [
             CodingKeys.width.rawValue: "100%",
             CodingKeys.height.rawValue: "100%",
-            CodingKeys.events.rawValue: YouTubePlayer.HTML.JavaScriptEvent.callbackRegistration
+            CodingKeys.events.rawValue: YouTubePlayer
+                .HTML
+                .JavaScriptEvent
+                .allCases
+                .filter { event in
+                    event != .onIframeAPIReady || event != .onIframeAPIFailedToLoad
+                }
+                .reduce(
+                    into: [String: String]()
+                ) { result, event in
+                    result[event.rawValue] = event.rawValue
+                }
         ]
         // Switch on Source
         switch player.source {

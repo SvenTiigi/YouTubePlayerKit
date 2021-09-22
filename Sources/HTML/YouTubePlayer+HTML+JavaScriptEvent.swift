@@ -23,24 +23,3 @@ extension YouTubePlayer.HTML {
     }
     
 }
-
-// MARK: - Callback Registration
-
-extension YouTubePlayer.HTML.JavaScriptEvent {
-    
-    /// The JavaScriptEvent Callback Registration Dictionary
-    static var callbackRegistration: [String: String] {
-        Self
-            .allCases
-            .filter { event in
-                event != .onIframeAPIReady
-                    || event != .onIframeAPIFailedToLoad
-            }
-            .reduce(
-                into: .init()
-            ) { result, event in
-                result[event.rawValue] = event.rawValue
-            }
-    }
-    
-}
