@@ -40,11 +40,12 @@ extension YouTubePlayerView: View {
     
     /// The content and behavior of the view
     public var body: some View {
-        ZStack {
-            YouTubePlayerWebView
-                .Representable(player: self.player)
+        YouTubePlayerWebView.Representable(
+            player: self.player
+        )
+        .overlay(
             self.overlay(self.state)
-        }
+        )
         .preference(
             key: YouTubePlayer.PreferenceKey.self,
             value: self.player
