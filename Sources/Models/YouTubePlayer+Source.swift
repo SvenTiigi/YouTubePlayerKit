@@ -53,46 +53,65 @@ public extension YouTubePlayer.Source {
     static func url(
         _ url: String
     ) -> Self? {
+        // Initialize URLComonents from URL string
         let urlComponents = URLComponents(string: url)
-        let startSeconds = urlComponents?.queryItems?["t"].flatMap(Int.init)
+        // Initialize URL from string
         let url = URL(string: url)
+        // Retrieve start seconds from "t" url parameter, if available
+        let startSeconds = urlComponents?.queryItems?["t"].flatMap(Int.init)
+        // Initialize PathComponents and drop first which is the leading "/"
         let pathComponents = url?.pathComponents.dropFirst()
+        // Check if URL host has YouTube share url host
         if url?.host?.hasSuffix("youtu.be") == true {
+            // Check if a video id is available
             if let videoId = pathComponents?.first {
+                // Return video source
                 return .video(
                     id: videoId,
                     startSeconds: startSeconds
                 )
             }
         } else {
+            // Otherwise switch on first path component
             switch pathComponents?.first {
             case "watch":
+                // Check if a playlist identifier is available
                 if let playlistId = urlComponents?.queryItems?["list"] {
-                    return .playlist(id: playlistId)
+                    // Return playlist source
+                    return .playlist(
+                        id: playlistId
+                    )
                 }
+                // Check if video id is available
                 if let videoId = urlComponents?.queryItems?["v"] {
+                    // Return video source
                     return .video(
                         id: videoId,
                         startSeconds: startSeconds
                     )
                 }
             case "embed":
-                if url?.pathComponents.indices.contains(1) == true,
-                    let videoId = url?.pathComponents[1] {
+                // Check if a video identifier is available
+                if let videoId = url?.pathComponents[safe: 1] {
+                    // Return video source
                     return .video(
                         id: videoId,
                         startSeconds: startSeconds
                     )
                 }
             case "c":
-                if url?.pathComponents.indices.contains(1) == true,
-                    let channelName = url?.pathComponents[1] {
-                    return .channel(name: channelName)
+                // Check if a channel name is available
+                if let channelName = url?.pathComponents[safe: 1] {
+                    // Return channel source
+                    return .channel(
+                        name: channelName
+                    )
                 }
             default:
                 break
             }
         }
+        // Otherwise return nil
         return nil
     }
     
@@ -105,6 +124,18 @@ private extension Sequence where Element == URLQueryItem {
     /// Retrieve a URLQueryItem value by a given name, if available
     subscript(_ name: String) -> String? {
         self.first { $0.name == name }?.value
+    }
+    
+}
+
+// MARK: - Collection+Safe
+
+private extension Collection {
+    
+    /// Retrieve an Element at the specified index if it is withing bounds, otherwise return nil.
+    /// - Parameter index: The Index
+    subscript(safe index: Index) -> Element? {
+        self.indices.contains(index) ? self[index] : nil
     }
     
 }
