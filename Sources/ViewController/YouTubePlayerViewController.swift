@@ -1,3 +1,4 @@
+#if !os(macOS)
 import UIKit
 
 // MARK: - YouTubePlayerViewController
@@ -42,3 +43,4 @@ public final class YouTubePlayerViewController: UIViewController {
     }
     
 }
+#endif

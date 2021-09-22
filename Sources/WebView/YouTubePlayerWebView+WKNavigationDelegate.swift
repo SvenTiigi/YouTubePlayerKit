@@ -150,10 +150,7 @@ private extension YouTubePlayerWebView {
             }
         }
         // Open URL
-        UIApplication.shared.open(
-            url,
-            options: [.universalLinksOnly : false]
-        )
+        self.open(url: url)
         // Disallow URL
         return false
     }

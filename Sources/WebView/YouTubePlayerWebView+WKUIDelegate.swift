@@ -21,14 +21,7 @@ extension YouTubePlayerWebView: WKUIDelegate {
         navigationAction
             .request
             .url
-            .flatMap { url in
-                UIApplication
-                    .shared
-                    .open(
-                        url,
-                        options: .init()
-                    )
-            }
+            .flatMap(self.open)
         // Return nil as the URL has already been handled
         return nil
     }

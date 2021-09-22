@@ -52,16 +52,19 @@ final class YouTubePlayerWebView: WKWebView {
             configuration: {
                 // Initialize WebView Configuration
                 let configuration = WKWebViewConfiguration()
+                #if !os(macOS)
                 // Allows inline media playback
                 configuration.allowsInlineMediaPlayback = true
-                // No media types requiring user action for playback
-                configuration.mediaTypesRequiringUserActionForPlayback = []
                 // Enable PiP-Playback
                 configuration.allowsPictureInPictureMediaPlayback = true
+                #endif
+                // No media types requiring user action for playback
+                configuration.mediaTypesRequiringUserActionForPlayback = []
                 // Return configuration
                 return configuration
             }()
         )
+        #if !os(macOS)
         // Set clear background color
         self.backgroundColor = .clear
         // Disable opaque
@@ -72,6 +75,7 @@ final class YouTubePlayerWebView: WKWebView {
         self.scrollView.isScrollEnabled = false
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
+        #endif
         // Set navigation delegate
         self.navigationDelegate = self
         // Set ui delegate

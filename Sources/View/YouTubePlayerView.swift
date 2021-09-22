@@ -1,4 +1,5 @@
 import SwiftUI
+import WebKit
 
 // MARK: - YouTubePlayerView
 
@@ -65,6 +66,7 @@ extension YouTubePlayerView: View {
 
 private extension YouTubePlayerWebView {
     
+    #if !os(macOS)
     /// The YouTubePlayer UIView SwiftUI Representable
     struct Representable: UIViewRepresentable {
         
@@ -92,5 +94,34 @@ private extension YouTubePlayerWebView {
         ) {}
         
     }
+    #endif
+    
+    #if os(macOS)
+    /// The YouTubePlayer NSView SwiftUI Representable
+    struct Representable: NSViewRepresentable {
+        
+        /// The YouTube Player
+        let player: YouTubePlayer
+        
+        /// Make YouTubePlayerWebView
+        /// - Parameter context: The Context
+        /// - Returns: The YouTubePlayerWebView
+        func makeNSView(
+            context: Context
+        ) -> YouTubePlayerWebView {
+            .init(player: self.player)
+        }
+        
+        /// Update YouTubePlayerWebView
+        /// - Parameters:
+        ///   - nsView: The YouTubePlayerWebView
+        ///   - context: The Context
+        func updateNSView(
+            _ nsView: YouTubePlayerWebView,
+            context: Context
+        ) {}
+        
+    }
+    #endif
     
 }

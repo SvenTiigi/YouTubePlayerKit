@@ -10,9 +10,11 @@ extension YouTubePlayerWebView {
     func loadPlayer() -> Bool {
         // Set YouTubePlayerAPI on current Player
         self.player.api = self
+        #if !os(macOS)
         // Update user interaction enabled state.
         // If no configuration is provided `true` value will be used
         self.isUserInteractionEnabled = self.player.configuration.isUserInteractionEnabled ?? true
+        #endif
         // Try to initialize YouTubePlayer Options
         guard let youTubePlayerOptions = try? YouTubePlayer.Options(
             player: self.player,
