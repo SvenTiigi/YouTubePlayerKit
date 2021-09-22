@@ -1,7 +1,7 @@
 import Foundation
 import WebKit
 
-// MARK: - WKUIDelegate
+// MARK: - YouTubePlayerWebView+WKUIDelegate
 
 extension YouTubePlayerWebView: WKUIDelegate {
     

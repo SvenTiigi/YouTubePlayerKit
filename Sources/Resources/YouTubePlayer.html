@@ -36,7 +36,7 @@
     </div>
     <!-- YouTube iFrame JS API -->
     <script src="https://www.youtube.com/iframe_api"
-        onerror="window.location.href='youtubeplayer://onIframeAPIFailedToLoad'">
+        onerror="window.webkit.messageHandlers.onIframeAPIFailedToLoad.postMessage(null);">
     </script>
     <!-- Custom JS -->
     <script>
@@ -55,8 +55,8 @@
                 window.innerWidth,
                 window.innerHeight
             );
-            // Update location
-            window.location.href = 'youtubeplayer://onIframeAPIReady';
+            // Post onIframeAPIReady message
+            window.webkit.messageHandlers.onIframeAPIReady.postMessage(null);
         });
 
         // On window resize
@@ -68,35 +68,34 @@
             );
         }
 
-        // Emit Event with name and data
-        function emitEvent(name, data) {
-            // Update window location with custom youtubeplayer scheme url
-            window.location.href = `youtubeplayer://${name}?data=${data}`;
-        }
-
         // YouTube Player onReady event callback
         function onReady(event) {
-            emitEvent('onReady', event.data);
+            // Post onReady message
+            window.webkit.messageHandlers.onReady.postMessage(null);
         }
 
         // YouTube Player onStateChange event callback
         function onStateChange(event) {
-            emitEvent('onStateChange', event.data);
+            // Post onStateChange message
+            window.webkit.messageHandlers.onStateChange.postMessage(event.data);
         }
 
         // YouTube Player onPlaybackQualityChange event callback
         function onPlaybackQualityChange(event) {
-            emitEvent('onPlaybackQualityChange', event.data);
+            // Post onPlaybackQualityChange message
+            window.webkit.messageHandlers.onPlaybackQualityChange.postMessage(event.data);
         }
 
         // YouTube Player onPlaybackRateChange event callback
         function onPlaybackRateChange(event) {
-            emitEvent('onPlaybackRateChange', event.data);
+            // Post onPlaybackRateChange message
+            window.webkit.messageHandlers.onPlaybackRateChange.postMessage(event.data);
         }
 
         // YouTube Player onError event callback
         function onError(event) {
-            emitEvent('onError', event.data);
+            // Post onError message
+            window.webkit.messageHandlers.onError.postMessage(event.data);
         }
     </script>
 </body>
