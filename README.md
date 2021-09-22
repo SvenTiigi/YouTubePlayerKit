@@ -7,12 +7,13 @@
 <h1 align="center">YouTubePlayerKit</h1>
 
 <p align="center">
-    A Swift Package to easily play YouTube videos on iOS
+    A Swift Package to easily play YouTube videos
 </p>
 
 <p align="center">
-   <a href="https://github.com/apple/swift-package-manager">
-      <img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" alt="SPM">
+   <img src="https://img.shields.io/badge/platform-iOS%20%7C%20macOS-lightgrey" alt="Platform">
+   <a href="https://sventiigi.github.io/YouTubePlayerKit">
+      <img src="https://github.com/SvenTiigi/YouTubePlayerKit/blob/gh-pages/badge.svg" alt="Documentation">
    </a>
    <a href="https://twitter.com/SvenTiigi/">
       <img src="https://img.shields.io/badge/Twitter-@SvenTiigi-blue.svg?style=flat" alt="Twitter">
