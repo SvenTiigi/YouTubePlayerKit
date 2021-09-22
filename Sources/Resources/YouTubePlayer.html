@@ -46,9 +46,10 @@
         // Configure YouTube Player
         window.YT.ready(() => {
             // Initialize YouTube Player
+            // The second parameter will be replaced during runtime
             player = new window.YT.Player(
                 'player',
-                YOUTUBE_PLAYER_OPTIONS
+                %@
             );
             // Set initial size
             player.setSize(

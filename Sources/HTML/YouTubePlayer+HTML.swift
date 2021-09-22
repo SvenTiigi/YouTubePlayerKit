@@ -44,44 +44,14 @@ extension YouTubePlayer.HTML {
             // Otherwise return nil
             return nil
         }
-        // Replace Tokenizer with Options
-        htmlContents = htmlContents.replacingOccurrences(
-            of: resource.javaScriptOptionsTokenizer,
-            with: options.json
+        // Format HTML contents string
+        // with YouTubePlayer Options JSON
+        htmlContents = .init(
+            format: htmlContents,
+            options.json
         )
         // Initialize HTML contents
         self.contents = htmlContents
-    }
-    
-}
-
-// MARK: - HTML+Resource
-
-extension YouTubePlayer.HTML {
-    
-    /// A YouTubePlayer HTML Resource
-    struct Resource {
-        
-        // MARK: Static-Properties
-        
-        /// The default Resource
-        static let `default` = Self(
-            fileName: "YouTubePlayer",
-            fileExtension: "html",
-            javaScriptOptionsTokenizer: "YOUTUBE_PLAYER_OPTIONS"
-        )
-        
-        // MARK: Properties
-        
-        /// The file name
-        let fileName: String
-        
-        /// The file extension
-        let fileExtension: String
-        
-        /// The YouTubePlayer JavaScript Options Tokenizer
-        let javaScriptOptionsTokenizer: String
-        
     }
     
 }
