@@ -222,7 +222,7 @@ youTubePlayer.load(
     source: .video(id: "0TD96VTf0Xs")
 )
 
-// etc...
+// ...
 ```
 > Check out the `YouTubePlayerAPI` protocol to get a list of all available functions and properties.
 
