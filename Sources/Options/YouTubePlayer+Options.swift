@@ -48,7 +48,7 @@ extension YouTubePlayer.Options {
         var configuration: [String: Any] = [
             CodingKeys.width.rawValue: "100%",
             CodingKeys.height.rawValue: "100%",
-            CodingKeys.events.rawValue: YouTubePlayer.JavaScriptEvent.supportedEvents
+            CodingKeys.events.rawValue: YouTubePlayer.HTML.JavaScriptEvent.callbackRegistration
         ]
         // Switch on Source
         switch player.source {
@@ -95,28 +95,6 @@ extension YouTubePlayer.Options {
         configuration[CodingKeys.playerVars.rawValue] = playerConfiguration
         // Make JSON string from Configuration
         self.json = try configuration.jsonString()
-    }
-    
-}
-
-// MARK: - YouTubePlayer+JavaScriptEvent+events
-
-private extension YouTubePlayer.JavaScriptEvent {
-    
-    /// The supported Events Dictionary
-    static var supportedEvents: [String: String] {
-        YouTubePlayer
-            .JavaScriptEvent
-            .allCases
-            .filter { event in
-                event != .onIframeAPIReady
-                    || event != .onIframeAPIFailedToLoad
-            }
-            .reduce(
-                into: .init()
-            ) { result, event in
-                result[event.rawValue] = event.rawValue
-            }
     }
     
 }

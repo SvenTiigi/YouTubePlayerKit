@@ -20,23 +20,16 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Otherwise cancel navigation action
             return decisionHandler(.cancel)
         }
-        // Check if scheme is ytplayer
-        if requestURL.scheme == YouTubePlayer.JavaScriptEvent.scheme {
-            // Check if JavaScriptEvent can be initialized from URL host
-            if let javaScriptEvent = requestURL.host.flatMap(YouTubePlayer.JavaScriptEvent.init) {
-                // Handle JavaScriptEvent
-                self.handle(
-                    javaScriptEvent: javaScriptEvent,
-                    data: URLComponents(
-                        url: requestURL,
-                        resolvingAgainstBaseURL: false
-                    )?
-                    .queryItems?
-                    .first { $0.name == YouTubePlayer.JavaScriptEvent.dataParameterName }?
-                    .value
-                    .flatMap { $0 == "null" ? nil : $0 }
-                )
-            }
+        // Check if a JavaScriptEvent can be initialized from request URL
+        if let javaScriptEvent = YouTubePlayer.HTML.JavaScriptEvent(url: requestURL) {
+            // Handle JavaScriptEvent
+            self.handle(
+                javaScriptEvent: javaScriptEvent,
+                data: YouTubePlayer
+                    .HTML
+                    .JavaScriptEvent
+                    .extractParameter(from: requestURL)
+            )
             // Cancel navigation action
             return decisionHandler(.cancel)
         }
@@ -62,7 +55,7 @@ private extension YouTubePlayerWebView {
     ///   - javaScriptEvent: The JavaScriptEvent
     ///   - data: The optional event data
     func handle(
-        javaScriptEvent: YouTubePlayer.JavaScriptEvent,
+        javaScriptEvent: YouTubePlayer.HTML.JavaScriptEvent,
         data: String?
     ) {
         // Switch on JavaScriptEvent

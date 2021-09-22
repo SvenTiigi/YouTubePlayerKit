@@ -28,8 +28,8 @@ extension YouTubePlayer.HTML {
     ) {
         // Try to retrieve HTML contents
         let html = bundle.url(
-            forResource: "YouTubePlayer",
-            withExtension: "html"
+            forResource: Constants.htmlFileName,
+            withExtension: Constants.htmlFileExtension
         )
         .flatMap { url in
             try? String(
@@ -44,7 +44,7 @@ extension YouTubePlayer.HTML {
         }
         // Replace Tokenizer with Options
         html = html.replacingOccurrences(
-            of: "YOUTUBE_PLAYER_OPTIONS",
+            of: Constants.javaScriptOptionsTokenizer,
             with: options.json
         )
         // Initialize HTML contents
