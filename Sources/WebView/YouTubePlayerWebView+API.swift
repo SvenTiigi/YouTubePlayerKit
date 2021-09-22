@@ -27,6 +27,37 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
 
 extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
     
+    /// The LoadVideoById Parameter
+    private struct LoadVideoByIdParamter: Encodable {
+        
+        /// The video identifier
+        let videoId: String
+        
+        /// The optional start seconds
+        let startSeconds: Int?
+        
+        /// The optional end seconds
+        let endSeconds: Int?
+        
+    }
+    
+    /// The LoadPlaylist Parameter
+    private struct LoadPlaylistParameter: Encodable {
+        
+        /// The list
+        let list: String
+        
+        /// The ListType
+        let listType: YouTubePlayer.Configuration.ListType
+        
+        /// The optional index
+        let index: Int?
+        
+        /// The optional start seconds
+        let startSeconds: Int?
+        
+    }
+    
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load
     func load(
@@ -42,41 +73,44 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
         // Switch on Source
         switch source {
         case .video(let id, let startSeconds, let endSeconds):
-            var parameters = ["videoId": "'\(id)'"]
-            if let startSeconds = startSeconds {
-                parameters["startSeconds"] = .init(startSeconds)
+            // Initialize LoadVideoByIdParamter
+            let parameter = LoadVideoByIdParamter(
+                videoId: id,
+                startSeconds: startSeconds,
+                endSeconds: endSeconds
+            )
+            // Verify parameter can be encoded to a JSON string
+            guard let parameterJSONString = try? parameter.jsonString() else {
+                // Otherwise return out of function
+                return
             }
-            if let endSeconds = endSeconds {
-                parameters["endSeconds"] = .init(endSeconds)
-            }
-            let parameterObject = parameters
-                .map { "\($0): \($1)" }
-                .joined(separator: ", ")
+            // Load video by id
             self.evaluate(
-                javaScript: "player.loadVideoById({\(parameterObject)});"
+                javaScript: "player.loadVideoById(\(parameterJSONString));"
             )
         case .playlist(let id, let index, let startSeconds),
              .channel(let id, let index, let startSeconds):
-            var parameters: [String: String] = .init()
-            parameters["list"] = "'\(id)'"
-            parameters["listType"] = {
-                if case .playlist = source {
-                    return "'playlist'"
-                } else {
-                    return "'user_uploads'"
-                }
-            }()
-            if let index = index {
-                parameters["index"] = .init(index)
+            // Initialize LoadPlaylistParameter
+            let parameter = LoadPlaylistParameter(
+                list: id,
+                listType: {
+                    if case .playlist = source {
+                        return .playlist
+                    } else {
+                        return .userUploads
+                    }
+                }(),
+                index: index,
+                startSeconds: startSeconds
+            )
+            // Verify parameter can be encoded to a JSON string
+            guard let parameterJSONString = try? parameter.jsonString() else {
+                // Otherwise return out of function
+                return
             }
-            if let startSeconds = startSeconds {
-                parameters["startSeconds"] = .init(startSeconds)
-            }
-            let parameterObject = parameters
-                .map { "\($0): \($1)" }
-                .joined(separator: ", ")
+            // Load Playlist
             self.evaluate(
-                javaScript: "player.loadPlaylist({\(parameterObject)});"
+                javaScript: "player.loadPlaylist(\(parameterJSONString));"
             )
         }
     }
