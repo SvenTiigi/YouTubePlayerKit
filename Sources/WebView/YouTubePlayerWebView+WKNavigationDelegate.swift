@@ -34,6 +34,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                     .queryItems?
                     .first { $0.name == YouTubePlayer.JavaScriptEvent.dataParameterName }?
                     .value
+                    .flatMap { $0 == "null" ? nil : $0 }
                 )
             }
             // Cancel navigation action
