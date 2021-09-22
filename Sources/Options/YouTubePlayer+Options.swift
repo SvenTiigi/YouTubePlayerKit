@@ -53,6 +53,7 @@ extension YouTubePlayer.Options {
                 .JavaScriptEvent
                 .allCases
                 .filter { event in
+                    // Exclude onIframeAPIReady and onIframeAPIFailedToLoad
                     event != .onIframeAPIReady || event != .onIframeAPIFailedToLoad
                 }
                 .reduce(
