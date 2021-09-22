@@ -22,14 +22,16 @@ extension YouTubePlayer.HTML {
     /// - Parameters:
     ///   - options: The YouTubePlayer Options
     ///   - bundle: The Bundle. Default value `.module`
+    ///   - resource: The Resource. Default value `.default`
     init?(
         options: YouTubePlayer.Options,
-        from bundle: Bundle = .module
+        bundle: Bundle = .module,
+        resource: Resource = .default
     ) {
         // Try to retrieve HTML contents
         let html = bundle.url(
-            forResource: Constants.htmlFileName,
-            withExtension: Constants.htmlFileExtension
+            forResource: resource.fileName,
+            withExtension: resource.fileExtension
         )
         .flatMap { url in
             try? String(
@@ -44,11 +46,42 @@ extension YouTubePlayer.HTML {
         }
         // Replace Tokenizer with Options
         htmlContents = htmlContents.replacingOccurrences(
-            of: Constants.javaScriptOptionsTokenizer,
+            of: resource.javaScriptOptionsTokenizer,
             with: options.json
         )
         // Initialize HTML contents
         self.contents = htmlContents
+    }
+    
+}
+
+// MARK: - HTML+Resource
+
+extension YouTubePlayer.HTML {
+    
+    /// A YouTubePlayer HTML Resource
+    struct Resource {
+        
+        // MARK: Static-Properties
+        
+        /// The default Resource
+        static let `default` = Self(
+            fileName: "YouTubePlayer",
+            fileExtension: "html",
+            javaScriptOptionsTokenizer: "YOUTUBE_PLAYER_OPTIONS"
+        )
+        
+        // MARK: Properties
+        
+        /// The file name
+        let fileName: String
+        
+        /// The file extension
+        let fileExtension: String
+        
+        /// The YouTubePlayer JavaScript Options Tokenizer
+        let javaScriptOptionsTokenizer: String
+        
     }
     
 }
