@@ -65,22 +65,22 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     }
     
     /// A Publisher that emits the current YouTubePlayer State
-    public var statePublisher: AnyPublisher<State, Never> {
+    public var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
         self.apiPublisher(\.statePublisher)
     }
     
-    /// The current YouTubePlayer VideoState, if available
-    public var videoState: YouTubePlayer.VideoState? {
-        self.api?.videoState
+    /// The current YouTubePlayer PlaybackState, if available
+    public var playbackState: PlaybackState? {
+        self.api?.playbackState
     }
 
-    /// A Publisher that emits the current YouTubePlayer VideoState
-    public var videoStatePublisher: AnyPublisher<VideoState, Never> {
-        self.apiPublisher(\.videoStatePublisher)
+    /// A Publisher that emits the current YouTubePlayer PlaybackState
+    public var playbackStatePublisher: AnyPublisher<PlaybackState, Never> {
+        self.apiPublisher(\.playbackStatePublisher)
     }
     
     /// The current YouTubePlayer PlaybackQuality, if available
-    public var playbackQuality: YouTubePlayer.PlaybackQuality? {
+    public var playbackQuality: PlaybackQuality? {
         self.api?.playbackQuality
     }
     
@@ -90,7 +90,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     }
     
     /// The current YouTubePlayer PlaybackRate, if available
-    public var playbackRate: YouTubePlayer.PlaybackRate? {
+    public var playbackRate: PlaybackRate? {
         self.api?.playbackRate
     }
     
@@ -296,12 +296,12 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         self.api?.getVideoLoadedFraction(completion: completion)
     }
     
-    /// Returns the state of the player video
+    /// Returns the PlaybackState of the player video
     /// - Parameter completion: The completion closure
-    public func getVideoState(
-        completion: @escaping (Result<VideoState, YouTubePlayerAPIError>) -> Void
+    public func getPlaybackState(
+        completion: @escaping (Result<PlaybackState, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getVideoState(completion: completion)
+        self.api?.getPlaybackState(completion: completion)
     }
     
     /// Returns the elapsed time in seconds since the video started playing

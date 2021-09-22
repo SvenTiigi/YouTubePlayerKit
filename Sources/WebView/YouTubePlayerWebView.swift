@@ -26,10 +26,10 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: Subjects
     
     /// The YouTubePlayer State CurrentValueSubject
-    private(set) lazy var stateSubject = CurrentValueSubject<YouTubePlayer.State?, Never>(nil)
+    private(set) lazy var playerStateSubject = CurrentValueSubject<YouTubePlayer.State?, Never>(nil)
     
-    /// The YouTubePlayer VideoState CurrentValueSubject
-    private(set) lazy var videoStateSubject = CurrentValueSubject<YouTubePlayer.VideoState?, Never>(nil)
+    /// The YouTubePlayer PlaybackState CurrentValueSubject
+    private(set) lazy var playbackStateSubject = CurrentValueSubject<YouTubePlayer.PlaybackState?, Never>(nil)
     
     /// The YouTubePlayer PlaybackQuality CurrentValueSubject
     private(set) lazy var playbackQualitySubject = CurrentValueSubject<YouTubePlayer.PlaybackQuality?, Never>(nil)
@@ -81,7 +81,7 @@ final class YouTubePlayerWebView: WKWebView {
         // Check if Player is not loaded
         if !isPlayerLoaded {
             // Send setup failed error
-            self.stateSubject.send(.error(.setupFailed))
+            self.playerStateSubject.send(.error(.setupFailed))
         }
     }
     
@@ -147,8 +147,8 @@ extension YouTubePlayerWebView {
             javaScript: "player.destroy();"
         ) { [weak self] _, _ in
             // Reset all CurrentValueSubjects
-            self?.stateSubject.send(nil)
-            self?.videoStateSubject.send(nil)
+            self?.playerStateSubject.send(nil)
+            self?.playbackStateSubject.send(nil)
             self?.playbackQualitySubject.send(nil)
             self?.playbackRateSubject.send(nil)
             // Invoke completion if available

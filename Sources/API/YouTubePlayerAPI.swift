@@ -57,11 +57,11 @@ public protocol YouTubePlayerEventAPI: AnyObject {
     /// A Publisher that emits the current YouTubePlayer State
     var statePublisher: AnyPublisher<YouTubePlayer.State, Never> { get }
     
-    /// The current YouTubePlayer VideoState, if available
-    var videoState: YouTubePlayer.VideoState? { get }
+    /// The current YouTubePlayer PlaybackState, if available
+    var playbackState: YouTubePlayer.PlaybackState? { get }
     
-    /// A Publisher that emits the current YouTubePlayer VideoState
-    var videoStatePublisher: AnyPublisher<YouTubePlayer.VideoState, Never> { get }
+    /// A Publisher that emits the current YouTubePlayer PlaybackState
+    var playbackStatePublisher: AnyPublisher<YouTubePlayer.PlaybackState, Never> { get }
     
     /// The current YouTubePlayer PlaybackQuality, if available
     var playbackQuality: YouTubePlayer.PlaybackQuality? { get }
@@ -246,10 +246,10 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     )
     
-    /// Returns the state of the player video
+    /// Returns the PlaybackState of the player video
     /// - Parameter completion: The completion closure
-    func getVideoState(
-        completion: @escaping (Result<YouTubePlayer.VideoState, YouTubePlayerAPIError>) -> Void
+    func getPlaybackState(
+        completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the elapsed time in seconds since the video started playing

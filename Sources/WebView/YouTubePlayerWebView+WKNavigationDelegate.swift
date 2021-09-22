@@ -72,21 +72,21 @@ private extension YouTubePlayerWebView {
             break
         case .onIframeAPIFailedToLoad:
             // Send error state
-            self.stateSubject.send(.error(.iFrameAPIFailedToLoad))
+            self.playerStateSubject.send(.error(.iFrameAPIFailedToLoad))
         case .onReady:
             // Send ready state
-            self.stateSubject.send(.ready)
+            self.playerStateSubject.send(.ready)
             // Check if autoPlay is enabled
             if self.player.configuration.autoPlay == true {
                 // Play Video
                 self.play()
             }
         case .onStateChange:
-            // Send VideoState
+            // Send PlaybackState
             data
                 .flatMap(Int.init)
-                .flatMap(YouTubePlayer.VideoState.init)
-                .map(self.videoStateSubject.send)
+                .flatMap(YouTubePlayer.PlaybackState.init)
+                .map(self.playbackStateSubject.send)
         case .onPlaybackQualityChange:
             // Send PlaybackQuality
             data
@@ -103,7 +103,7 @@ private extension YouTubePlayerWebView {
                 .flatMap(Int.init)
                 .flatMap(YouTubePlayer.Error.init)
                 .map { .error($0) }
-                .map(self.stateSubject.send)
+                .map(self.playerStateSubject.send)
         }
     }
     

@@ -1,11 +1,11 @@
 import Foundation
 
-// MARK: - YouTubePlayer+VideoState
+// MARK: - YouTubePlayer+PlaybackState
 
 public extension YouTubePlayer {
     
-    /// The YouTubePlayer VideoState
-    enum VideoState: Int {
+    /// The YouTubePlayer PlaybackState
+    enum PlaybackState: Int {
         /// Unstarted
         case unstarted = -1
         /// Ended

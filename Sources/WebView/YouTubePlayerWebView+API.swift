@@ -123,24 +123,24 @@ extension YouTubePlayerWebView: YouTubePlayerEventAPI {
     
     /// The current YouTubePlayer State, if available
     var state: YouTubePlayer.State? {
-        self.stateSubject.value
+        self.playerStateSubject.value
     }
     
     /// A Publisher that emits the current YouTubePlayer State
     var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
-        self.stateSubject
+        self.playerStateSubject
             .compactMap { $0 }
             .eraseToAnyPublisher()
     }
     
-    /// The current YouTubePlayer VideoState, if available
-    var videoState: YouTubePlayer.VideoState? {
-        self.videoStateSubject.value
+    /// The current YouTubePlayer PlaybackState, if available
+    var playbackState: YouTubePlayer.PlaybackState? {
+        self.playbackStateSubject.value
     }
     
-    /// A Publisher that emits the current YouTubePlayer VideoState
-    var videoStatePublisher: AnyPublisher<YouTubePlayer.VideoState, Never> {
-        self.videoStateSubject
+    /// A Publisher that emits the current YouTubePlayer PlaybackState
+    var playbackStatePublisher: AnyPublisher<YouTubePlayer.PlaybackState, Never> {
+        self.playbackStateSubject
             .compactMap { $0 }
             .eraseToAnyPublisher()
     }
@@ -454,10 +454,10 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
         )
     }
     
-    /// Returns the state of the player video
+    /// Returns the PlaybackState of the player video
     /// - Parameter completion: The completion closure
-    func getVideoState(
-        completion: @escaping (Result<YouTubePlayer.VideoState, YouTubePlayerAPIError>) -> Void
+    func getPlaybackState(
+        completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
             javaScript: "player.getPlayerState();",
@@ -465,21 +465,21 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
         ) { result, javaScript in
             switch result {
             case .success(let value):
-                // Verify VideoState enum can be initialized from raw value
-                guard let videoState = YouTubePlayer.VideoState(rawValue: value) else {
+                // Verify PlaybackState enum can be initialized from raw value
+                guard let playbackState = YouTubePlayer.PlaybackState(rawValue: value) else {
                     // Otherwise complete with failure
                     return completion(
                         .failure(
                             .init(
                                 javaScript: javaScript,
                                 javaScriptResponse: value,
-                                reason: "Unknown VideoState: \(value)"
+                                reason: "Unknown PlaybackState: \(value)"
                             )
                         )
                     )
                 }
                 // Complete with success
-                completion(.success(videoState))
+                completion(.success(playbackState))
             case .failure(let error):
                 // Complete with failure
                 completion(.failure(error))
