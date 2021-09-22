@@ -40,11 +40,11 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
         _ keyPath: KeyPath<YouTubePlayerAPI, P>
     ) -> AnyPublisher<P.Output, P.Failure>
     where P.Output: Equatable, P.Failure == Never {
-        Just(
-            self.api
-        )
-        .append(
-            self.objectWillChange
+        Deferred {
+            Just(self.api)
+        }
+        .merge(
+            with: self.objectWillChange
                 .map { [weak self] in
                     self?.api
                 }
