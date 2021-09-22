@@ -30,7 +30,7 @@ struct ContentView: View {
     var body: some View {
         //  WWDC 2019 Keynote
         YouTubePlayerView(
-            "https://www.youtube.com/watch?v=psL_5RIBqnY"
+            "https://youtube.com/watch?v=psL_5RIBqnY"
         )
     }
     
