@@ -40,7 +40,7 @@ struct ContentView: View {
 ## Features
 
 - [x] Play YouTube videos with just one line of code 📺
-- [x] YouTube [Terms of Service](https://www.youtube.com/t/terms) compliant implementation ✅
+- [x] YouTube [Terms of Service](https://youtube.com/t/terms) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI and UIKit 📱
 
@@ -76,7 +76,7 @@ struct ContentView: View {
         // YouTubePlayerView with overlay view builder
         // which takes in a `YouTubePlayer.State`
         YouTubePlayerView(
-            "https://www.youtube.com/watch?v=psL_5RIBqnY"
+            "https://youtube.com/watch?v=psL_5RIBqnY"
         ) { state in
             switch state {
             case .idle:
@@ -101,7 +101,7 @@ import YouTubePlayerKit
 
 // Initialize a YouTubePlayerViewController
 let youTubePlayerViewController = YouTubePlayerViewController(
-    player: "https://www.youtube.com/watch?v=psL_5RIBqnY"
+    player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
 
 // Optional: Use the `YouTubePlayer` to access the underlying iFrame API
@@ -128,7 +128,7 @@ A `YouTubePlayer` is the central object which needs to be passed to every YouTub
 Therefore, you can easily initialize a `YouTubePlayer` by using a string literal as seen in the previous examples.
 
 ```swift
-let youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY"
+let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 ```
 
 A `YouTubePlayer` consist of two parts a `YouTubePlayer.Source` and a `YouTubePlayer.Configuration`.
@@ -163,16 +163,16 @@ Additionally, you can use a URL to initialize a `YouTubePlayer.Source`
 
 ```swift
 // Watch URL
-let watchURLSource: YouTubePlayer.Source? = .url("https://www.youtube.com/watch?v=psL_5RIBqnY")
+let watchURLSource: YouTubePlayer.Source? = .url("https://youtube.com/watch?v=psL_5RIBqnY")
 
 // Share URL
 let sharedURLSource: YouTubePlayer.Source? = .url("https://youtu.be/psL_5RIBqnY")
 
 // Embed URL
-let embedURLSource: YouTubePlayer.Source? = .url("https://www.youtube.com/embed/psL_5RIBqnY")
+let embedURLSource: YouTubePlayer.Source? = .url("https://youtube.com/embed/psL_5RIBqnY")
 
 // Channel URL
-let channelURLSource: YouTubePlayer.Source? = .url("https://www.youtube.com/c/iJustine")
+let channelURLSource: YouTubePlayer.Source? = .url("https://youtube.com/c/iJustine")
 ```
 > When using a URL the `YouTubePlayer.Source` will be optional
 
@@ -193,7 +193,7 @@ let configuration = YouTubePlayer.Configuration(
 )
 
 let youTubePlayer = YouTubePlayer(
-    source: "https://www.youtube.com/watch?v=psL_5RIBqnY",
+    source: "https://youtube.com/watch?v=psL_5RIBqnY",
     configuration: configuration
 )
 ```
@@ -204,7 +204,7 @@ let youTubePlayer = YouTubePlayer(
 A `YouTubePlayer` instance offers various properties and functions to access the underlying YouTube player iFrame API like accessing the current playback quality, play, pause, seek, etc...
 
 ```swift
-let youTubePlayer: YouTubePlayer = "https://www.youtube.com/watch?v=psL_5RIBqnY"
+let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 
 // Play video
 youTubePlayer.play()
