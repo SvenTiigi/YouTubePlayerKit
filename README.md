@@ -123,7 +123,7 @@ self.present(youTubePlayerViewController, animated: true)
 
 ## YouTubePlayer
 
-A `YouTubePlayer` is the central object which needs to be passed to every `YouTubePlayerView` or `YouTubePlayerViewController` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API. 
+A `YouTubePlayer` is the central object which needs to be passed to every YouTubePlayerView or YouTubePlayerViewController in order to play a certain YouTube video and interact with the underlying YouTube iFrame API. 
 
 Therefore, you can easily initialize a `YouTubePlayer` by using a string literal as seen in the previous examples.
 
