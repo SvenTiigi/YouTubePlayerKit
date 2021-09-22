@@ -94,9 +94,7 @@ private extension YouTubePlayerWebView {
         ) {}
         
     }
-    #endif
-    
-    #if os(macOS)
+    #else
     /// The YouTubePlayer NSView SwiftUI Representable
     struct Representable: NSViewRepresentable {
         
