@@ -94,7 +94,7 @@ extension YouTubePlayer.Options {
         // Set Player Configuration
         configuration[CodingKeys.playerVars.rawValue] = playerConfiguration
         // Make JSON string from Configuration
-        self.json = try configuration.json()
+        self.json = try configuration.jsonString()
     }
     
 }
@@ -117,57 +117,6 @@ private extension YouTubePlayer.JavaScriptEvent {
             ) { result, event in
                 result[event.rawValue] = event.rawValue
             }
-    }
-    
-}
-
-// MARK: - Encodable+JSON
-
-private extension Encodable {
-    
-    /// Make JSON Dictionary
-    func json() throws -> [String: Any] {
-        // Initialize JSONEncoder
-        let encoder = JSONEncoder()
-        // Set without escaping slashes output formatting
-        encoder.outputFormatting = .withoutEscapingSlashes
-        // Encode
-        let jsonData = try encoder.encode(self)
-        // Serialize to JSON object
-        let jsonObject = try JSONSerialization.jsonObject(
-           with: jsonData,
-           options: .allowFragments
-        )
-        // Verify JSON object can be casted to a Dictionary
-        guard let jsonDictionary = jsonObject as? [String: Any] else {
-            // Otherwise throw Error
-            throw DecodingError.typeMismatch(
-                [String: Any].self,
-                .init(
-                    codingPath: .init(),
-                    debugDescription: "Malformed JSON object"
-                )
-            )
-        }
-        // Return JSON Dictionary
-        return jsonDictionary
-    }
-    
-}
-
-// MARK: - Dictionary+JSON
-
-private extension Dictionary {
-    
-    /// Make JSON String
-    func json() throws -> String {
-        .init(
-            decoding: try JSONSerialization.data(
-                withJSONObject: self,
-                options: .init()
-            ),
-            as: UTF8.self
-        )
     }
     
 }
