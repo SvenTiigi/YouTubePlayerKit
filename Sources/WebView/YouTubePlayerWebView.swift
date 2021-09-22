@@ -195,7 +195,7 @@ extension YouTubePlayerWebView {
     /// - Parameters:
     ///   - javaScript: The JavaScript string
     ///   - responseType: The Response type
-    ///   - completion: The completion closure
+    ///   - completion: The completion closure which takes in the Result and the executed JavaScript
     func evaluate<Response>(
         javaScript: String,
         responseType: Response.Type,
@@ -230,6 +230,24 @@ extension YouTubePlayerWebView {
                 // Complete with failure
                 completion(.failure(error), javaScript)
             }
+        }
+    }
+    
+    /// Evaluates the given JavaScript and tries to convert the response value to given `Response` type
+    /// - Parameters:
+    ///   - javaScript: The JavaScript string
+    ///   - responseType: The Response type. Default value `.self`
+    ///   - completion: The completion closure which takes in the Result
+    func evaluate<Response>(
+        javaScript: String,
+        responseType: Response.Type = Response.self,
+        completion: @escaping (Result<Response, YouTubePlayerAPIError>) -> Void
+    ) {
+        self.evaluate(
+            javaScript: javaScript,
+            responseType: Response.self
+        ) { result, _ in
+            completion(result)
         }
     }
     

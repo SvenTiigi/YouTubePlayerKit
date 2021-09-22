@@ -297,11 +297,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaylist();",
-            responseType: [String].self
-        ) { result, _ in
-            // Invoke completion
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// This function returns the index of the playlist video that is currently playing.
@@ -311,10 +308,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaylistIndex();",
-            responseType: Int.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
 }
@@ -344,11 +339,8 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     ) {
         self.evaluate(
             javaScript: "player.isMuted();",
-            responseType: Bool.self
-        ) { result, _ in
-            // Invoke completion
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// Returns the player's current volume, an integer between 0 and 100
@@ -358,10 +350,8 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVolume();",
-            responseType: Int.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// Sets the volume.
@@ -388,10 +378,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaybackRate();",
-            responseType: Double.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// This function sets the suggested playback rate for the current video
@@ -411,10 +399,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     ) {
         self.evaluate(
             javaScript: "player.getAvailablePlaybackRates();",
-            responseType: [Double].self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
 }
@@ -430,11 +416,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoLoadedFraction();",
-            responseType: Double.self
-        ) { result, _ in
-            // Invoke completion
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// Returns the state of the player video
@@ -477,10 +460,8 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getCurrentTime();",
-            responseType: Int.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
 }
@@ -496,10 +477,8 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getDuration();",
-            responseType: Int.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// Returns the YouTube.com URL for the currently loaded/playing video
@@ -509,10 +488,8 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoUrl();",
-            responseType: String.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
     /// Returns the embed code for the currently loaded/playing video
@@ -522,10 +499,8 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoEmbedCode();",
-            responseType: String.self
-        ) { result, _ in
-            completion(result)
-        }
+            completion: completion
+        )
     }
     
 }
