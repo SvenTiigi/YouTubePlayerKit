@@ -70,32 +70,32 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     }
     
     /// The current YouTubePlayer PlaybackState, if available
-    public var playbackState: PlaybackState? {
+    public var playbackState: YouTubePlayer.PlaybackState? {
         self.api?.playbackState
     }
 
     /// A Publisher that emits the current YouTubePlayer PlaybackState
-    public var playbackStatePublisher: AnyPublisher<PlaybackState, Never> {
+    public var playbackStatePublisher: AnyPublisher<YouTubePlayer.PlaybackState, Never> {
         self.apiPublisher(\.playbackStatePublisher)
     }
     
     /// The current YouTubePlayer PlaybackQuality, if available
-    public var playbackQuality: PlaybackQuality? {
+    public var playbackQuality: YouTubePlayer.PlaybackQuality? {
         self.api?.playbackQuality
     }
     
     /// A Publisher that emits the current YouTubePlayer PlaybackQuality
-    public var playbackQualityPublisher: AnyPublisher<PlaybackQuality, Never> {
+    public var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> {
         self.apiPublisher(\.playbackQualityPublisher)
     }
     
     /// The current YouTubePlayer PlaybackRate, if available
-    public var playbackRate: PlaybackRate? {
+    public var playbackRate: YouTubePlayer.PlaybackRate? {
         self.api?.playbackRate
     }
     
     /// A Publisher that emits the current YouTubePlayer PlaybackRate
-    public var playbackRatePublisher: AnyPublisher<PlaybackRate, Never> {
+    public var playbackRatePublisher: AnyPublisher<YouTubePlayer.PlaybackRate, Never> {
         self.apiPublisher(\.playbackRatePublisher)
     }
     
@@ -140,7 +140,7 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
     /// Retrieves properties that describe the viewer's current perspective
     /// - Parameter completion: The completion closure
     public func get360DegreePerspective(
-        completion: @escaping (Result<Perspective360Degree, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<YouTubePlayer.Perspective360Degree, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.get360DegreePerspective(completion: completion)
     }
@@ -148,7 +148,7 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
     /// Sets the video orientation for playback of a 360° video
     /// - Parameter perspective360Degree: The Perspective360Degree
     public func set(
-        perspective360Degree: Perspective360Degree
+        perspective360Degree: YouTubePlayer.Perspective360Degree
     ) {
         self.api?.set(perspective360Degree: perspective360Degree)
     }
@@ -261,7 +261,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     /// This function retrieves the playback rate of the currently playing video
     /// - Parameter completion: The completion closure
     public func getPlaybackRate(
-        completion: @escaping (Result<PlaybackRate, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<YouTubePlayer.PlaybackRate, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getPlaybackRate(completion: completion)
     }
@@ -269,7 +269,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     /// This function sets the suggested playback rate for the current video
     /// - Parameter playbackRate: The playback rate
     public func set(
-        playbackRate: PlaybackRate
+        playbackRate: YouTubePlayer.PlaybackRate
     ) {
         self.api?.set(playbackRate: playbackRate)
     }
@@ -277,7 +277,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     /// This function returns the set of playback rates in which the current video is available
     /// - Parameter completion: The completion closure
     public func getAvailablePlaybackRates(
-        completion: @escaping (Result<[PlaybackRate], YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getAvailablePlaybackRates(completion: completion)
     }
@@ -299,7 +299,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     /// Returns the PlaybackState of the player video
     /// - Parameter completion: The completion closure
     public func getPlaybackState(
-        completion: @escaping (Result<PlaybackState, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getPlaybackState(completion: completion)
     }
