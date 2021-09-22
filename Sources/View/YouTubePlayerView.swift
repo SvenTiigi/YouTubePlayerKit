@@ -45,6 +45,10 @@ extension YouTubePlayerView: View {
                 .Representable(player: self.player)
             self.overlay(self.state)
         }
+        .preference(
+            key: YouTubePlayer.PreferenceKey.self,
+            value: self.player
+        )
         .onReceive(
             self.player
                 .statePublisher
