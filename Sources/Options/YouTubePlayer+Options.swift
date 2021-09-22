@@ -71,7 +71,7 @@ extension YouTubePlayer.Options {
             playerConfiguration[
                 YouTubePlayer.Configuration.CodingKeys.list.rawValue
             ] = id
-        case .channel(let id, _, _):
+        case .channel(let name, _, _):
             // Set user uploads
             playerConfiguration[
                 YouTubePlayer.Configuration.CodingKeys.listType.rawValue
@@ -79,7 +79,7 @@ extension YouTubePlayer.Options {
             // Set channel id
             playerConfiguration[
                 YouTubePlayer.Configuration.CodingKeys.list.rawValue
-            ] = id
+            ] = name
         case nil:
             // Simply do nothing
             break

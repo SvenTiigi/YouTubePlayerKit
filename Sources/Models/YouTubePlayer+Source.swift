@@ -20,7 +20,7 @@ public extension YouTubePlayer {
         )
         /// Channel
         case channel(
-            id: String,
+            name: String,
             index: UInt? = nil,
             startSeconds: UInt? = nil
         )
@@ -84,10 +84,10 @@ public extension YouTubePlayer.Source {
                         startSeconds: startSeconds
                     )
                 }
-            case "channel":
+            case "c":
                 if url?.pathComponents.indices.contains(1) == true,
-                    let channelId = url?.pathComponents[1] {
-                    return .channel(id: channelId)
+                    let channelName = url?.pathComponents[1] {
+                    return .channel(name: channelName)
                 }
             default:
                 break
