@@ -45,7 +45,7 @@ public extension YouTubePlayer {
         
         /// This parameter specifies the time, measured in seconds
         /// from the start of the video, when the player should stop playing the video
-        public var endTime: UInt?
+        public var endTime: Int?
         
         /// Setting this parameter to false prevents
         /// the fullscreen button from displaying in the player
@@ -77,7 +77,7 @@ public extension YouTubePlayer {
         
         /// This parameter causes the player to begin playing
         /// the video at the given number of seconds from the start of the video
-        public var startTime: UInt?
+        public var startTime: Int?
         
         /// This parameter identifies the URL where the player is embedded.
         /// This value is used in YouTube Analytics reporting when the YouTube player is embedded
@@ -95,7 +95,7 @@ public extension YouTubePlayer {
             controls: Bool? = nil,
             keyboardControlsDisabled: Bool? = nil,
             enableJsAPI: Bool? = nil,
-            endTime: UInt? = nil,
+            endTime: Int? = nil,
             showFullscreenButton: Bool? = nil,
             language: String? = nil,
             showAnnotations: Bool? = nil,
@@ -103,7 +103,7 @@ public extension YouTubePlayer {
             modestBranding: Bool? = nil,
             playInline: Bool? = nil,
             showRelatedVideos: Bool? = nil,
-            startTime: UInt? = nil,
+            startTime: Int? = nil,
             referrer: String? = nil
         ) {
             self.isUserInteractionEnabled = isUserInteractionEnabled

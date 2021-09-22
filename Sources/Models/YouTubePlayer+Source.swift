@@ -9,20 +9,20 @@ public extension YouTubePlayer {
         /// Video
         case video(
             id: String,
-            startSeconds: UInt? = nil,
-            endSeconds: UInt? = nil
+            startSeconds: Int? = nil,
+            endSeconds: Int? = nil
         )
         /// Playlist
         case playlist(
             id: String,
-            index: UInt? = nil,
-            startSeconds: UInt? = nil
+            index: Int? = nil,
+            startSeconds: Int? = nil
         )
         /// Channel
         case channel(
             name: String,
-            index: UInt? = nil,
-            startSeconds: UInt? = nil
+            index: Int? = nil,
+            startSeconds: Int? = nil
         )
     }
     
@@ -54,7 +54,7 @@ public extension YouTubePlayer.Source {
         _ url: String
     ) -> Self? {
         let urlComponents = URLComponents(string: url)
-        let startSeconds = urlComponents?.queryItems?["t"].flatMap(UInt.init)
+        let startSeconds = urlComponents?.queryItems?["t"].flatMap(Int.init)
         let url = URL(string: url)
         let pathComponents = url?.pathComponents.dropFirst()
         if url?.host?.hasSuffix("youtu.be") == true {

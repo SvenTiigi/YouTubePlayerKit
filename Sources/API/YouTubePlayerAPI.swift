@@ -141,7 +141,7 @@ public protocol YouTubePlayerPlaylistAPI: AnyObject {
     /// This function loads and plays the specified video in the playlist
     /// - Parameter index: The index of the video that you want to play in the playlist
     func playVideo(
-        at index: UInt
+        at index: Int
     )
     
     /// This function indicates whether the video player should continuously play a playlist
@@ -167,7 +167,7 @@ public protocol YouTubePlayerPlaylistAPI: AnyObject {
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
     func getPlayistIndex(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     
 }
@@ -194,14 +194,14 @@ public protocol YouTubePlayerVolumeAPI: AnyObject {
     /// Returns the player's current volume, an integer between 0 and 100
     /// - Parameter completion: The completion closure
     func getVolume(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     
     /// Sets the volume.
     /// Accepts an integer between 0 and 100
     /// - Parameter volume: The volume
     func set(
-        volume: UInt
+        volume: Int
     )
     
 }
@@ -255,7 +255,7 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
     /// Returns the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     func getCurrentTime(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     
 }
@@ -270,7 +270,7 @@ public protocol YouTubePlayerVideoInformationAPI: AnyObject {
     /// Returns the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     
     /// Returns the YouTube.com URL for the currently loaded/playing video

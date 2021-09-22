@@ -172,7 +172,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     /// This function loads and plays the specified video in the playlist
     /// - Parameter index: The index of the video that you want to play in the playlist
     public func playVideo(
-        at index: UInt
+        at index: Int
     ) {
         self.api?.playVideo(at: index)
     }
@@ -206,7 +206,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
     public func getPlayistIndex(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getPlayistIndex(completion: completion)
     }
@@ -238,7 +238,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     /// Returns the player's current volume, an integer between 0 and 100
     /// - Parameter completion: The completion closure
     public func getVolume(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getVolume(completion: completion)
     }
@@ -247,7 +247,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     /// Accepts an integer between 0 and 100
     /// - Parameter volume: The volume
     public func set(
-        volume: UInt
+        volume: Int
     ) {
         self.api?.set(volume: volume)
     }
@@ -307,7 +307,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     /// Returns the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     public func getCurrentTime(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getCurrentTime(completion: completion)
     }
@@ -321,7 +321,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     /// Returns the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     public func getDuration(
-        completion: @escaping (Result<UInt, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.api?.getDuration(completion: completion)
     }

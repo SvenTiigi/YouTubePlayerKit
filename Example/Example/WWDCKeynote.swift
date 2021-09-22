@@ -13,7 +13,7 @@ import Foundation
 struct WWDCKeynote: Codable, Hashable {
     
     /// The year
-    let year: UInt
+    let year: Int
     
     /// The YouTube URL
     let youTubeURL: String
@@ -25,7 +25,7 @@ struct WWDCKeynote: Codable, Hashable {
 extension WWDCKeynote: Identifiable {
     
     /// The stable identity of the entity associated with this instance.
-    var id: UInt {
+    var id: Int {
         self.year
     }
     

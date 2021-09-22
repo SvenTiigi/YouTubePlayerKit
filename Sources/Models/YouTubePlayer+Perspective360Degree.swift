@@ -11,7 +11,7 @@ public extension YouTubePlayer {
         
         /// Represents the horizontal angle of the view in degrees,
         /// which reflects the extent to which the user turns the view to face further left or right
-        public let yaw: UInt?
+        public let yaw: Int?
         
         /// Represents the vertical angle of the view in degrees,
         /// which reflects the extent to which the user adjusts the view to look up or down
@@ -31,7 +31,7 @@ public extension YouTubePlayer {
         
         /// Creates a new instance of `YouTubePlayer.Perspective360Degree`
         public init(
-            yaw: UInt? = nil,
+            yaw: Int? = nil,
             pitch: Int? = nil,
             roll: Int? = nil,
             fov: Int? = nil,
