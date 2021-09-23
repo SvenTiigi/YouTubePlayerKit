@@ -179,10 +179,10 @@ let configuration = YouTubePlayer.Configuration(
     isUserInteractionEnabled: false,
     // Enable auto play
     autoPlay: true,
-    // Disable controls
-    controls: false,
+    // Hide controls
+    showControls: false,
     // Enable loop
-    loop: true
+    loopEnabled: true
 )
 
 let youTubePlayer = YouTubePlayer(
