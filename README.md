@@ -103,23 +103,24 @@ When using `UIKit` you can make use of the `YouTubePlayerViewController`.
 import UIKit
 import YouTubePlayerKit
 
+// Initialize a YouTubePlayer
+let youTubePlayer = YouTubePlayer(
+    source: .video(id: "psL_5RIBqnY")
+)
 // Initialize a YouTubePlayerViewController
 let youTubePlayerViewController = YouTubePlayerViewController(
-    player: "https://youtube.com/watch?v=psL_5RIBqnY"
+    player: youTubePlayer
 )
 
-// Optional: Use the `YouTubePlayer` to access the underlying iFrame API
-youTubePlayerViewController
-    .player
-    .playbackQualityPublisher
-    .sink { playbackQuality in
-        // Print playback quality changes
-        print(
-            "Playback quality changed to", 
-            playbackQuality
-        ) 
+// Example: Access the underlying iFrame API via the `YouTubePlayer` instance
+youTubePlayer.getPlaybackMetadata { result in
+    switch result {
+    case .success(let metadata):
+        print("Video title", metadata.title)
+    case .failure(let error):
+        print("Failed to retrieve metadata", error)
     }
-    .store(in: &cancellables)
+}
 
 // Present YouTubePlayerViewController
 self.present(youTubePlayerViewController, animated: true)
@@ -135,13 +136,11 @@ Therefore, you can easily initialize a `YouTubePlayer` by using a string literal
 let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 ```
 
-A `YouTubePlayer` consist of two parts a `YouTubePlayer.Source` and a `YouTubePlayer.Configuration`.
+A `YouTubePlayer` generally consist of a `YouTubePlayer.Source` and a `YouTubePlayer.Configuration`.
 
 ```swift
 let youTubePlayer = YouTubePlayer(
-    source: .video(
-        id: "psL_5RIBqnY"
-    ),
+    source: .video(id: "psL_5RIBqnY"),
     configuration: .init(
         autoPlay: true
     )
@@ -166,17 +165,7 @@ let channelSource: YouTubePlayer.Source = .channel(name: "iJustine")
 Additionally, you can use a URL to initialize a `YouTubePlayer.Source`
 
 ```swift
-// Watch URL
-let watchURLSource: YouTubePlayer.Source? = .url("https://youtube.com/watch?v=psL_5RIBqnY")
-
-// Share URL
-let sharedURLSource: YouTubePlayer.Source? = .url("https://youtu.be/psL_5RIBqnY")
-
-// Embed URL
-let embedURLSource: YouTubePlayer.Source? = .url("https://youtube.com/embed/psL_5RIBqnY")
-
-// Channel URL
-let channelURLSource: YouTubePlayer.Source? = .url("https://youtube.com/c/iJustine")
+let urlSource: YouTubePlayer.Source? = .url("https://youtube.com/watch?v=psL_5RIBqnY")
 ```
 > When using a URL the `YouTubePlayer.Source` will be optional
 
@@ -216,15 +205,21 @@ youTubePlayer.play()
 // Pause video
 youTubePlayer.pause()
 
-// Retrieve the duration
-youTubePlayer.getDuration { result in
-    print("Duration", result)
-}
-
 // Load a new Video
 youTubePlayer.load(
     source: .video(id: "0TD96VTf0Xs")
 )
+
+// Subscribe to PlaybackQuality Publisher
+youTubePlayer
+    .playbackQualityPublisher
+    .sink { playbackQuality in
+        print(
+            "Playback quality changed",
+            playbackQuality
+        )
+    }
+    .store(in: &self.cancellables)
 
 // ...
 ```
