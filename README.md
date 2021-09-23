@@ -233,7 +233,7 @@ import YouTubePlayerKit
 
 struct ContentView: View {
     
-    let youTubePlayer: YouTubePlayer = .init(
+    let youTubePlayer = YouTubePlayer(
         source: .video(id: "0TD96VTf0Xs")
     )
     
