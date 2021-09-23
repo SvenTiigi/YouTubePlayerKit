@@ -49,21 +49,31 @@ final class YouTubePlayerWebView: WKWebView {
         // Super init
         super.init(
             frame: .zero,
-            configuration: {
-                // Initialize WebView Configuration
-                let configuration = WKWebViewConfiguration()
-                #if !os(macOS)
-                // Allows inline media playback
-                configuration.allowsInlineMediaPlayback = true
-                // Enable PiP-Playback
-                configuration.allowsPictureInPictureMediaPlayback = true
-                #endif
-                // No media types requiring user action for playback
-                configuration.mediaTypesRequiringUserActionForPlayback = []
-                // Return configuration
-                return configuration
-            }()
+            configuration: .youTubePlayer
         )
+        // Setup
+        self.setup()
+    }
+    
+    /// Initializer with NSCoder always returns nil
+    required init?(coder: NSCoder) {
+        nil
+    }
+    
+}
+
+// MARK: - Setup
+
+private extension YouTubePlayerWebView {
+    
+    /// Setup YouTubePlayerWebView
+    func setup() {
+        // Set YouTubePlayerAPI on current Player
+        self.player.api = self
+        // Set navigation delegate
+        self.navigationDelegate = self
+        // Set ui delegate
+        self.uiDelegate = self
         // For each JavaScriptEvent
         for javaScriptEvent in YouTubePlayer.HTML.JavaScriptEvent.allCases {
             // Add message handler for JavaScriptEvent
@@ -74,8 +84,6 @@ final class YouTubePlayerWebView: WKWebView {
                     name: javaScriptEvent.rawValue
                 )
         }
-        // Set YouTubePlayerAPI on current Player
-        self.player.api = self
         #if !os(macOS)
         // Set clear background color
         self.backgroundColor = .clear
@@ -88,22 +96,38 @@ final class YouTubePlayerWebView: WKWebView {
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
         #endif
-        // Set navigation delegate
-        self.navigationDelegate = self
-        // Set ui delegate
-        self.uiDelegate = self
-        // Load Player and retain result
+        // Load Player and retrieve the bool result
         let isPlayerLoaded = self.loadPlayer()
-        // Check if Player is not loaded
-        if !isPlayerLoaded {
-            // Send setup failed error
-            self.playerStateSubject.send(.error(.setupFailed))
+        // Verify Player has not been loaded correctly
+        guard !isPlayerLoaded else {
+            // Otherwise everything is okay
+            // we can safetly return out of function
+            return
         }
+        // Send setup failed error
+        self.playerStateSubject.send(.error(.setupFailed))
     }
     
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
+}
+
+// MARK: - WKWebViewConfiguration+youTubePlayer
+
+private extension WKWebViewConfiguration {
+    
+    /// The YouTubePlayer WKWebViewConfiguration
+    static var youTubePlayer: WKWebViewConfiguration {
+        // Initialize WebView Configuration
+        let configuration = WKWebViewConfiguration()
+        #if !os(macOS)
+        // Allows inline media playback
+        configuration.allowsInlineMediaPlayback = true
+        // Enable PiP-Playback
+        configuration.allowsPictureInPictureMediaPlayback = true
+        #endif
+        // No media types requiring user action for playback
+        configuration.mediaTypesRequiringUserActionForPlayback = []
+        // Return configuration
+        return configuration
     }
     
 }
