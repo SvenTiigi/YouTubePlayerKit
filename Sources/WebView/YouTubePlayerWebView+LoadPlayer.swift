@@ -8,8 +8,6 @@ extension YouTubePlayerWebView {
     /// - Returns: A Bool value if the YouTube player was successfully loaded
     @discardableResult
     func loadPlayer() -> Bool {
-        // Set YouTubePlayerAPI on current Player
-        self.player.api = self
         #if !os(macOS)
         // Update user interaction enabled state.
         // If no configuration is provided `true` value will be used

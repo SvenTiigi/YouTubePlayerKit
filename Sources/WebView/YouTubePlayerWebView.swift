@@ -74,6 +74,8 @@ final class YouTubePlayerWebView: WKWebView {
                     name: javaScriptEvent.rawValue
                 )
         }
+        // Set YouTubePlayerAPI on current Player
+        self.player.api = self
         #if !os(macOS)
         // Set clear background color
         self.backgroundColor = .clear
