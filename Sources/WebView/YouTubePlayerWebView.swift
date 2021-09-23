@@ -96,16 +96,8 @@ private extension YouTubePlayerWebView {
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
         #endif
-        // Load Player and retrieve the bool result
-        let isPlayerLoaded = self.loadPlayer()
-        // Verify Player has not been loaded correctly
-        guard !isPlayerLoaded else {
-            // Otherwise everything is okay
-            // we can safetly return out of function
-            return
-        }
-        // Send setup failed error
-        self.playerStateSubject.send(.error(.setupFailed))
+        // Load YouTubePlayer
+        self.loadPlayer()
     }
     
 }

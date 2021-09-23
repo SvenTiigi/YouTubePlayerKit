@@ -18,32 +18,31 @@ extension YouTubePlayer {
 
 extension YouTubePlayer.HTML {
     
-    /// Creates a new instance of `YouTubePlayer.HTML` if available
+    /// Creates a new instance of `YouTubePlayer.HTML` or throws an error
     /// - Parameters:
     ///   - options: The YouTubePlayer Options
     ///   - bundle: The Bundle. Default value `.module`
     ///   - resource: The Resource. Default value `.default`
-    init?(
+    init(
         options: YouTubePlayer.Options,
         bundle: Bundle = .module,
         resource: Resource = .default
-    ) {
-        // Try to retrieve HTML contents
-        let html = bundle.url(
+    ) throws {
+        // Verify URL for Resource is available
+        guard let resourceURL = bundle.url(
             forResource: resource.fileName,
             withExtension: resource.fileExtension
-        )
-        .flatMap { url in
-            try? String(
-                contentsOf: url,
-                encoding: .utf8
+        ) else {
+            // Otherwise throw an UnavailableResourceError
+            throw UnavailableResourceError(
+                resource: resource
             )
         }
-        // Verify HTML contents is available
-        guard var htmlContents = html else {
-            // Otherwise return nil
-            return nil
-        }
+        // Retrieve the HTML contents from the resource url
+        var htmlContents = try String(
+            contentsOf: resourceURL,
+            encoding: .utf8
+        )
         // Format HTML contents string
         // with YouTubePlayer Options JSON
         htmlContents = .init(
