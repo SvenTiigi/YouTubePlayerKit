@@ -232,8 +232,9 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
     ) {
         self.evaluate(
             javaScript: "player.getSphericalProperties();",
-            converter: .typeCast(to: String.self)
-                .decode(as: YouTubePlayer.Perspective360Degree.self),
+            converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.Perspective360Degree>
+                .typeCast(to: String.self)
+                .decode(),
             completion: completion
         )
     }
@@ -452,8 +453,9 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlayerState();",
-            converter: .typeCast(to: Int.self)
-                .rawRepresentable(type: YouTubePlayer.PlaybackState.self),
+            converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.PlaybackState>
+                .typeCast(to: Int.self)
+                .rawRepresentable(),
             completion: completion
         )
     }
@@ -477,8 +479,9 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoData();",
-            converter: .typeCast(to: String.self)
-                .decode(as: YouTubePlayer.PlaybackMetadata.self),
+            converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.PlaybackMetadata>
+                .typeCast(to: String.self)
+                .decode(),
             completion: completion
         )
     }
