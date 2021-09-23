@@ -312,6 +312,14 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         self.api?.getCurrentTime(completion: completion)
     }
     
+    /// Returns the current PlaybackMetadata
+    /// - Parameter completion: The completion closure
+    public func getPlaybackMetadata(
+        completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
+    ) {
+        self.api?.getPlaybackMetadata(completion: completion)
+    }
+    
 }
 
 // MARK: - YouTubePlayerVideoInformationAPI

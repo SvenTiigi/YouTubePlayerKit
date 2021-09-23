@@ -258,6 +258,12 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     
+    /// Returns the current PlaybackMetadata
+    /// - Parameter completion: The completion closure
+    func getPlaybackMetadata(
+        completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
+    )
+    
 }
 
 // MARK: - YouTubePlayerVideoInformationAPI

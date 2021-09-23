@@ -16,8 +16,9 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
         self.stop()
         // Destroy Player
         self.evaluate(
-            javaScript: "player.destroy();"
-        ) { [weak self] _, _ in
+            javaScript: "player.destroy();",
+            converter: .empty
+        ) { [weak self] _ in
             // Reset all CurrentValueSubjects
             self?.playerStateSubject.send(nil)
             self?.playbackStateSubject.send(nil)
@@ -231,37 +232,9 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
     ) {
         self.evaluate(
             javaScript: "player.getSphericalProperties();",
-            responseType: String.self
-        ) { result, javaScript in
-            switch result {
-            case .success(let string):
-                // Declare a YouTubePlayer Perspective360Degree
-                let perspective360Degree: YouTubePlayer.Perspective360Degree
-                do {
-                    // Try to decode JSON object as YouTubePlayer Perspective360Degree
-                    perspective360Degree = try JSONDecoder().decode(
-                        YouTubePlayer.Perspective360Degree.self,
-                        from: .init(string.utf8)
-                    )
-                } catch {
-                    // Complete with failure
-                    return completion(
-                        .failure(
-                            .init(
-                                javaScript: javaScript,
-                                javaScriptResponse: string,
-                                underlyingError: error
-                            )
-                        )
-                    )
-                }
-                // Complete with success
-                completion(.success(perspective360Degree))
-            case .failure(let error):
-                // Complete with failure
-                completion(.failure(error))
-            }
-        }
+            converter: .typeCast().decode(),
+            completion: completion
+        )
     }
     
     /// Sets the video orientation for playback of a 360° video
@@ -276,6 +249,7 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
         }
         // Initialize JSON string from data
         let jsonString = String(decoding: jsonData, as: UTF8.self)
+        // Evaluate JavaScript
         self.evaluate(
             javaScript: "player.setSphericalProperties(\(jsonString));"
         )
@@ -340,6 +314,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaylist();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -351,6 +326,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaylistIndex();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -382,6 +358,7 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     ) {
         self.evaluate(
             javaScript: "player.isMuted();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -393,6 +370,7 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVolume();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -421,6 +399,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlaybackRate();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -442,6 +421,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackRateAPI {
     ) {
         self.evaluate(
             javaScript: "player.getAvailablePlaybackRates();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -459,6 +439,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoLoadedFraction();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -470,30 +451,9 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getPlayerState();",
-            responseType: Int.self
-        ) { result, javaScript in
-            switch result {
-            case .success(let value):
-                // Verify PlaybackState enum can be initialized from raw value
-                guard let playbackState = YouTubePlayer.PlaybackState(rawValue: value) else {
-                    // Otherwise complete with failure
-                    return completion(
-                        .failure(
-                            .init(
-                                javaScript: javaScript,
-                                javaScriptResponse: value,
-                                reason: "Unknown PlaybackState: \(value)"
-                            )
-                        )
-                    )
-                }
-                // Complete with success
-                completion(.success(playbackState))
-            case .failure(let error):
-                // Complete with failure
-                completion(.failure(error))
-            }
-        }
+            converter: .typeCast().rawRepresentable(),
+            completion: completion
+        )
     }
     
     /// Returns the elapsed time in seconds since the video started playing
@@ -503,6 +463,19 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
     ) {
         self.evaluate(
             javaScript: "player.getCurrentTime();",
+            converter: .typeCast(),
+            completion: completion
+        )
+    }
+    
+    /// Returns the current PlaybackMetadata
+    /// - Parameter completion: The completion closure
+    func getPlaybackMetadata(
+        completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
+    ) {
+        self.evaluate(
+            javaScript: "player.getVideoData();",
+            converter: .typeCast().decode(),
             completion: completion
         )
     }
@@ -520,6 +493,7 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getDuration();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -531,6 +505,7 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoUrl();",
+            converter: .typeCast(),
             completion: completion
         )
     }
@@ -542,6 +517,7 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
     ) {
         self.evaluate(
             javaScript: "player.getVideoEmbedCode();",
+            converter: .typeCast(),
             completion: completion
         )
     }
