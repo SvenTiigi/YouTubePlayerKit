@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer PlaybackState
-    enum PlaybackState: Int {
+    enum PlaybackState: Int, Codable, Hashable, CaseIterable {
         /// Unstarted
         case unstarted = -1
         /// Ended
