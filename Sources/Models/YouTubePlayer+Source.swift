@@ -99,7 +99,7 @@ public extension YouTubePlayer.Source {
                         startSeconds: startSeconds
                     )
                 }
-            case "c":
+            case "c", "user":
                 // Check if a channel name is available
                 if let channelName = url?.pathComponents[safe: 1] {
                     // Return channel source
