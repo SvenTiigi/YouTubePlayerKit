@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer State
-    enum State: Hashable {
+    enum State {
         /// Idle
         case idle
         /// Ready
@@ -14,6 +14,32 @@ public extension YouTubePlayer {
         case error(Error)
     }
 
+}
+
+// MARK: - Equatable
+
+extension YouTubePlayer.State: Equatable {
+    
+    /// Returns a Boolean value indicating whether two `YouTubePlayer.State` are equal
+    /// - Parameters:
+    ///   - lhs: A `YouTubePlayer.State` to compare.
+    ///   - rhs: Another `YouTubePlayer.State` to compare.
+    public static func == (
+        lhs: Self,
+        rhs: Self
+    ) -> Bool {
+        switch (lhs, rhs) {
+        case (.idle, idle):
+            return true
+        case (.ready, .ready):
+            return true
+        case (.error, .error):
+            return true
+        default:
+            return false
+        }
+    }
+    
 }
 
 // MARK: - State+isIdle

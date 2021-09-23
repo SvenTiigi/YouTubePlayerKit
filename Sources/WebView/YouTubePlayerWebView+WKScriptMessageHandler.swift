@@ -65,7 +65,7 @@ extension YouTubePlayerWebView: WKScriptMessageHandler {
         case .onError:
             // Verify Error is available from message body
             guard let body = message.body as? Int,
-                    let error = YouTubePlayer.Error(rawValue: body) else {
+                    let error = YouTubePlayer.Error(errorCode: body) else {
                 // Otherwise return out of function
                 return
             }

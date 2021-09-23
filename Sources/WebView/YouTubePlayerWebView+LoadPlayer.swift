@@ -19,8 +19,12 @@ extension YouTubePlayerWebView {
                 )
             )
         } catch {
-            // Send setup failed error and return out of function
-            self.playerStateSubject.send(.error(.setupFailed))
+            // Send error state
+            self.playerStateSubject.send(
+                .error(
+                    .setupFailed(error)
+                )
+            )
             // Return false as setup has failed
             return false
         }
