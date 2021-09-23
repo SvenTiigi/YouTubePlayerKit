@@ -166,7 +166,7 @@ public protocol YouTubePlayerPlaylistAPI: AnyObject {
     
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
-    func getPlayistIndex(
+    func getPlaylistIndex(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     )
     

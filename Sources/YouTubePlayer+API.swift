@@ -1,6 +1,63 @@
 import Combine
 import Foundation
 
+// MARK: - YouTubePlayer+APIPublisher
+
+private extension YouTubePlayer {
+    
+    /// A Publisher that emits the `YouTubePlayerAPI` retrieved from the `api` property
+    func apiPublisher() -> AnyPublisher<YouTubePlayerAPI, Never> {
+        Deferred {
+            Just(self.api)
+        }
+        .merge(
+            with: self.objectWillChange
+                .map { [weak self] in
+                    self?.api
+                }
+        )
+        .compactMap { $0 }
+        .eraseToAnyPublisher()
+    }
+    
+    /// A Publisher thats emit a Publisher of the `YouTubePlayerAPI` by a given KeyPath
+    /// - Parameter keyPath: The KeyPath to a Publisher
+    func apiPublisher<P: Publisher>(
+        publisher keyPath: KeyPath<YouTubePlayerAPI, P>
+    ) -> AnyPublisher<P.Output, P.Failure>
+    where P.Output: Equatable, P.Failure == Never {
+        self.apiPublisher()
+            .flatMap { $0[keyPath: keyPath] }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
+    
+}
+
+// MARK: - YouTubePlayer+onAPIReady
+
+private extension YouTubePlayer {
+    
+    /// This functions invokes the `completion` closure as soon as a `YouTubePlayerAPI`
+    /// is available and the `YouTubePlayer.State` is no longer `idle`
+    /// - Parameter completion: The completion closure to invoke
+    func onAPIReady(
+        completion: @escaping (YouTubePlayerAPI) -> Void
+    ) {
+        self.apiPublisher()
+            .zip(
+                self.statePublisher
+                    .filter { !$0.isIdle }
+            )
+            .prefix(1)
+            .sink { api, _ in
+                completion(api)
+            }
+            .store(in: &self.cancellables)
+    }
+    
+}
+
 // MARK: - YouTubePlayerConfigurationAPI
 
 extension YouTubePlayer: YouTubePlayerConfigurationAPI {
@@ -11,7 +68,9 @@ extension YouTubePlayer: YouTubePlayerConfigurationAPI {
     public func update(
         configuration: YouTubePlayer.Configuration
     ) {
-        self.api?.update(configuration: configuration)
+        self.onAPIReady { api in
+            api.update(configuration: configuration)
+        }
     }
     
 }
@@ -25,7 +84,9 @@ extension YouTubePlayer: YouTubePlayerLoadAPI {
     public func load(
         source: YouTubePlayer.Source?
     ) {
-        self.api?.load(source: source)
+        self.onAPIReady { api in
+            api.load(source: source)
+        }
     }
     
 }
@@ -34,31 +95,6 @@ extension YouTubePlayer: YouTubePlayerLoadAPI {
 
 extension YouTubePlayer: YouTubePlayerEventAPI {
     
-    /// Retrieve Publisher from API by a given KeyPath
-    /// - Parameter keyPath: The KeyPath to a Publisher
-    private func apiPublisher<P: Publisher>(
-        _ keyPath: KeyPath<YouTubePlayerAPI, P>
-    ) -> AnyPublisher<P.Output, P.Failure>
-    where P.Output: Equatable, P.Failure == Never {
-        Deferred {
-            Just(self.api)
-        }
-        .merge(
-            with: self.objectWillChange
-                .map { [weak self] in
-                    self?.api
-                }
-        )
-        .flatMap { api in
-            api?[keyPath: keyPath]
-                .eraseToAnyPublisher()
-                ?? Empty()
-                .eraseToAnyPublisher()
-        }
-        .removeDuplicates()
-        .eraseToAnyPublisher()
-    }
-    
     /// The current YouTubePlayer State, if available
     public var state: YouTubePlayer.State? {
         self.api?.state
@@ -66,7 +102,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer State
     public var statePublisher: AnyPublisher<YouTubePlayer.State, Never> {
-        self.apiPublisher(\.statePublisher)
+        self.apiPublisher(publisher: \.statePublisher)
     }
     
     /// The current YouTubePlayer PlaybackState, if available
@@ -76,7 +112,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
 
     /// A Publisher that emits the current YouTubePlayer PlaybackState
     public var playbackStatePublisher: AnyPublisher<YouTubePlayer.PlaybackState, Never> {
-        self.apiPublisher(\.playbackStatePublisher)
+        self.apiPublisher(publisher: \.playbackStatePublisher)
     }
     
     /// The current YouTubePlayer PlaybackQuality, if available
@@ -86,7 +122,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer PlaybackQuality
     public var playbackQualityPublisher: AnyPublisher<YouTubePlayer.PlaybackQuality, Never> {
-        self.apiPublisher(\.playbackQualityPublisher)
+        self.apiPublisher(publisher: \.playbackQualityPublisher)
     }
     
     /// The current YouTubePlayer PlaybackRate, if available
@@ -96,7 +132,7 @@ extension YouTubePlayer: YouTubePlayerEventAPI {
     
     /// A Publisher that emits the current YouTubePlayer PlaybackRate
     public var playbackRatePublisher: AnyPublisher<YouTubePlayer.PlaybackRate, Never> {
-        self.apiPublisher(\.playbackRatePublisher)
+        self.apiPublisher(publisher: \.playbackRatePublisher)
     }
     
 }
@@ -107,17 +143,23 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
     
     /// Plays the currently cued/loaded video
     public func play() {
-        self.api?.play()
+        self.onAPIReady { api in
+            api.play()
+        }
     }
     
     /// Pauses the currently playing video
     public func pause() {
-        self.api?.pause()
+        self.onAPIReady { api in
+            api.pause()
+        }
     }
     
     /// Stops and cancels loading of the current video
     public func stop() {
-        self.api?.stop()
+        self.onAPIReady { api in
+            api.stop()
+        }
     }
     
     /// Seeks to a specified time in the video
@@ -128,7 +170,9 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
         to seconds: Double,
         allowSeekAhead: Bool
     ) {
-        self.api?.stop()
+        self.onAPIReady { api in
+            api.stop()
+        }
     }
     
 }
@@ -142,7 +186,9 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
     public func get360DegreePerspective(
         completion: @escaping (Result<YouTubePlayer.Perspective360Degree, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.get360DegreePerspective(completion: completion)
+        self.onAPIReady { api in
+            api.get360DegreePerspective(completion: completion)
+        }
     }
     
     /// Sets the video orientation for playback of a 360° video
@@ -150,7 +196,9 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
     public func set(
         perspective360Degree: YouTubePlayer.Perspective360Degree
     ) {
-        self.api?.set(perspective360Degree: perspective360Degree)
+        self.onAPIReady { api in
+            api.set(perspective360Degree: perspective360Degree)
+        }
     }
     
 }
@@ -161,12 +209,16 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     
     /// This function loads and plays the next video in the playlist
     public func nextVideo() {
-        self.api?.nextVideo()
+        self.onAPIReady { api in
+            api.nextVideo()
+        }
     }
     
     /// This function loads and plays the previous video in the playlist
     public func previousVideo() {
-        self.api?.previousVideo()
+        self.onAPIReady { api in
+            api.previousVideo()
+        }
     }
     
     /// This function loads and plays the specified video in the playlist
@@ -174,7 +226,9 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     public func playVideo(
         at index: Int
     ) {
-        self.api?.playVideo(at: index)
+        self.onAPIReady { api in
+            api.playVideo(at: index)
+        }
     }
     
     /// This function indicates whether the video player should continuously play a playlist
@@ -183,7 +237,9 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     public func setLoop(
         enabled: Bool
     ) {
-        self.api?.setLoop(enabled: enabled)
+        self.onAPIReady { api in
+            api.setLoop(enabled: enabled)
+        }
     }
     
     /// This function indicates whether a playlist's videos should be shuffled
@@ -192,7 +248,9 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     public func setShuffle(
         enabled: Bool
     ) {
-        self.api?.setShuffle(enabled: enabled)
+        self.onAPIReady { api in
+            api.setShuffle(enabled: enabled)
+        }
     }
     
     /// This function returns an array of the video IDs in the playlist as they are currently ordered
@@ -200,15 +258,19 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     public func getPlaylist(
         completion: @escaping (Result<[String], YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getPlaylist(completion: completion)
+        self.onAPIReady { api in
+            api.getPlaylist(completion: completion)
+        }
     }
     
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
-    public func getPlayistIndex(
+    public func getPlaylistIndex(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getPlayistIndex(completion: completion)
+        self.onAPIReady { api in
+            api.getPlaylistIndex(completion: completion)
+        }
     }
     
 }
@@ -219,12 +281,16 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     
     /// Mutes the player
     public func mute() {
-        self.api?.mute()
+        self.onAPIReady { api in
+            api.mute()
+        }
     }
     
     /// Unmutes the player
     public func unmute() {
-        self.api?.unmute()
+        self.onAPIReady { api in
+            api.unmute()
+        }
     }
     
     /// Returns Bool value if the player is muted
@@ -232,7 +298,9 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     public func isMuted(
         completion: @escaping (Result<Bool, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.isMuted(completion: completion)
+        self.onAPIReady { api in
+            api.isMuted(completion: completion)
+        }
     }
     
     /// Returns the player's current volume, an integer between 0 and 100
@@ -240,7 +308,9 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     public func getVolume(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getVolume(completion: completion)
+        self.onAPIReady { api in
+            api.getVolume(completion: completion)
+        }
     }
     
     /// Sets the volume.
@@ -249,7 +319,9 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     public func set(
         volume: Int
     ) {
-        self.api?.set(volume: volume)
+        self.onAPIReady { api in
+            api.set(volume: volume)
+        }
     }
     
 }
@@ -263,7 +335,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     public func getPlaybackRate(
         completion: @escaping (Result<YouTubePlayer.PlaybackRate, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getPlaybackRate(completion: completion)
+        self.onAPIReady { api in
+            api.getPlaybackRate(completion: completion)
+        }
     }
     
     /// This function sets the suggested playback rate for the current video
@@ -271,7 +345,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     public func set(
         playbackRate: YouTubePlayer.PlaybackRate
     ) {
-        self.api?.set(playbackRate: playbackRate)
+        self.onAPIReady { api in
+            api.set(playbackRate: playbackRate)
+        }
     }
     
     /// This function returns the set of playback rates in which the current video is available
@@ -279,7 +355,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
     public func getAvailablePlaybackRates(
         completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getAvailablePlaybackRates(completion: completion)
+        self.onAPIReady { api in
+            api.getAvailablePlaybackRates(completion: completion)
+        }
     }
     
 }
@@ -293,7 +371,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     public func getVideoLoadedFraction(
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getVideoLoadedFraction(completion: completion)
+        self.onAPIReady { api in
+            api.getVideoLoadedFraction(completion: completion)
+        }
     }
     
     /// Returns the PlaybackState of the player video
@@ -301,7 +381,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     public func getPlaybackState(
         completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getPlaybackState(completion: completion)
+        self.onAPIReady { api in
+            api.getPlaybackState(completion: completion)
+        }
     }
     
     /// Returns the elapsed time in seconds since the video started playing
@@ -309,7 +391,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     public func getCurrentTime(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getCurrentTime(completion: completion)
+        self.onAPIReady { api in
+            api.getCurrentTime(completion: completion)
+        }
     }
     
     /// Returns the current PlaybackMetadata
@@ -317,7 +401,9 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     public func getPlaybackMetadata(
         completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getPlaybackMetadata(completion: completion)
+        self.onAPIReady { api in
+            api.getPlaybackMetadata(completion: completion)
+        }
     }
     
 }
@@ -331,7 +417,9 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     public func getDuration(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getDuration(completion: completion)
+        self.onAPIReady { api in
+            api.getDuration(completion: completion)
+        }
     }
     
     /// Returns the YouTube.com URL for the currently loaded/playing video
@@ -339,7 +427,9 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     public func getVideoURL(
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getVideoURL(completion: completion)
+        self.onAPIReady { api in
+            api.getVideoURL(completion: completion)
+        }
     }
     
     /// Returns the embed code for the currently loaded/playing video
@@ -347,7 +437,9 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     public func getVideoEmbedCode(
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
-        self.api?.getVideoEmbedCode(completion: completion)
+        self.onAPIReady { api in
+            api.getVideoEmbedCode(completion: completion)
+        }
     }
     
 }

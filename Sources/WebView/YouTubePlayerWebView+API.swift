@@ -233,7 +233,7 @@ extension YouTubePlayerWebView: YouTubePlayer360DegreePerspectiveAPI {
         self.evaluate(
             javaScript: "player.getSphericalProperties();",
             converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.Perspective360Degree>
-                .typeCast(to: String.self)
+                .typeCast(to: [String: Any].self)
                 .decode(),
             completion: completion
         )
@@ -323,7 +323,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaylistAPI {
     
     /// This function returns the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
-    func getPlayistIndex(
+    func getPlaylistIndex(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.evaluate(
@@ -480,7 +480,7 @@ extension YouTubePlayerWebView: YouTubePlayerPlaybackAPI {
         self.evaluate(
             javaScript: "player.getVideoData();",
             converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.PlaybackMetadata>
-                .typeCast(to: String.self)
+                .typeCast(to: [String: Any].self)
                 .decode(),
             completion: completion
         )

@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 // MARK: - YouTubePlayer
@@ -21,6 +22,9 @@ public final class YouTubePlayer: ObservableObject {
             self.objectWillChange.send()
         }
     }
+    
+    /// The Cancellables
+    var cancellables = Set<AnyCancellable>()
     
     // MARK: Initializer
     

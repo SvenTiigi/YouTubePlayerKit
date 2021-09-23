@@ -201,7 +201,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
 
 // MARK: - JavaScriptEvaluationResponseConverter+decode
 
-extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Output == String {
+extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Output == [String: Any] {
     
     /// Convert and Decode JavaScript Response to a Decodable type
     /// - Parameters:
@@ -216,13 +216,29 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
             self(javaScript, javaScriptResponse)
                 // FlatMap Result
                 .flatMap { output in
+                    // Declare output Data
+                    let outputData: Data
+                    do {
+                        // Initialize output Data by trying to retrieve JSON Data
+                        outputData = try output.jsonData()
+                    } catch {
+                        // Return failure
+                        return .failure(
+                            .init(
+                                javaScript: javaScript,
+                                javaScriptResponse: output,
+                                underlyingError: error,
+                                reason: "Malformed JSON"
+                            )
+                        )
+                    }
                     // Declare Decodable
                     let decodable: D
                     do {
                         // Try to decode output to Decodable type
                         decodable = try decoder().decode(
                             D.self,
-                            from: .init(output.utf8)
+                            from: outputData
                         )
                     } catch {
                         // Return failure
