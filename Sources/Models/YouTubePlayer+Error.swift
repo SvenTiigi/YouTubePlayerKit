@@ -6,6 +6,10 @@ public extension YouTubePlayer {
     
     /// The YouTubePlayer Error
     enum Error: Swift.Error {
+        /// Player setup failed with Error
+        case setupFailed(Swift.Error)
+        /// The YouTube iFrame API JavaScript failed to load
+        case iFrameAPIFailedToLoad
         /// The request contains an invalid parameter value.
         /// For example, this error occurs if you specify a video ID that does not have 11 characters,
         /// or if the video ID contains invalid characters, such as exclamation points or asterisks.
@@ -18,10 +22,6 @@ public extension YouTubePlayer {
         case notFound
         /// The owner of the requested video does not allow it to be played in embedded players.
         case embeddedVideoPlayingNotAllowed
-        /// Player setup failed with Error
-        case setupFailed(Swift.Error)
-        /// The YouTube iFrame API JavaScript failed to load
-        case iFrameAPIFailedToLoad
     }
     
 }
