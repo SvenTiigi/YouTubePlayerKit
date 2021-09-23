@@ -5,7 +5,7 @@ import SwiftUI
 
 public extension YouTubePlayer {
     
-    /// A YouTubePlayer  produced by a SwiftUI view
+    /// A YouTubePlayer instance produced by a SwiftUI view
     struct PreferenceKey: SwiftUI.PreferenceKey {
         
         /// The default value of the preference.
