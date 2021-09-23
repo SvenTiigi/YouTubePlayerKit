@@ -47,6 +47,11 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Allow navigation action
             return decisionHandler(.allow)
         }
+        // Verify URL scheme is http or https
+        guard url.scheme == "http" || url.scheme == "https" else {
+            // Otherwise allow navigation action
+            return decisionHandler(.allow)
+        }
         // For each valid URL RegularExpression
         for validURLRegularExpression in Self.validURLRegularExpressions {
             // Find first match in URL
