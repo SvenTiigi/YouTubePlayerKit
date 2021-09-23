@@ -79,9 +79,7 @@ private extension YouTubePlayerWebView {
         func makeUIView(
             context: Context
         ) -> YouTubePlayerWebView {
-            .init(
-                player: self.player
-            )
+            .init(player: self.player)
         }
         
         /// Update YouTubePlayerWebView
