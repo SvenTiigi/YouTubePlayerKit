@@ -47,6 +47,7 @@ struct ContentView: View {
 - [x] YouTube [Terms of Service](https://youtube.com/t/terms) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI and UIKit 📱
+- [x] async/await support ⛓
 
 ## Example
 
