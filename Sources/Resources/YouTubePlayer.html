@@ -62,11 +62,14 @@
 
         // On window resize
         window.onresize = () => {
-            // Set Player size
-            player.setSize(
-                window.innerWidth,
-                window.innerHeight
-            );
+            // Check if player is available
+            if (player) {
+                // Set Player size
+                player.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+            }
         }
 
         // YouTube Player onReady event callback
