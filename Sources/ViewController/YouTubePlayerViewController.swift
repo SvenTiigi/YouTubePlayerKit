@@ -1,10 +1,23 @@
-#if !os(macOS)
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
+
+// MARK: - YouTubePlayerBaseViewController
+
+#if os(macOS)
+/// The YouTubePlayerBase NSViewController
+public class YouTubePlayerBaseViewController: NSViewController {}
+#else
+/// The YouTubePlayerBase UIViewController
+public class YouTubePlayerBaseViewController: UIViewController {}
+#endif
 
 // MARK: - YouTubePlayerViewController
 
-/// The YouTubePlayer UIViewController
-public final class YouTubePlayerViewController: UIViewController {
+/// The YouTubePlayer ViewController
+public final class YouTubePlayerViewController: YouTubePlayerBaseViewController {
     
     // MARK: Properties
     
@@ -18,7 +31,7 @@ public final class YouTubePlayerViewController: UIViewController {
     
     // MARK: Initializer
     
-    /// Creates a new instance of `YouTubePlayer.ViewController`
+    /// Creates a new instance of `YouTubePlayerViewController`
     /// - Parameters:
     ///   - player: The YouTubePlayer
     public init(
@@ -28,6 +41,22 @@ public final class YouTubePlayerViewController: UIViewController {
         self.webView = .init(player: player)
         // Super init
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    /// Creates a new instance of `YouTubePlayerViewController`
+    /// - Parameters:
+    ///   - source: The optional YouTubePlayer Source. Default value `nil`
+    ///   - configuration: The YouTubePlayer Configuration. Default value `.init()`
+    public convenience init(
+        source: YouTubePlayer.Source? = nil,
+        configuration: YouTubePlayer.Configuration = .init()
+    ) {
+        self.init(
+            player: .init(
+                source: source,
+                configuration: configuration
+            )
+        )
     }
     
     /// Initializer with NSCoder always returns nil
@@ -43,49 +72,3 @@ public final class YouTubePlayerViewController: UIViewController {
     }
     
 }
-#else
-import AppKit
-
-// MARK: - YouTubePlayerViewController
-
-/// The YouTubePlayer UIViewController
-final class YouTubePlayerViewController: NSViewController {
-    
-    // MARK: Properties
-    
-    /// The YouTubePlayerWebView
-    private let webView: YouTubePlayerWebView
-    
-    /// The YouTubePlayer
-    public var player: YouTubePlayer {
-        self.webView.player
-    }
-    
-    // MARK: Initializer
-    
-    /// Creates a new instance of `YouTubePlayer.ViewController`
-    /// - Parameters:
-    ///   - player: The YouTubePlayer
-    public init(
-        player: YouTubePlayer
-    ) {
-        // Initialize WebView
-        self.webView = .init(player: player)
-        // Super init
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
-    }
-    
-    // MARK: View-Lifecycle
-    
-    /// Creates the view that the controller manages
-    override func loadView() {
-        self.view = self.webView
-    }
-    
-}
-#endif
