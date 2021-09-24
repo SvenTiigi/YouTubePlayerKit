@@ -46,12 +46,13 @@ struct ContentView: View {
 - [x] Play YouTube videos with just one line of code 📺
 - [x] YouTube [Terms of Service](https://youtube.com/t/terms) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
-- [x] Support for SwiftUI and UIKit 📱
-- [x] async/await support ⛓
+- [x] Support for SwiftUI and UIKit 🧑‍🎨
+- [x] Runs on iOS and macOS 📱 🖥
+- [x] `async/await` support ⛓
 
 ## Example
 
-Check out the example application to see `YouTubePlayerKit` in action. Simply open the `Example/Example.xcodeproj` and run the `Example` scheme.
+Check out the example application to see YouTubePlayerKit in action. Simply open the `Example/Example.xcodeproj` and run the "Example" scheme.
 
 ## Installation
 
