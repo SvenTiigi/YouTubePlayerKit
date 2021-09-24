@@ -11,6 +11,9 @@ public struct YouTubePlayerView<Overlay: View> {
     /// The YouTubePlayer
     public let player: YouTubePlayer
     
+    /// The The transaction to use when the `YouTubePlayer.State` changes
+    public let transaction: Transaction
+    
     /// The Overlay ViewBuilder closure
     public let overlay: (YouTubePlayer.State) -> Overlay
     
@@ -23,13 +26,16 @@ public struct YouTubePlayerView<Overlay: View> {
     /// Creates a new instance of `YouTubePlayer.View`
     /// - Parameters:
     ///   - player: The YouTubePlayer
+    ///   - transaction: The transaction to use when the `YouTubePlayer.State` changes. Default value `.init()`
     ///   - overlay: The Overlay ViewBuilder closure
     public init(
         _ player: YouTubePlayer,
+        transaction: Transaction = .init(),
         @ViewBuilder
         overlay: @escaping (YouTubePlayer.State) -> Overlay
     ) {
         self.player = player
+        self.transaction = transaction
         self.overlay = overlay
     }
     
@@ -56,7 +62,9 @@ extension YouTubePlayerView: View {
                 .statePublisher
                 .receive(on: DispatchQueue.main)
         ) { state in
-            self.state = state
+            withTransaction(self.transaction) {
+                self.state = state
+            }
         }
     }
     
