@@ -68,6 +68,12 @@ dependencies: [
 
 Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `YouTubePlayerKit`.
 
+## Overview
+
+- [Usage](https://github.com/SvenTiigi/YouTubePlayerKit#usage)
+- [YouTubePlayer](https://github.com/SvenTiigi/YouTubePlayerKit#youtubeplayer)
+- [YouTubePlayerAPI](https://github.com/SvenTiigi/YouTubePlayerKit#youtubeplayerapi)
+
 ## Usage
 
 A YouTube player can be easily rendered when using `SwiftUI` by declaring a `YouTubePlayerView`.
