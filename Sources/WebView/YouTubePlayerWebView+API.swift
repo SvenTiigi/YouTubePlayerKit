@@ -80,49 +80,49 @@ extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
         }
         // Update YouTubePlayer Source
         self.player.source = source
-        // Switch on Source
-        switch source {
-        case .video(let id, let startSeconds, let endSeconds):
-            // Initialize LoadVideoByIdParamter
-            let parameter = LoadVideoByIdParamter(
-                videoId: id,
-                startSeconds: startSeconds,
-                endSeconds: endSeconds
-            )
-            // Verify parameter can be encoded to a JSON string
-            guard let parameterJSONString = try? parameter.jsonString() else {
-                // Otherwise return out of function
-                return
+        // Initialize parameter
+        let parameter: Encodable = {
+            switch source {
+            case .video(let id, let startSeconds, let endSeconds):
+                return LoadVideoByIdParamter(
+                    videoId: id,
+                    startSeconds: startSeconds,
+                    endSeconds: endSeconds
+                )
+            case .playlist(let id, let index, let startSeconds),
+                 .channel(let id, let index, let startSeconds):
+                return LoadPlaylistParameter(
+                    list: id,
+                    listType: {
+                        if case .playlist = source {
+                            return .playlist
+                        } else {
+                            return .userUploads
+                        }
+                    }(),
+                    index: index,
+                    startSeconds: startSeconds
+                )
             }
-            // Load video by id
-            self.evaluate(
-                javaScript: "player.loadVideoById(\(parameterJSONString));"
-            )
-        case .playlist(let id, let index, let startSeconds),
-             .channel(let id, let index, let startSeconds):
-            // Initialize LoadPlaylistParameter
-            let parameter = LoadPlaylistParameter(
-                list: id,
-                listType: {
-                    if case .playlist = source {
-                        return .playlist
-                    } else {
-                        return .userUploads
-                    }
-                }(),
-                index: index,
-                startSeconds: startSeconds
-            )
-            // Verify parameter can be encoded to a JSON string
-            guard let parameterJSONString = try? parameter.jsonString() else {
-                // Otherwise return out of function
-                return
-            }
-            // Load Playlist
-            self.evaluate(
-                javaScript: "player.loadPlaylist(\(parameterJSONString));"
-            )
+        }()
+        // Verify parameter can be encoded to a JSON string
+        guard let parameterJSONString = try? parameter.jsonString() else {
+            // Otherwise return out of function
+            return
         }
+        // Initialize function name
+        let functionName: String = {
+            switch source {
+            case .video:
+                return "loadVideoById"
+            case .playlist, .channel:
+                return "loadPlaylist"
+            }
+        }()
+        // Evaluate JavaScript
+        self.evaluate(
+            javaScript: "player.\(functionName)(\(parameterJSONString));"
+        )
     }
     
 }
