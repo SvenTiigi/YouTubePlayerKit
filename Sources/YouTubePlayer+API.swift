@@ -253,7 +253,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         }
     }
     
-    /// This function returns an array of the video IDs in the playlist as they are currently ordered
+    /// Retrieve an array of the video IDs in the playlist as they are currently ordered
     /// - Parameter completion: The completion closure
     public func getPlaylist(
         completion: @escaping (Result<[String], YouTubePlayerAPIError>) -> Void
@@ -263,7 +263,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         }
     }
     
-    /// This function returns the index of the playlist video that is currently playing.
+    /// Retrieve the index of the playlist video that is currently playing.
     /// - Parameter completion: The completion closure
     public func getPlaylistIndex(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
@@ -293,7 +293,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
         }
     }
     
-    /// Returns Bool value if the player is muted
+    /// Retrieve the Bool value if the player is muted
     /// - Parameter completion: The completion closure
     public func isMuted(
         completion: @escaping (Result<Bool, YouTubePlayerAPIError>) -> Void
@@ -303,7 +303,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
         }
     }
     
-    /// Returns the player's current volume, an integer between 0 and 100
+    /// Retrieve the player's current volume, an integer between 0 and 100
     /// - Parameter completion: The completion closure
     public func getVolume(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
@@ -350,7 +350,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
         }
     }
     
-    /// This function returns the set of playback rates in which the current video is available
+    /// Retrieves the set of playback rates in which the current video is available
     /// - Parameter completion: The completion closure
     public func getAvailablePlaybackRates(
         completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
@@ -366,7 +366,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
 
 extension YouTubePlayer: YouTubePlayerPlaybackAPI {
     
-    /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
+    /// Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
     /// - Parameter completion: The completion closure
     public func getVideoLoadedFraction(
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
@@ -376,7 +376,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         }
     }
     
-    /// Returns the PlaybackState of the player video
+    /// Retrieve the PlaybackState of the player video
     /// - Parameter completion: The completion closure
     public func getPlaybackState(
         completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
@@ -386,7 +386,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         }
     }
     
-    /// Returns the elapsed time in seconds since the video started playing
+    /// Retrieve the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     public func getCurrentTime(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
@@ -396,7 +396,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         }
     }
     
-    /// Returns the current PlaybackMetadata
+    /// Retrieve the current PlaybackMetadata
     /// - Parameter completion: The completion closure
     public func getPlaybackMetadata(
         completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
@@ -412,7 +412,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
 
 extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     
-    /// Returns the duration in seconds of the currently playing video
+    /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     public func getDuration(
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
@@ -422,7 +422,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
         }
     }
     
-    /// Returns the YouTube.com URL for the currently loaded/playing video
+    /// Retrieve the YouTube.com URL for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     public func getVideoURL(
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
@@ -432,7 +432,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
         }
     }
     
-    /// Returns the embed code for the currently loaded/playing video
+    /// Retrieve the embed code for the currently loaded/playing video
     /// - Parameter completion: The completion closure
     public func getVideoEmbedCode(
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
