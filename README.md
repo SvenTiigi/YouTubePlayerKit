@@ -202,8 +202,7 @@ Additionally, a `YouTubePlayer` allows you to access the underlying YouTube play
 
 #### Async/Await
 
-Asynchronous functions for example `getPlaybackMetadata` can be invoked via a completion closure.
-Therefore the `YouTubePlayerKit` exposes an `async/await` equivalent for each asynchronous function.
+Asynchronous functions on a `YouTubePlayer` are generally constructed with a completion closure parameter to retrieve the result of the asynchronous operation.
 
 ```swift
 // Retrieve the current PlaybackMetadata via a completion closure
@@ -218,8 +217,11 @@ youTubePlayer.getPlaybackMetadata { result in
         print("Error", youTubePlayerAPIError)
     }
 }
+```
 
-// On iOS >= 15.0 and macOS >= 12.0 use await
+On `iOS >= 15.0` and `macOS >= 12.0` you can use `async/await` to execute the asynchronous function.
+```swift
+// Retrieve the current PlaybackMetadata
 let playbackMetadata = try await youTubePlayer.getPlaybackMetadata()
 ```
 
