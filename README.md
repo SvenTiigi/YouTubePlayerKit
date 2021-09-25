@@ -81,9 +81,9 @@ struct ContentView: View {
     let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 
     var body: some View {
-        // YouTubePlayerView with overlay view builder
-        // which takes in a `YouTubePlayer.State`
         YouTubePlayerView(self.youTubePlayer) { state in
+            // Overlay ViewBuilder closure to place an overlay View
+            // for the current `YouTubePlayer.State`
             switch state {
             case .idle:
                 ProgressView()
@@ -97,9 +97,9 @@ struct ContentView: View {
 
 }
 ```
-> Check out the various `YouTubePlayerView` initializer to place an overlay for a given state.
+> Check out the additional [`YouTubePlayerView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/View/YouTubePlayerView%2BInit.swift) initializer to place an overlay for a given state.
 
-When using `UIKit` you can make use of the `YouTubePlayerViewController`.
+When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController`.
 
 ```swift
 import UIKit
@@ -192,69 +192,189 @@ let youTubePlayer = YouTubePlayer(
     configuration: configuration
 )
 ```
-> Check out the `YouTubePlayer.Configuration` to get a list of all available parameters.
+> Check out the [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Configuration/YouTubePlayer%2BConfiguration.swift) to get a list of all available parameters.
 
-## YouTubePlayerAPI
+### API
 
-A `YouTubePlayer` instance offers various properties and functions to access the underlying YouTube player iFrame API like accessing the current playback quality, play, pause, seek, etc...
+Additionally, a `YouTubePlayer` allows you to access the underlying YouTube player iFrame API in order to play, pause, seek or retrieve information like the current playback quality or title of the video that is currently playing.
+
+> Check out the [`YouTubePlayerAPI`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/API/YouTubePlayerAPI.swift) protocol to get a list of all available functions and properties.
+
+### Async/Await
+
+Asynchronous functions for example `getPlaybackMetadata` can be invoked via a completion closure.
+Therefore the `YouTubePlayerKit` exposes an `async/await` equivalent for each asynchronous function.
 
 ```swift
-let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
+// Retrieve the current PlaybackMetadata via a completion closure
+youTubePlayer.getPlaybackMetadata { result in
+    switch result {
+    case .success(let playbackMetadata):
+        print(
+            "Title", playbackMetadata.title,
+            "Author", playbackMetadata.author
+        )
+    case .failure(let youTubePlayerAPIError):
+        print("Error", youTubePlayerAPIError)
+    }
+}
 
+// On iOS >= 15.0 and macOS >= 12.0 use await
+let playbackMetadata = try await youTubePlayer.getPlaybackMetadata()
+```
+
+### Playback controls and player settings
+
+```swift
 // Play video
 youTubePlayer.play()
 
 // Pause video
 youTubePlayer.pause()
 
-// Load a new Video
-youTubePlayer.load(
-    source: .video(id: "0TD96VTf0Xs")
-)
+// Stop video
+youTubePlayer.stop()
 
-// Subscribe to PlaybackQuality Publisher
-youTubePlayer
-    .playbackQualityPublisher
-    .sink { playbackQuality in
-        print(
-            "Playback quality changed",
-            playbackQuality
-        )
-    }
-    .store(in: &self.cancellables)
-
-// ...
+// Seek to 60 seconds
+youTubePlayer.seek(to: 60, allowSeekAhead: false)
 ```
-> Check out the `YouTubePlayerAPI` protocol to get a list of all available functions and properties.
 
-When using `SwiftUI` simply store the `YouTubePlayer` on your View.
+### Events
 
 ```swift
-import SwiftUI
-import YouTubePlayerKit
+// A Publisher that emits the current YouTubePlayer State
+youTubePlayer.statePublisher
 
-struct ContentView: View {
-    
-    let youTubePlayer = YouTubePlayer(
-        source: .video(id: "0TD96VTf0Xs")
+// A Publisher that emits the current YouTubePlayer PlaybackState
+youTubePlayer.playbackStatePublisher
+
+// A Publisher that emits the current YouTubePlayer PlaybackQuality
+youTubePlayer.playbackQualityPublisher
+
+// A Publisher that emits the current YouTubePlayer PlaybackRate
+youTubePlayer.playbackRatePublisher
+```
+
+### Playback status
+
+```swift
+// Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
+youTubePlayer.getVideoLoadedFraction { _ in }
+
+// Retrieve the PlaybackState of the player video
+youTubePlayer.getPlaybackState { _ in }
+
+// Retrieve the elapsed time in seconds since the video started playing
+youTubePlayer.getCurrentTime { _ in }
+
+// Retrieve the current PlaybackMetadata
+youTubePlayer.getPlaybackMetadata { _ in }
+```
+
+### Load video
+
+```swift
+// Load a new video from source
+youTubePlayer.load(source: .url("https://youtube.com/watch?v=psL_5RIBqnY"))
+```
+
+### Update Configuration
+
+```swift
+// Update the YouTubePlayer Configuration
+youTubePlayer.update(
+    configuration: .init(
+        showControls: false
     )
-    
-    var body: some View {
-        VStack {
-            YouTubePlayerView(
-                self.youTubePlayer
-            )
-            .frame(height: 200)
-            Button(
-                action: self.youTubePlayer.play,
-                label: {
-                    Text("Play")
-                }
-            )
-        }
-    }
-    
-}
+)
+```
+> Note: updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
+
+### Changing the player volume
+
+```swift
+// Mutes the player
+youTubePlayer.mute()
+
+// Unmutes the player
+youTubePlayer.unmute()
+
+// Retrieve Bool value if the player is muted
+youTubePlayer.isMuted { _ in }
+
+// Retrieve the player's current volume, an integer between 0 and 100
+youTubePlayer.getVolume { _ in }
+
+// Sets the volume
+youTubePlayer.set(volume: 50)
+```
+
+### Retrieving video information
+
+```swift
+// Retrieve the duration in seconds of the currently playing video
+youTubePlayer.getDuration { _ in }
+
+// Retrieve the YouTube.com URL for the currently loaded/playing video
+youTubePlayer.getVideoURL { _ in }
+
+// Retrieve the embed code for the currently loaded/playing video
+youTubePlayer.getVideoEmbedCode { _ in }
+```
+
+### Playing a video in a playlist
+
+```swift
+// This function loads and plays the next video in the playlist
+youTubePlayer.nextVideo()
+
+// This function loads and plays the previous video in the playlist
+youTubePlayer.previousVideo()
+
+// This function loads and plays the specified video in the playlist
+youTubePlayer.playVideo(at: 3)
+
+// This function indicates whether the video player should continuously play a playlist
+youTubePlayer.setLoop(enabled: true)
+
+// This function indicates whether a playlist's videos should be shuffled
+youTubePlayer.setShuffle(enabled: true)
+
+// This function returns an array of the video IDs in the playlist as they are currently ordered
+youTubePlayer.getPlaylist { _ in }
+
+// This function returns the index of the playlist video that is currently playing
+youTubePlayer.getPlaylistIndex { _ in }
+```
+
+### Controlling playback of 360° videos
+
+```swift
+// Retrieves properties that describe the viewer's current perspective
+youTubePlayer.get360DegreePerspective { _ in }
+
+// Sets the video orientation for playback of a 360° video
+youTubePlayer.set(
+    perspective360Degree: .init(
+        yaw: 50,
+        pitch: 20,
+        roll: 60,
+        fov: 10
+    )
+)
+```
+
+### Setting the playback rate
+
+```swift
+// This function retrieves the playback rate of the currently playing video
+youTubePlayer.getPlaybackRate { _ in }
+
+// This function sets the suggested playback rate for the current video
+youTubePlayer.set(playbackRate: 1.5)
+
+// This function returns the set of playback rates in which the current video is available
+youTubePlayer.getAvailablePlaybackRates { _ in }
 ```
 
 ## Credits
