@@ -200,7 +200,7 @@ Additionally, a `YouTubePlayer` allows you to access the underlying YouTube play
 
 > Check out the [`YouTubePlayerAPI`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/API/YouTubePlayerAPI.swift) protocol to get a list of all available functions and properties.
 
-### Async/Await
+#### Async/Await
 
 Asynchronous functions for example `getPlaybackMetadata` can be invoked via a completion closure.
 Therefore the `YouTubePlayerKit` exposes an `async/await` equivalent for each asynchronous function.
@@ -223,7 +223,7 @@ youTubePlayer.getPlaybackMetadata { result in
 let playbackMetadata = try await youTubePlayer.getPlaybackMetadata()
 ```
 
-### Playback controls and player settings
+#### Playback controls and player settings
 
 ```swift
 // Play video
@@ -239,7 +239,7 @@ youTubePlayer.stop()
 youTubePlayer.seek(to: 60, allowSeekAhead: false)
 ```
 
-### Events
+#### Events
 
 ```swift
 // A Publisher that emits the current YouTubePlayer State
@@ -255,7 +255,7 @@ youTubePlayer.playbackQualityPublisher
 youTubePlayer.playbackRatePublisher
 ```
 
-### Playback status
+#### Playback status
 
 ```swift
 // Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
@@ -271,14 +271,14 @@ youTubePlayer.getCurrentTime { _ in }
 youTubePlayer.getPlaybackMetadata { _ in }
 ```
 
-### Load video
+#### Load video
 
 ```swift
 // Load a new video from source
 youTubePlayer.load(source: .url("https://youtube.com/watch?v=psL_5RIBqnY"))
 ```
 
-### Update Configuration
+#### Update Configuration
 
 ```swift
 // Update the YouTubePlayer Configuration
@@ -290,7 +290,7 @@ youTubePlayer.update(
 ```
 > Note: updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
-### Changing the player volume
+#### Changing the player volume
 
 ```swift
 // Mutes the player
@@ -309,7 +309,7 @@ youTubePlayer.getVolume { _ in }
 youTubePlayer.set(volume: 50)
 ```
 
-### Retrieving video information
+#### Retrieving video information
 
 ```swift
 // Retrieve the duration in seconds of the currently playing video
@@ -322,7 +322,7 @@ youTubePlayer.getVideoURL { _ in }
 youTubePlayer.getVideoEmbedCode { _ in }
 ```
 
-### Playing a video in a playlist
+#### Playing a video in a playlist
 
 ```swift
 // This function loads and plays the next video in the playlist
@@ -347,7 +347,7 @@ youTubePlayer.getPlaylist { _ in }
 youTubePlayer.getPlaylistIndex { _ in }
 ```
 
-### Controlling playback of 360° videos
+#### Controlling playback of 360° videos
 
 ```swift
 // Retrieves properties that describe the viewer's current perspective
@@ -364,7 +364,7 @@ youTubePlayer.set(
 )
 ```
 
-### Setting the playback rate
+#### Setting the playback rate
 
 ```swift
 // This function retrieves the playback rate of the currently playing video
