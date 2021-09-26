@@ -1,7 +1,7 @@
 <br/>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/logo.png?token=ACZQQFS3DO5PMLZUDKA3VT3BKHYS4" width="30%" alt="logo">
+    <img src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/logo.png" width="30%" alt="logo">
 </p>
 
 <h1 align="center">YouTubePlayerKit</h1>
@@ -23,7 +23,7 @@
    </a>
 </p>
 
-<img align="right" width="307" src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/example-app.png?token=ACZQQFQCQOW4BAQ5BX3Q4Q3BKLRI2" alt="Example application">
+<img align="right" width="307" src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/example-app.png" alt="Example application">
 
 ```swift
 import SwiftUI
