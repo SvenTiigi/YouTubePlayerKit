@@ -273,11 +273,14 @@ youTubePlayer.getCurrentTime { _ in }
 youTubePlayer.getPlaybackMetadata { _ in }
 ```
 
-#### Load video
+#### Load/Cue video
 
 ```swift
 // Load a new video from source
 youTubePlayer.load(source: .url("https://youtube.com/watch?v=psL_5RIBqnY"))
+
+// Cue a video from source
+youTubePlayer.cue(source: .url("https://youtube.com/watch?v=psL_5RIBqnY"))
 ```
 
 #### Update Configuration
