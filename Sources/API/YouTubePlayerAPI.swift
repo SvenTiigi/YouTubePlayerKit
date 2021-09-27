@@ -43,6 +43,12 @@ public protocol YouTubePlayerQueueingAPI: AnyObject {
         source: YouTubePlayer.Source?
     )
     
+    /// Cue YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to cue
+    func cue(
+        source: YouTubePlayer.Source?
+    )
+    
 }
 
 // MARK: - YouTubePlayerEventAPI

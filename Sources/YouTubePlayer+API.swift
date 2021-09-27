@@ -89,6 +89,16 @@ extension YouTubePlayer: YouTubePlayerQueueingAPI {
         }
     }
     
+    /// Cue YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to cue
+    public func cue(
+        source: YouTubePlayer.Source?
+    ) {
+        self.onAPIReady { api in
+            api.cue(source: source)
+        }
+    }
+    
 }
 
 // MARK: - YouTubePlayerEventAPI

@@ -37,6 +37,54 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
 
 extension YouTubePlayerWebView: YouTubePlayerQueueingAPI {
     
+    /// Load YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to load
+    func load(
+        source: YouTubePlayer.Source?
+    ) {
+        // Verify YouTubePlayer Source is available
+        guard let source = source else {
+            // Otherwise return out of function
+            return
+        }
+        // Update Source
+        self.update(
+            source: source,
+            javaScriptFunctionName: {
+                switch source {
+                case .video:
+                    return "loadVideoById"
+                case .playlist, .channel:
+                    return "loadPlaylist"
+                }
+            }()
+        )
+    }
+    
+    /// Cue YouTubePlayer Source
+    /// - Parameter source: The YouTubePlayer Source to cue
+    func cue(
+        source: YouTubePlayer.Source?
+    ) {
+        // Verify YouTubePlayer Source is available
+        guard let source = source else {
+            // Otherwise return out of function
+            return
+        }
+        // Update Source
+        self.update(
+            source: source,
+            javaScriptFunctionName: {
+                switch source {
+                case .video:
+                    return "cueVideoById"
+                case .playlist, .channel:
+                    return "cuePlaylist"
+                }
+            }()
+        )
+    }
+    
     /// The LoadVideoById Parameter
     private struct LoadVideoByIdParamter: Encodable {
         
@@ -68,16 +116,14 @@ extension YouTubePlayerWebView: YouTubePlayerQueueingAPI {
         
     }
     
-    /// Load YouTubePlayer Source
-    /// - Parameter source: The YouTubePlayer Source to load
-    func load(
-        source: YouTubePlayer.Source?
+    /// Update YouTubePlayer Source with a given JavaScript function name
+    /// - Parameters:
+    ///   - source: The YouTubePlayer Source
+    ///   - javaScriptFunctionName: The JavaScript function name
+    private func update(
+        source: YouTubePlayer.Source,
+        javaScriptFunctionName: String
     ) {
-        // Verify YouTubePlayer Source is available
-        guard let source = source else {
-            // Otherwise return out of function
-            return
-        }
         // Update YouTubePlayer Source
         self.player.source = source
         // Initialize parameter
@@ -110,18 +156,9 @@ extension YouTubePlayerWebView: YouTubePlayerQueueingAPI {
             // Otherwise return out of function
             return
         }
-        // Initialize function name
-        let functionName: String = {
-            switch source {
-            case .video:
-                return "loadVideoById"
-            case .playlist, .channel:
-                return "loadPlaylist"
-            }
-        }()
         // Evaluate JavaScript
         self.evaluate(
-            javaScript: "player.\(functionName)(\(parameterJSONString));"
+            javaScript: "player.\(javaScriptFunctionName)(\(parameterJSONString));"
         )
     }
     
