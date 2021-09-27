@@ -113,8 +113,6 @@ private extension WKWebViewConfiguration {
         #if !os(macOS)
         // Allows inline media playback
         configuration.allowsInlineMediaPlayback = true
-        // Enable PiP-Playback
-        configuration.allowsPictureInPictureMediaPlayback = true
         #endif
         // No media types requiring user action for playback
         configuration.mediaTypesRequiringUserActionForPlayback = []

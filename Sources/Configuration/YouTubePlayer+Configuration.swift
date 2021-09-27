@@ -15,6 +15,10 @@ public extension YouTubePlayer {
         /// - Note: This property is excluded from encoding
         public var isUserInteractionEnabled: Bool?
         
+        /// A Boolean value that indicates whether HTML5 videos can play Picture in Picture.
+        /// - Note: This property is excluded from encoding
+        public var allowsPictureInPictureMediaPlayback: Bool?
+        
         /// This parameter specifies whether the initial video
         /// will automatically start to play when the player loads
         public var autoPlay: Bool?
@@ -90,6 +94,7 @@ public extension YouTubePlayer {
         /// Creates a new instance of `YouTubePlayer.Configuration`
         public init(
             isUserInteractionEnabled: Bool? = nil,
+            allowsPictureInPictureMediaPlayback: Bool? = nil,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
             captionsClosed: Bool? = nil,
@@ -109,6 +114,7 @@ public extension YouTubePlayer {
             referrer: String? = nil
         ) {
             self.isUserInteractionEnabled = isUserInteractionEnabled
+            self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
             self.captionsClosed = captionsClosed
