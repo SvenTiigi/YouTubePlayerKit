@@ -6,7 +6,7 @@ import Foundation
 /// The YouTubePlayerAPI
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Functions
 public typealias YouTubePlayerAPI = YouTubePlayerConfigurationAPI
-    & YouTubePlayerLoadAPI
+    & YouTubePlayerQueueingAPI
     & YouTubePlayerEventAPI
     & YouTubePlayerVideoAPI
     & YouTubePlayer360DegreePerspectiveAPI
@@ -31,11 +31,11 @@ public protocol YouTubePlayerConfigurationAPI: AnyObject {
     
 }
 
-// MARK: - YouTubePlayerLoadAPI
+// MARK: - YouTubePlayerQueueingAPI
 
-/// The YouTubePlayerLoadAPI
+/// The YouTubePlayerQueueingAPI
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Queueing_Functions
-public protocol YouTubePlayerLoadAPI: AnyObject {
+public protocol YouTubePlayerQueueingAPI: AnyObject {
     
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load

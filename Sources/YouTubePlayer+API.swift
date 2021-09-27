@@ -75,9 +75,9 @@ extension YouTubePlayer: YouTubePlayerConfigurationAPI {
     
 }
 
-// MARK: - YouTubePlayerLoadAPI
+// MARK: - YouTubePlayerQueueingAPI
 
-extension YouTubePlayer: YouTubePlayerLoadAPI {
+extension YouTubePlayer: YouTubePlayerQueueingAPI {
     
     /// Load YouTubePlayer Source
     /// - Parameter source: The YouTubePlayer Source to load

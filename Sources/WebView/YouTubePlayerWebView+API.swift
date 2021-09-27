@@ -33,9 +33,9 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
     
 }
 
-// MARK: - YouTubePlayerLoadAPI
+// MARK: - YouTubePlayerQueueingAPI
 
-extension YouTubePlayerWebView: YouTubePlayerLoadAPI {
+extension YouTubePlayerWebView: YouTubePlayerQueueingAPI {
     
     /// The LoadVideoById Parameter
     private struct LoadVideoByIdParamter: Encodable {
