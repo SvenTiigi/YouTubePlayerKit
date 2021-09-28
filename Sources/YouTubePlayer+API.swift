@@ -422,6 +422,20 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
 
 extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     
+    /// Show Stats for Nerds which displays additional video information
+    public func showStatsForNerds() {
+        self.onAPIReady { api in
+            api.showStatsForNerds()
+        }
+    }
+    
+    /// Hide Stats for Nerds
+    public func hideStatsForNerds() {
+        self.onAPIReady { api in
+            api.hideStatsForNerds()
+        }
+    }
+    
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     public func getDuration(

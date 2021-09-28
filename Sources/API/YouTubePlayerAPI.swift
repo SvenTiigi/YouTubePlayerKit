@@ -279,6 +279,12 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Retrieving_video_information
 public protocol YouTubePlayerVideoInformationAPI: AnyObject {
     
+    /// Show Stats for Nerds which displays additional video information
+    func showStatsForNerds()
+    
+    /// Hide Stats for Nerds
+    func hideStatsForNerds()
+    
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
