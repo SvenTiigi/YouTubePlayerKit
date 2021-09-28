@@ -420,6 +420,7 @@ extension YouTubePlayerWebView: YouTubePlayerVolumeAPI {
     func set(
         volume: Int
     ) {
+        let volume = max(0, min(volume, 100))
         self.evaluate(
             javaScript: "player.setVolume(\(volume));"
         )
