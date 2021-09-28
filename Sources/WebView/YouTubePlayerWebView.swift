@@ -12,10 +12,6 @@ final class YouTubePlayerWebView: WKWebView {
     /// The YouTubePlayer
     let player: YouTubePlayer
     
-    /// The updated YouTubePlayer Source which has
-    /// been set by the `load(source:)` API
-    private(set) var updatedSource: YouTubePlayer.Source?
-    
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle
         .main
