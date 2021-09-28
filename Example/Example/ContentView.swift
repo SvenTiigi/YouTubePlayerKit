@@ -53,9 +53,7 @@ extension ContentView: View {
                     ForEach(self.wwdcKeynotes) { wwdcKeynote in
                         Button(
                             action: {
-                                self.youTubePlayer.load(
-                                    source: .url(wwdcKeynote.youTubeURL)
-                                )
+                                self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
                             },
                             label: {
                                 YouTubePlayerView(
