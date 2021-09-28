@@ -62,7 +62,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.0.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.1.0")
 ]
 ```
 
@@ -263,14 +263,23 @@ youTubePlayer.playbackRatePublisher
 // Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
 youTubePlayer.getVideoLoadedFraction { _ in }
 
+// A Publisher that emits a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
+youTubePlayer.videoLoadedFractionPublisher()
+
 // Retrieve the PlaybackState of the player video
 youTubePlayer.getPlaybackState { _ in }
 
 // Retrieve the elapsed time in seconds since the video started playing
 youTubePlayer.getCurrentTime { _ in }
 
+/// A Publisher that emits the current elapsed time in seconds since the video started playing
+youTubePlayer.currentTimePublisher()
+
 // Retrieve the current PlaybackMetadata
 youTubePlayer.getPlaybackMetadata { _ in }
+
+// A Publisher that emits the current PlaybackMetadata
+youTubePlayer.playbackMetadataPublisher
 ```
 
 #### Load/Cue video
@@ -319,6 +328,9 @@ youTubePlayer.set(volume: 50)
 ```swift
 // Retrieve the duration in seconds of the currently playing video
 youTubePlayer.getDuration { _ in }
+
+// A Publisher that emits the duration in seconds of the currently playing video
+youTubePlayer.durationPublisher
 
 // Retrieve the YouTube.com URL for the currently loaded/playing video
 youTubePlayer.getVideoURL { _ in }
