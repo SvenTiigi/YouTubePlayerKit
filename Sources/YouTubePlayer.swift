@@ -10,11 +10,35 @@ public final class YouTubePlayer: ObservableObject {
     
     /// The optional YouTubePlayer Source
     @Published
-    public internal(set) var source: Source?
+    public var source: Source? {
+        didSet {
+            // Verify Source has changed
+            guard oldValue != self.source else {
+                // Otherwise return out of function
+                return
+            }
+            // Load Source
+            self.load(
+                source: self.source
+            )
+        }
+    }
     
     /// The YouTubePlayer Configuration
     @Published
-    public internal(set) var configuration: Configuration
+    public var configuration: Configuration {
+        didSet {
+            // Verify Configuration has changed
+            guard oldValue != self.configuration else {
+                // Otherwise return out of function
+                return
+            }
+            // Update Configuration
+            self.update(
+                configuration: self.configuration
+            )
+        }
+    }
     
     /// The YouTubePlayerAPI
     weak var api: YouTubePlayerAPI? {
