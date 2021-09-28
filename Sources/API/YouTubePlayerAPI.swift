@@ -261,7 +261,7 @@ public protocol YouTubePlayerPlaybackAPI: AnyObject {
     /// Retrieve the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     func getCurrentTime(
-        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     )
     
     /// Retrieve the current PlaybackMetadata
@@ -282,7 +282,7 @@ public protocol YouTubePlayerVideoInformationAPI: AnyObject {
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
-        completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     )
     
     /// Retrieve the YouTube.com URL for the currently loaded/playing video

@@ -119,7 +119,7 @@ public extension YouTubePlayerPlaybackAPI {
     }
     
     /// Returns the elapsed time in seconds since the video started playing
-    func getCurrentTime() async throws -> Int {
+    func getCurrentTime() async throws -> Double {
         try await withCheckedThrowingContinuation { continuation in
             self.getCurrentTime { result in
                 continuation.resume(with: result)
@@ -144,7 +144,7 @@ public extension YouTubePlayerPlaybackAPI {
 public extension YouTubePlayerVideoInformationAPI {
     
     /// Returns the duration in seconds of the currently playing video
-    func getDuration() async throws -> Int {
+    func getDuration() async throws -> Double {
         try await withCheckedThrowingContinuation { continuation in
             self.getDuration { result in
                 continuation.resume(with: result)
