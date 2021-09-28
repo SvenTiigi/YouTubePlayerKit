@@ -30,13 +30,13 @@ public extension YouTubePlayer {
         
         /// Setting the parameter's value to true causes closed
         /// captions to be shown by default, even if the user has turned captions off
-        public var captionsClosed: Bool?
+        public var showCaptions: Bool?
         
         /// This parameter specifies the color that will be used in
         /// the player's video progress bar to highlight the amount
         /// of the video that the viewer has already see
         /// - Note: Setting the color parameter to white will disable the modestbranding option.
-        public var color: Color?
+        public var progressBarColor: ProgressBarColor?
         
         /// This parameter indicates whether the video player controls are displayed
         public var showControls: Bool?
@@ -47,7 +47,7 @@ public extension YouTubePlayer {
         
         /// Setting the parameter's value to true enables
         /// the player to be controlled via IFrame Player API calls
-        public var enableJsAPI: Bool?
+        public var enableJavaScriptAPI: Bool?
         
         /// This parameter specifies the time, measured in seconds
         /// from the start of the video, when the player should stop playing the video
@@ -72,7 +72,7 @@ public extension YouTubePlayer {
         
         /// This parameter lets you use a YouTube player that does not show a YouTube logo.
         /// Set the parameter value to true to prevent the YouTube logo from displaying in the control bar.
-        public var modestBranding: Bool?
+        public var useModestBranding: Bool?
         
         /// This parameter controls whether videos play inline or fullscreen on iOS
         public var playInline: Bool?
@@ -97,17 +97,17 @@ public extension YouTubePlayer {
             allowsPictureInPictureMediaPlayback: Bool? = nil,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
-            captionsClosed: Bool? = nil,
-            color: Color? = nil,
+            showCaptions: Bool? = nil,
+            progressBarColor: ProgressBarColor? = nil,
             showControls: Bool? = nil,
             keyboardControlsDisabled: Bool? = nil,
-            enableJsAPI: Bool? = nil,
+            enableJavaScriptAPI: Bool? = nil,
             endTime: Int? = nil,
             showFullscreenButton: Bool? = nil,
             language: String? = nil,
             showAnnotations: Bool? = nil,
             loopEnabled: Bool? = nil,
-            modestBranding: Bool? = nil,
+            useModestBranding: Bool? = nil,
             playInline: Bool? = nil,
             showRelatedVideos: Bool? = nil,
             startTime: Int? = nil,
@@ -117,17 +117,17 @@ public extension YouTubePlayer {
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
-            self.captionsClosed = captionsClosed
-            self.color = color
+            self.showCaptions = showCaptions
+            self.progressBarColor = progressBarColor
             self.showControls = showControls
             self.keyboardControlsDisabled = keyboardControlsDisabled
-            self.enableJsAPI = enableJsAPI
+            self.enableJavaScriptAPI = enableJavaScriptAPI
             self.endTime = endTime
             self.showFullscreenButton = showFullscreenButton
             self.language = language
             self.showAnnotations = showAnnotations
             self.loopEnabled = loopEnabled
-            self.modestBranding = modestBranding
+            self.useModestBranding = useModestBranding
             self.playInline = playInline
             self.showRelatedVideos = showRelatedVideos
             self.startTime = startTime
@@ -166,11 +166,11 @@ extension YouTubePlayer.Configuration: Encodable {
     enum CodingKeys: String, CodingKey {
         case autoPlay = "autoplay"
         case captionLanguage = "cc_lang_pref"
-        case captionsClosed = "cc_load_policy"
-        case color
+        case showCaptions = "cc_load_policy"
+        case progressBarColor = "color"
         case showControls = "controls"
         case keyboardControlsDisabled = "disablekb"
-        case enableJsAPI = "enablejsapi"
+        case enableJavaScriptAPI = "enablejsapi"
         case endTime = "end"
         case showFullscreenButton = "fs"
         case language = "hl"
@@ -178,7 +178,7 @@ extension YouTubePlayer.Configuration: Encodable {
         case list
         case listType
         case loopEnabled = "loop"
-        case modestBranding = "modestbranding"
+        case useModestBranding = "modestbranding"
         case origin
         case playInline = "playsinline"
         case showRelatedVideos = "rel"
@@ -194,17 +194,17 @@ extension YouTubePlayer.Configuration: Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.autoPlay?.bit, forKey: .autoPlay)
         try container.encodeIfPresent(self.captionLanguage, forKey: .captionLanguage)
-        try container.encodeIfPresent(self.captionsClosed?.bit, forKey: .captionsClosed)
-        try container.encodeIfPresent(self.color, forKey: .color)
+        try container.encodeIfPresent(self.showCaptions?.bit, forKey: .showCaptions)
+        try container.encodeIfPresent(self.progressBarColor, forKey: .progressBarColor)
         try container.encodeIfPresent(self.showControls?.bit, forKey: .showControls)
         try container.encodeIfPresent(self.keyboardControlsDisabled?.bit, forKey: .keyboardControlsDisabled)
-        try container.encodeIfPresent(self.enableJsAPI?.bit, forKey: .enableJsAPI)
+        try container.encodeIfPresent(self.enableJavaScriptAPI?.bit, forKey: .enableJavaScriptAPI)
         try container.encodeIfPresent(self.endTime, forKey: .endTime)
         try container.encodeIfPresent(self.showFullscreenButton?.bit, forKey: .showFullscreenButton)
         try container.encodeIfPresent(self.language, forKey: .language)
         try container.encodeIfPresent(self.showAnnotations.flatMap { $0 ? 1 : 3 }, forKey: .showAnnotations)
         try container.encodeIfPresent(self.loopEnabled?.bit, forKey: .loopEnabled)
-        try container.encodeIfPresent(self.modestBranding?.bit, forKey: .modestBranding)
+        try container.encodeIfPresent(self.useModestBranding?.bit, forKey: .useModestBranding)
         try container.encodeIfPresent(self.playInline?.bit, forKey: .playInline)
         try container.encodeIfPresent(self.showRelatedVideos?.bit, forKey: .showRelatedVideos)
         try container.encodeIfPresent(self.startTime, forKey: .startTime)
