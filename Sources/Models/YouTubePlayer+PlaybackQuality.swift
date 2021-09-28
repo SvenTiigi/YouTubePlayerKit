@@ -6,6 +6,8 @@ public extension YouTubePlayer {
     
     /// The YouTubePlayer PlaybackQuality
     enum PlaybackQuality: String, Codable, Hashable, CaseIterable {
+        /// Automatic
+        case auto
         /// Small
         case small
         /// Medium
