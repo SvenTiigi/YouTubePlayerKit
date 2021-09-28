@@ -326,6 +326,15 @@ youTubePlayer.set(volume: 50)
 #### Retrieving video information
 
 ```swift
+// Show Stats for Nerds which displays additional video information
+youTubePlayer.showStatsForNerds()
+
+// Hide Stats for Nerds
+youTubePlayer.hideStatsForNerds()
+
+// Retrieve the YouTubePlayer Information
+youTubePlayer.getInformation { _ in }
+
 // Retrieve the duration in seconds of the currently playing video
 youTubePlayer.getDuration { _ in }
 
