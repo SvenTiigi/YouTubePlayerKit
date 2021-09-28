@@ -285,6 +285,12 @@ public protocol YouTubePlayerVideoInformationAPI: AnyObject {
     /// Hide Stats for Nerds
     func hideStatsForNerds()
     
+    /// Retrieve the YouTubePlayer Information
+    /// - Parameter completion: The completion closure
+    func getInformation(
+        completion: @escaping (Result<YouTubePlayer.Information, YouTubePlayerAPIError>) -> Void
+    )
+    
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(

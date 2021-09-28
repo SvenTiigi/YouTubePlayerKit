@@ -544,6 +544,20 @@ extension YouTubePlayerWebView: YouTubePlayerVideoInformationAPI {
         )
     }
     
+    /// Retrieve the YouTubePlayer Information
+    /// - Parameter completion: The completion closure
+    func getInformation(
+        completion: @escaping (Result<YouTubePlayer.Information, YouTubePlayerAPIError>) -> Void
+    ) {
+        self.evaluate(
+            javaScript: "player.playerInfo;",
+            converter: JavaScriptEvaluationResponseConverter<YouTubePlayer.PlaybackMetadata>
+                .typeCast(to: [String: Any].self)
+                .decode(),
+            completion: completion
+        )
+    }
+    
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(

@@ -143,6 +143,15 @@ public extension YouTubePlayerPlaybackAPI {
 @available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerVideoInformationAPI {
     
+    /// Retrieve the YouTubePlayer Information
+    func getInformation() async throws -> YouTubePlayer.Information {
+        try await withCheckedThrowingContinuation { continuation in
+            self.getInformation { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     /// Returns the duration in seconds of the currently playing video
     func getDuration() async throws -> Double {
         try await withCheckedThrowingContinuation { continuation in
