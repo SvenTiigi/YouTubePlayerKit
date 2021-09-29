@@ -62,7 +62,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.1.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.1.1")
 ]
 ```
 
@@ -105,27 +105,40 @@ When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewControl
 import UIKit
 import YouTubePlayerKit
 
-// Initialize a YouTubePlayer
-let youTubePlayer = YouTubePlayer(
-    source: .video(id: "psL_5RIBqnY")
-)
 // Initialize a YouTubePlayerViewController
 let youTubePlayerViewController = YouTubePlayerViewController(
-    player: youTubePlayer
+    player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
 
 // Example: Access the underlying iFrame API via the `YouTubePlayer` instance
-youTubePlayer.getPlaybackMetadata { result in
-    switch result {
-    case .success(let metadata):
-        print("Video title", metadata.title)
-    case .failure(let error):
-        print("Failed to retrieve metadata", error)
-    }
-}
+youTubePlayerViewController.player.showStatsForNerds()
 
 // Present YouTubePlayerViewController
 self.present(youTubePlayerViewController, animated: true)
+```
+
+If you wish to change the video at runtime simply update the `source` of a `YouTubePlayer`.
+
+```swift
+youTubePlayer.source = .video(id: "0TD96VTf0Xs")
+```
+
+Additionally, you can update the `configuration` of a `YouTubePlayer` to update the current configuration.
+
+```swift
+youTubePlayer.configuration = .init(
+    isUserInteractionEnabled: true,
+    autPlay: true
+)
+```
+> Note: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
+
+Since `YouTubePlayer` is conform to the [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) protocol you can listen for changes whenever the `source` or `configuration` of a `YouTubePlayer` gets updated.
+
+```swift
+youTubePlayer
+    .objectWillChange
+    .sink { }
 ```
 
 ## YouTubePlayer
