@@ -8,6 +8,8 @@
 
 <p align="center">
     A Swift Package to easily play YouTube videos
+    <br/>
+    with extended support for SwiftUI, Combine and async/await
 </p>
 
 <p align="center">
