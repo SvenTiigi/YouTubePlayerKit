@@ -96,6 +96,7 @@ extension ContentView: View {
             )
         }
         .edgesIgnoringSafeArea(.bottom)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
 }
