@@ -181,7 +181,7 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
         allowSeekAhead: Bool
     ) {
         self.onAPIReady { api in
-            api.stop()
+            api.seek(to: seconds, allowSeekAhead: allowSeekAhead)
         }
     }
     
