@@ -70,16 +70,6 @@ private extension YouTubePlayerWebView {
         self.navigationDelegate = self
         // Set ui delegate
         self.uiDelegate = self
-        // For each JavaScriptEvent
-        for javaScriptEvent in YouTubePlayer.HTML.JavaScriptEvent.allCases {
-            // Add message handler for JavaScriptEvent
-            self.configuration
-                .userContentController
-                .add(
-                    self,
-                    name: javaScriptEvent.rawValue
-                )
-        }
         #if !os(macOS)
         // Set clear background color
         self.backgroundColor = .clear

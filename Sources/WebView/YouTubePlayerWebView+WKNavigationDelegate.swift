@@ -42,6 +42,15 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Otherwise cancel navigation action
             return decisionHandler(.cancel)
         }
+        // Check if a Resolved JavaScriptEvent can be initialized from request URL
+        if let resolvedJavaScriptEvent = YouTubePlayer.HTML.JavaScriptEvent.Resolved(url: url) {
+            // Handle JavaScriptEvent
+            self.handle(
+                resolvedJavaScriptEvent: resolvedJavaScriptEvent
+            )
+            // Cancel navigation action
+            return decisionHandler(.cancel)
+        }
         // Check if Request URL host is equal to origin URL host
         if url.host?.lowercased() == self.originURL?.host?.lowercased() {
             // Allow navigation action
@@ -73,6 +82,64 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
         self.open(url: url)
         // Cancel navigation action
         decisionHandler(.cancel)
+    }
+    
+}
+
+// MARK: - Handle resolved YouTube Player Event Callback
+
+private extension YouTubePlayerWebView {
+    
+    /// Handle resolved YouTubePlayer HTML JavaScriptEvent
+    /// - Parameters:
+    ///   - resolvedJavaScriptEvent: The Resolved JavaScriptEvent
+    func handle(
+        resolvedJavaScriptEvent: YouTubePlayer.HTML.JavaScriptEvent.Resolved
+    ) {
+        // Switch on Resolved JavaScriptEvent
+        switch resolvedJavaScriptEvent.event {
+        case .onIframeAPIReady:
+            // Simply do nothing
+            break
+        case .onIframeAPIFailedToLoad:
+            // Send error state
+            self.playerStateSubject.send(.error(.iFrameAPIFailedToLoad))
+        case .onReady:
+            // Send ready state
+            self.playerStateSubject.send(.ready)
+            // Check if autoPlay is enabled
+            if self.player.configuration.autoPlay == true {
+                // Play Video
+                self.play()
+            }
+        case .onStateChange:
+            // Send PlaybackState
+            resolvedJavaScriptEvent
+                .data
+                .flatMap(Int.init)
+                .flatMap(YouTubePlayer.PlaybackState.init)
+                .map(self.playbackStateSubject.send)
+        case .onPlaybackQualityChange:
+            // Send PlaybackQuality
+            resolvedJavaScriptEvent
+                .data
+                .flatMap(YouTubePlayer.PlaybackQuality.init)
+                .map(self.playbackQualitySubject.send)
+        case .onPlaybackRateChange:
+            // Send PlaybackRate
+            resolvedJavaScriptEvent
+                .data
+                .flatMap(YouTubePlayer.PlaybackRate.init)
+                .map(self.playbackRateSubject.send)
+        case .onError:
+            // Send error state
+            resolvedJavaScriptEvent
+                .data
+                .flatMap(Int.init)
+                .flatMap(YouTubePlayer.Error.init)
+                .map { .error($0) }
+                .map(self.playerStateSubject.send)
+        }
     }
     
 }
