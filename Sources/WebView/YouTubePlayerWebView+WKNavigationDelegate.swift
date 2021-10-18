@@ -75,4 +75,17 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
         decisionHandler(.cancel)
     }
     
+    /// Invoked when the web view's web content process is terminated.
+    /// - Parameter webView: The web view whose underlying web content process was terminated.
+    func webViewWebContentProcessDidTerminate(
+        _ webView: WKWebView
+    ) {
+        // Send error state
+        self.playerStateSubject.send(
+            .error(
+                .webContentProcessDidTerminate
+            )
+        )
+    }
+    
 }
