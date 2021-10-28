@@ -36,6 +36,16 @@ extension YouTubePlayerWebView: WKScriptMessageHandler {
                 // Play Video
                 self.play()
             }
+            // Retrieve current values to well initialize them.
+            // In case of failure nothing is set as properties are already nil.
+            player.getPlaybackRate { result in
+                guard case .success(let playbackRate) = result else { return }
+                self.playbackRateSubject.send(playbackRate)
+            }
+            player.getPlaybackState { result in
+                guard case .success(let playbackState) = result else { return }
+                self.playbackStateSubject.send(playbackState)
+            }
         case .onStateChange:
             // Verify PlaybackState is available from message body
             guard let body = message.body as? Int,
