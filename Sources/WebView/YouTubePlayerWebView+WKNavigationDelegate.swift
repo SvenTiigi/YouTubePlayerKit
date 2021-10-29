@@ -112,6 +112,26 @@ private extension YouTubePlayerWebView {
                 // Play Video
                 self.play()
             }
+            // Retrieve the current PlaybackRate
+            self.player.getPlaybackRate { [weak self] result in
+                // Verify PlaybackRate is available
+                guard case .success(let playbackRate) = result else {
+                    // Otherwise ignore the error and return out of function
+                    return
+                }
+                // Send PlaybackRate
+                self?.playbackRateSubject.send(playbackRate)
+            }
+            // Retrieve the current PlaybackState
+            self.player.getPlaybackState { [weak self] result in
+                // Verify PlaybackState is available
+                guard case .success(let playbackState) = result else {
+                    // Otherwise ignore the error and return out of function
+                    return
+                }
+                // Send PlaybackState
+                self?.playbackStateSubject.send(playbackState)
+            }
         case .onStateChange:
             // Send PlaybackState
             resolvedJavaScriptEvent
