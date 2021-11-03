@@ -49,8 +49,8 @@ extension YouTubePlayer.Options {
             CodingKeys.width.rawValue: "100%",
             CodingKeys.height.rawValue: "100%",
             CodingKeys.events.rawValue: YouTubePlayer
-                .HTML
                 .JavaScriptEvent
+                .Name
                 .allCases
                 .filter { event in
                     // Exclude onIframeAPIReady and onIframeAPIFailedToLoad

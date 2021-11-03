@@ -1,11 +1,11 @@
 import Foundation
 
-// MARK: - YouTubePlayer+HTML+JavaScriptEvent
+// MARK: - YouTubePlayer.JavaScriptEvent+Name
 
-extension YouTubePlayer.HTML {
+extension YouTubePlayer.JavaScriptEvent {
     
-    /// The YouTubePlayer HTML JavaScript Event
-    enum JavaScriptEvent: String, Codable, Hashable, CaseIterable {
+    /// The YouTubePlayer JavaScriptEvent Name
+    enum Name: String, Codable, Hashable, CaseIterable {
         /// iFrame API is ready
         case onIframeAPIReady
         /// iFrame API failed to load

@@ -1,37 +1,31 @@
 import Foundation
 
-// MARK: - YouTubePlayer+HTML+JavaScriptEvent+Resolved
+// MARK: - YouTubePlayer+JavaScriptEvent
 
-extension YouTubePlayer.HTML.JavaScriptEvent {
+extension YouTubePlayer {
     
-    /// A resolved YouTubePlayer HTML JavaScriptEvent
-    struct Resolved: Codable, Hashable {
+    /// A YouTubePlayer JavaScriptEvent
+    struct JavaScriptEvent: Codable, Hashable {
         
-        /// The JavaScriptEvent that has been resolved
-        let event: YouTubePlayer.HTML.JavaScriptEvent
+        /// The JavaScriptEvent Name
+        let name: Name
         
-        /// The optional data parameter
+        /// The optional data payload
         let data: String?
         
     }
     
 }
 
-// MARK: - Constants
+// MARK: - JavaScriptEvent+init(url:)
 
-private extension YouTubePlayer.HTML.JavaScriptEvent.Resolved {
+extension YouTubePlayer.JavaScriptEvent {
     
     /// The YouTubePlayer JavaScript Event callback URL scheme
-    static let eventCallbackURLScheme = "youtubeplayer"
+    private static let eventCallbackURLScheme = "youtubeplayer"
     
     /// The YouTubePlayer JavaScript Event data parameter name
-    static let eventCallbackDataParameterName = "data"
-    
-}
-
-// MARK: - Failable initializer with URL
-
-extension YouTubePlayer.HTML.JavaScriptEvent.Resolved {
+    private static let eventCallbackDataParameterName = "data"
     
     /// Creates a new instance of `YouTubePlayer.HTML.JavaScriptEvent.Resolved` from an URL, if available
     /// - Parameters:
@@ -47,14 +41,14 @@ extension YouTubePlayer.HTML.JavaScriptEvent.Resolved {
             // Otherwise return nil
             return nil
         }
-        // Verify JavaScriptEvent can be initialized from raw value
-        guard let event = YouTubePlayer.HTML.JavaScriptEvent(rawValue: host) else {
+        // Verify JavaScriptEvent Name can be initialized from raw value
+        guard let name = YouTubePlayer.JavaScriptEvent.Name(rawValue: host) else {
             // Otherwise return nil
             return nil
         }
         // Initialize
         self.init(
-            event: event,
+            name: name,
             data: URLComponents(
                 url: url,
                 resolvingAgainstBaseURL: false
