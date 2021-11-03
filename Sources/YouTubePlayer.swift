@@ -99,3 +99,18 @@ extension YouTubePlayer: Equatable {
     }
 
 }
+
+// MARK: - Hashable
+
+extension YouTubePlayer: Hashable {
+    
+    /// Hashes the essential components of this value by feeding them into the given hasher.
+    /// - Parameter hasher: The hasher to use when combining the components of this instance.
+    public func hash(
+        into hasher: inout Hasher
+    ) {
+        hasher.combine(self.source)
+        hasher.combine(self.configuration)
+    }
+    
+}
