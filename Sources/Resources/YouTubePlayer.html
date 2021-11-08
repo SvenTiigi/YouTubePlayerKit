@@ -62,14 +62,22 @@
 
         // On window resize
         window.onresize = () => {
-            // Check if player is available
-            if (player) {
-                // Set Player size
-                player.setSize(
-                    window.innerWidth,
-                    window.innerHeight
-                );
+            // Adjust YouTubePlayer Size
+            adjustYouTubePlayerSize();
+        }
+        
+        // Adjust YouTubePlayer Size
+        function adjustYouTubePlayerSize() {
+            // Check if YouTubePlayer is unavailable
+            if (!player) {
+                // Return out of function
+                return;
             }
+            // Set Player size
+            player.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
         }
         
         // Send YouTubePlayer Event with optional data
