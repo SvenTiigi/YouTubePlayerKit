@@ -46,7 +46,7 @@ struct ContentView: View {
 ## Features
 
 - [x] Play YouTube videos with just one line of code 📺
-- [x] YouTube [Terms of Service](https://youtube.com/t/terms) compliant implementation ✅
+- [x] YouTube [Terms of Service](https://developers.google.com/youtube/terms/api-services-terms-of-service) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI and UIKit 🧑‍🎨
 - [x] Runs on iOS and macOS 📱 🖥
@@ -69,6 +69,12 @@ dependencies: [
 ```
 
 Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `YouTubePlayerKit`.
+
+## App Store Review
+
+When submitting an app to the App Store which includes the `YouTubePlayerKit`, please ensure to add a link to the [YouTube API Terms of Services](https://developers.google.com/youtube/terms/api-services-terms-of-service) in the review notes.
+
+> https://developers.google.com/youtube/terms/api-services-terms-of-service
 
 ## Usage
 
