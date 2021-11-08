@@ -19,6 +19,9 @@ final class YouTubePlayerWebView: WKWebView {
         .flatMap { ["https://", $0.lowercased()].joined() }
         .flatMap(URL.init)
     
+    /// The frame observation Cancellable
+    private var frameObservation: AnyCancellable?
+    
     // MARK: Subjects
     
     /// The YouTubePlayer State CurrentValueSubject
@@ -64,6 +67,22 @@ private extension YouTubePlayerWebView {
     
     /// Setup YouTubePlayerWebView
     func setup() {
+        // Setup frame observation
+        self.frameObservation = self
+            .publisher(for: \.frame)
+            // Add a slight delay to ensure
+            // the underlying window of the WKWebView
+            // has resized properly
+            .delay(
+                for: 0.1,
+                scheduler: DispatchQueue.main
+            )
+            .sink { [weak self] _ in
+                // Adjust YouTubePlayer Size
+                self?.evaluate(
+                    javaScript: "adjustYouTubePlayerSize()"
+                )
+            }
         // Set YouTubePlayerAPI on current Player
         self.player.api = self
         // Set navigation delegate
