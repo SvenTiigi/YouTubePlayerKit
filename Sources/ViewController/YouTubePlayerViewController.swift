@@ -26,7 +26,12 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
     
     /// The YouTubePlayer
     public var player: YouTubePlayer {
-        self.webView.player
+        get {
+            self.webView.player
+        }
+        set {
+            self.webView.player = newValue
+        }
     }
     
     // MARK: Initializer

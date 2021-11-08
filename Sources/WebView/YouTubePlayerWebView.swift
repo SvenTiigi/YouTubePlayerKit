@@ -10,7 +10,17 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: Properties
     
     /// The YouTubePlayer
-    let player: YouTubePlayer
+    var player: YouTubePlayer {
+        didSet {
+            // Verify YouTubePlayer reference has changed
+            guard self.player !== oldValue else {
+                // Otherwise return out of function
+                return
+            }
+            // Re-Load Player
+            self.loadPlayer()
+        }
+    }
     
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle

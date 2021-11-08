@@ -8,6 +8,26 @@ extension YouTubePlayerWebView {
     /// - Returns: A Bool value if the YouTube player has been successfully loaded
     @discardableResult
     func loadPlayer() -> Bool {
+        // Check if PlayerState Subject has a current value
+        if self.playerStateSubject.value != nil {
+            // Reset PlayerState Subject current value
+            self.playerStateSubject.send(nil)
+        }
+        // Check if PlaybackState Subject has a current value
+        if self.playbackStateSubject.value != nil {
+            // Reset PlaybackState Subject current value
+            self.playbackStateSubject.send(nil)
+        }
+        // Check if PlaybackQuality Subject has a current value
+        if self.playbackQualitySubject.value != nil {
+            // Reset PlaybackQuality Subject current value
+            self.playbackQualitySubject.send(nil)
+        }
+        // Check if PlaybackRate Subject has a current value
+        if self.playbackRateSubject.value != nil {
+            // Reset PlaybackRate Subject current value
+            self.playbackRateSubject.send(nil)
+        }
         // Declare YouTubePlayer HTML
         let youTubePlayerHTML: YouTubePlayer.HTML
         do {

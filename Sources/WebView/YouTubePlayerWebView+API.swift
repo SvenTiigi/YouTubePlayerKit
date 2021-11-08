@@ -19,11 +19,6 @@ extension YouTubePlayerWebView: YouTubePlayerConfigurationAPI {
             javaScript: "player.destroy();",
             converter: .empty
         ) { [weak self] _ in
-            // Reset all CurrentValueSubjects
-            self?.playerStateSubject.send(nil)
-            self?.playbackStateSubject.send(nil)
-            self?.playbackQualitySubject.send(nil)
-            self?.playbackRateSubject.send(nil)
             // Update YouTubePlayer Configuration
             self?.player.configuration = configuration
             // Re-Load Player
