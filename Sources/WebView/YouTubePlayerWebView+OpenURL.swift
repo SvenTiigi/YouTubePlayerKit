@@ -16,7 +16,7 @@ extension YouTubePlayerWebView {
         #if os(macOS)
         NSWorkspace.shared.open(
             [url],
-            withAppBundleIdentifier:"com.apple.Safari",
+            withAppBundleIdentifier: "com.apple.Safari",
             options: .init(),
             additionalEventParamDescriptor: nil,
             launchIdentifiers: nil
