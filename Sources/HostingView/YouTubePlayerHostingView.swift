@@ -4,18 +4,20 @@ import AppKit
 import UIKit
 #endif
 
-// MARK: - YouTubePlayerHostBaseView
+// MARK: - YouTubePlayerHostingBaseView
 
 #if os(macOS)
-/// The YouTubePlayerBase NSView
-public class YouTubePlayerHostBaseView: NSView {}
+/// The YouTubePlayerHostingBase NSView
+public class YouTubePlayerHostingBaseView: NSView {}
 #else
-/// The YouTubePlayerBase UIView
-public class YouTubePlayerHostBaseView: UIView {}
+/// The YouTubePlayerHostingBase UIView
+public class YouTubePlayerHostingBaseView: UIView {}
 #endif
 
-/// The YouTubePlayer HostView
-public final class YouTubePlayerHostView: YouTubePlayerHostBaseView {
+// MARK: - YouTubePlayerHostingView
+
+/// The YouTubePlayer HostingView
+public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     // MARK: Properties
     
@@ -37,16 +39,19 @@ public final class YouTubePlayerHostView: YouTubePlayerHostBaseView {
     /// Creates a new instance of `YouTubePlayerHostView`
     /// - Parameters:
     ///   - player: The YouTubePlayer
-    public init(player: YouTubePlayer) {
-        webView = .init(player: player)
-        #if os(macOS)
-        webView.autoresizingMask = [.width, .height]
-        #else
-        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        #endif
+    public init(
+        player: YouTubePlayer
+    ) {
+        self.webView = .init(player: player)
         super.init(frame: .zero)
-        
-        addSubview(webView)
+        self.webView.autoresizingMask = {
+            #if os(macOS)
+            return [.width, .height]
+            #else
+            return [.flexibleWidth, .flexibleHeight]
+            #endif
+        }()
+        self.addSubview(self.webView)
     }
     
     /// Creates a new instance of `YouTubePlayerHostView`
@@ -69,4 +74,5 @@ public final class YouTubePlayerHostView: YouTubePlayerHostBaseView {
     required init?(coder: NSCoder) {
         nil
     }
+    
 }
