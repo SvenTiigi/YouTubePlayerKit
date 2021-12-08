@@ -107,7 +107,7 @@ struct ContentView: View {
 ```
 > Check out the additional [`YouTubePlayerView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/View/YouTubePlayerView%2BInit.swift) initializer to place an overlay for a given state.
 
-When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController`.
+When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostView`.
 
 ```swift
 import UIKit
@@ -151,7 +151,7 @@ youTubePlayer
 
 ## YouTubePlayer
 
-A `YouTubePlayer` is the central object which needs to be passed to every YouTubePlayerView or YouTubePlayerViewController in order to play a certain YouTube video and interact with the underlying YouTube iFrame API. 
+A `YouTubePlayer` is the central object which needs to be passed to every `YouTubePlayerView`, `YouTubePlayerViewController`, or `YouTubePlayerHostView` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API. 
 
 Therefore, you can easily initialize a `YouTubePlayer` by using a string literal as seen in the previous examples.
 
