@@ -131,3 +131,44 @@ public extension YouTubePlayerVideoInformationAPI where Self: YouTubePlayerEvent
     }
     
 }
+
+// MARK: - YouTubePlayerVideoInformationAPI+getVideoThumbnail
+
+public extension YouTubePlayerVideoInformationAPI {
+    
+    /// Retrieve the VideoThumbnail for the currently loaded video
+    /// - Parameter completion: The completion closure
+    func getVideoThumbnail(
+        completion: @escaping (Result<YouTubePlayer.VideoThumbnail, YouTubePlayerAPIError>) -> Void
+    ) {
+        // Retrieve Video URL
+        self.getVideoURL { result in
+            // Switch on Result
+            switch result {
+            case .success(let videoURL):
+                // Verify YouTubePlayer Source can be initialized from Video URL
+                guard let source: YouTubePlayer.Source = .url(videoURL) else {
+                    // Otherwise complete with failure
+                    return completion(
+                        .failure(
+                            .init(
+                                javaScript: .init(),
+                                reason: "Invalid YouTube Video URL"
+                            )
+                        )
+                    )
+                }
+                // Complete with success
+                completion(
+                    .success(.init(source: source))
+                )
+            case .failure(let error):
+                // Complete with failure
+                completion(
+                    .failure(error)
+                )
+            }
+        }
+    }
+    
+}

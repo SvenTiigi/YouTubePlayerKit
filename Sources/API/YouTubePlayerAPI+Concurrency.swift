@@ -1,7 +1,7 @@
 import Foundation
 
 // Compiler-Check for Swift Version >= 5.5
-// Temporarily: Exclude macOS as macOS 12.0 has not yet been released
+// Temporarily: Exclude macOS as macOS 12.0 GitHub CI image is currently not available
 #if swift(>=5.5) && !os(macOS)
 
 // MARK: - YouTubePlayer360DegreePerspectiveAPI+Concurrency
@@ -176,6 +176,15 @@ public extension YouTubePlayerVideoInformationAPI {
             self.getVideoEmbedCode { result in
                 continuation.resume(with: result)
             }
+        }
+    }
+    
+    /// Retrieve the VideoThumbnail for the currently loaded video
+    func getVideoThumbnail() async throws -> YouTubePlayer.VideoThumbnail {
+        try await withCheckedThrowingContinuation { continuation in
+            self.getVideoThumbnail(
+                completion: continuation.resume
+            )
         }
     }
     
