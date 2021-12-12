@@ -28,11 +28,46 @@ public extension YouTubePlayer {
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.VideoThumbnail`
-        /// - Parameter source: The YouTubePlayer Source
+        /// from a video URL or throws an `BadVideoURLError`
+        /// - Parameter videoURL: The video URL
         public init(
-            source: Source
-        ) {
+            videoURL: String
+        ) throws {
+            // Verify YouTubePlayer Source can be initialized from video URL
+            guard let source: YouTubePlayer.Source = .url(videoURL) else {
+                // Otherwise throw BadVideoURLError
+                throw BadVideoURLError(
+                    videoURL: videoURL
+                )
+            }
+            // Initialize Source
             self.source = source
+        }
+        
+    }
+    
+}
+
+// MARK: - VideoThumbnail+BadVideoURLError
+
+public extension YouTubePlayer.VideoThumbnail {
+    
+    /// The VideoThumbnail BadVideoURLError
+    struct BadVideoURLError: Codable, Hashable, Error {
+        
+        // MARK: Properties
+        
+        /// The bad video URL
+        public let videoURL: String
+        
+        // MARK: Initializer
+        
+        /// Creates a new instance of `YouTubePlayer.VideoThumbnail.BadVideoURLError`
+        /// - Parameter videoURL: The bad video URL
+        public init(
+            videoURL: String
+        ) {
+            self.videoURL = videoURL
         }
         
     }
@@ -44,6 +79,7 @@ public extension YouTubePlayer {
 public extension YouTubePlayer.VideoThumbnail {
     
     /// A VideoThumbnail Resolution
+    /// - Read more: https://developers.google.com/youtube/v3/docs/thumbnails
     enum Resolution: String, Codable, Hashable, CaseIterable {
         /// The default thumbnail image. The default thumbnail for a video or a resource
         /// that refers to a video, such as a playlist item or search result is 120px wide and 90px tall.

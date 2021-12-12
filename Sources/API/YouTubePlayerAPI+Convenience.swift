@@ -139,34 +139,46 @@ public extension YouTubePlayerVideoInformationAPI {
     /// Retrieve the VideoThumbnail for the currently loaded video
     /// - Parameter completion: The completion closure
     func getVideoThumbnail(
-        completion: @escaping (Result<YouTubePlayer.VideoThumbnail, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<YouTubePlayer.VideoThumbnail, Error>) -> Void
     ) {
-        // Retrieve Video URL
         self.getVideoURL { result in
-            // Switch on Result
+            completion(
+                result
+                    .mapError { $0 }
+                    .flatMap { videoURL in
+                        .init { try .init(videoURL: videoURL) }
+                    }
+            )
+        }
+    }
+    
+}
+
+// MARK: - YouTubePlayerVideoInformationAPI+getVideoThumbnailImage
+
+public extension YouTubePlayerVideoInformationAPI {
+    
+    /// Retrieve the VideoThumbnail Image for the currently loaded video
+    /// - Parameters:
+    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
+    ///   - completion: The completion closure
+    func getVideoThumbnailImage(
+        resolution: YouTubePlayer.VideoThumbnail.Resolution = .maximum,
+        urlSession: URLSession = .shared,
+        completion: @escaping (Result<YouTubePlayer.VideoThumbnail.Image, Error>) -> Void
+    ) {
+        self.getVideoThumbnail { result in
             switch result {
-            case .success(let videoURL):
-                // Verify YouTubePlayer Source can be initialized from Video URL
-                guard let source: YouTubePlayer.Source = .url(videoURL) else {
-                    // Otherwise complete with failure
-                    return completion(
-                        .failure(
-                            .init(
-                                javaScript: .init(),
-                                reason: "Invalid YouTube Video URL"
-                            )
-                        )
-                    )
+            case .success(let thumbnail):
+                thumbnail.image(
+                    resolution: resolution,
+                    urlSession: urlSession
+                ) { result in
+                    completion(result.mapError { $0 })
                 }
-                // Complete with success
-                completion(
-                    .success(.init(source: source))
-                )
             case .failure(let error):
-                // Complete with failure
-                completion(
-                    .failure(error)
-                )
+                completion(.failure(error))
             }
         }
     }

@@ -188,6 +188,23 @@ public extension YouTubePlayerVideoInformationAPI {
         }
     }
     
+    /// Retrieve the VideoThumbnail Image for the currently loaded video
+    /// - Parameters:
+    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
+    func getVideoThumbnailImage(
+        resolution: YouTubePlayer.VideoThumbnail.Resolution = .maximum,
+        urlSession: URLSession = .shared
+    ) async throws -> YouTubePlayer.VideoThumbnail.Image {
+        try await withCheckedThrowingContinuation { continuation in
+            self.getVideoThumbnailImage(
+                resolution: resolution,
+                urlSession: urlSession,
+                completion: continuation.resume
+            )
+        }
+    }
+    
 }
 
 #endif
