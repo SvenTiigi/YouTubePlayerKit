@@ -42,7 +42,6 @@ extension ContentView: View {
                     }
                 )
                 .frame(height: 220)
-                .background(Color(.systemBackground))
                 .shadow(
                     color: .black.opacity(0.1),
                     radius: 46,
@@ -56,17 +55,10 @@ extension ContentView: View {
                                 self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
                             },
                             label: {
-                                YouTubePlayerView(
-                                    .init(
-                                        source: .url(wwdcKeynote.youTubeURL),
-                                        configuration: .init(
-                                            isUserInteractionEnabled: false
-                                        )
-                                    )
+                                YouTubePlayerThumbnailView(
+                                    wwdcKeynote.youTubeURL,
+                                    isUserInteractionEnabled: false
                                 )
-                                .frame(height: 150)
-                                .background(Color(.systemBackground))
-                                .cornerRadius(12)
                             }
                         )
                     }
@@ -85,13 +77,6 @@ extension ContentView: View {
                         )
                         .imageScale(.large)
                     }
-                )
-            )
-            .background(
-                Color(
-                    self.colorScheme == .dark
-                        ? .secondarySystemGroupedBackground
-                        : .systemGroupedBackground
                 )
             )
         }
