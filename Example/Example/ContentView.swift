@@ -34,7 +34,7 @@ extension ContentView: View {
     /// The content and behavior of the view
     var body: some View {
         NavigationView {
-            ScrollView {
+            VStack(spacing: 0) {
                 YouTubePlayerView(
                     self.youTubePlayer,
                     placeholderOverlay: {
@@ -42,28 +42,24 @@ extension ContentView: View {
                     }
                 )
                 .frame(height: 220)
-                .shadow(
-                    color: .black.opacity(0.1),
-                    radius: 46,
-                    x: 0,
-                    y: 15
-                )
-                VStack(spacing: 20) {
-                    ForEach(self.wwdcKeynotes) { wwdcKeynote in
-                        Button(
-                            action: {
-                                self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
-                            },
-                            label: {
-                                YouTubePlayerThumbnailView(
-                                    wwdcKeynote.youTubeURL,
-                                    isUserInteractionEnabled: false
-                                )
-                            }
-                        )
+                ScrollView {
+                    VStack(spacing: 20) {
+                        ForEach(self.wwdcKeynotes) { wwdcKeynote in
+                            Button(
+                                action: {
+                                    self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
+                                },
+                                label: {
+                                    YouTubePlayerThumbnailView(
+                                        wwdcKeynote.youTubeURL,
+                                        isUserInteractionEnabled: false
+                                    )
+                                }
+                            )
+                        }
                     }
+                    .padding()
                 }
-                .padding()
             }
             .navigationBarTitle(" WWDC Keynotes")
             .navigationBarItems(
