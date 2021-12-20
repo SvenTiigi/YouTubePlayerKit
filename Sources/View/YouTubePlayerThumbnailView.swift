@@ -56,30 +56,48 @@ public extension YouTubePlayerThumbnailView {
     
 }
 
+// MARK: - Start fetching Metadata
+
+private extension YouTubePlayerThumbnailView {
+    
+    /// Start fetching metadata
+    func startFetchingMetadata() {
+        // Verify URL is available
+        guard let url = self.url else {
+            // Otherwise return out of function
+            return
+        }
+        // Start fetching metadata for URL
+        LPMetadataProvider().startFetchingMetadata(
+            for: url
+        ) { metadata, _ in
+            // Set Metadata
+            self.metadata = metadata
+        }
+    }
+    
+}
+
 // MARK: - View
 
 extension YouTubePlayerThumbnailView: View {
     
     /// The content and behavior of the view
     public var body: some View {
-        LPLinkView.Representable(
+        let linkView = LPLinkView.Representable(
             url: self.url,
             metaData: self.metadata
         )
         .disabled(!self.isUserInteractionEnabled)
-        .onAppear {
-            // Verify URL is available
-            guard let url = self.url else {
-                // Otherwise return out of function
-                return
-            }
-            // Start fetching metadata for URL
-            LPMetadataProvider().startFetchingMetadata(
-                for: url
-            ) { metadata, _ in
-                // Set Metadata
-                self.metadata = metadata
-            }
+        .onAppear(perform: self.startFetchingMetadata)
+        if #available(iOS 14.0, macOS 11.0, *) {
+            linkView
+                .onChange(of: self.url) { _ in
+                    self.metadata = nil
+                    self.startFetchingMetadata()
+                }
+        } else {
+            linkView
         }
     }
     
@@ -89,7 +107,42 @@ extension YouTubePlayerThumbnailView: View {
 
 private extension LPLinkView {
     
-    /// A LPLinkView SwiftUI Representable View
+    #if os(macOS)
+    /// A LPLinkView SwiftUI Representable NSView
+    struct Representable: NSViewRepresentable {
+        
+        // MARK: Properties
+        
+        /// The URL
+        let url: URL?
+        
+        /// The LPLinkMetadata
+        let metaData: LPLinkMetadata?
+        
+        // MARK: UIViewRepresentable
+        
+        /// Make LPLinkView
+        /// - Parameter context: The Context
+        func makeNSView(
+            context: Context
+        ) -> LPLinkView {
+            self.url.flatMap { .init(url: $0) } ?? .init()
+        }
+        
+        /// Update LPLinkView
+        /// - Parameters:
+        ///   - linkView: The LPLinkView
+        ///   - context: The Context
+        func updateNSView(
+            _ linkView: LPLinkView,
+            context: Context
+        ) {
+            self.metaData.flatMap { linkView.metadata = $0 }
+        }
+        
+    }
+    #else
+    /// A LPLinkView SwiftUI Representable UIView
     struct Representable: UIViewRepresentable {
         
         // MARK: Properties
@@ -122,5 +175,6 @@ private extension LPLinkView {
         }
         
     }
+    #endif
     
 }
