@@ -1,12 +1,7 @@
 import Foundation
 
-// Compiler-Check for Swift Version >= 5.5
-// Temporarily: Exclude macOS as macOS 12.0 has not yet been released
-#if swift(>=5.5) && !os(macOS)
-
 // MARK: - YouTubePlayer360DegreePerspectiveAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayer360DegreePerspectiveAPI {
     
     /// Retrieves properties that describe the viewer's current perspective
@@ -22,7 +17,6 @@ public extension YouTubePlayer360DegreePerspectiveAPI {
 
 // MARK: - YouTubePlayerPlaylistAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerPlaylistAPI {
     
     /// This function returns an array of the video IDs in the playlist as they are currently ordered
@@ -47,7 +41,6 @@ public extension YouTubePlayerPlaylistAPI {
 
 // MARK: - YouTubePlayerVolumeAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerVolumeAPI {
     
     /// Returns Bool value if the player is muted
@@ -72,7 +65,6 @@ public extension YouTubePlayerVolumeAPI {
 
 // MARK: - YouTubePlayerPlaybackRateAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerPlaybackRateAPI {
     
     /// This function retrieves the playback rate of the currently playing video
@@ -97,7 +89,6 @@ public extension YouTubePlayerPlaybackRateAPI {
 
 // MARK: - YouTubePlayerPlaybackAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerPlaybackAPI {
     
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
@@ -140,7 +131,6 @@ public extension YouTubePlayerPlaybackAPI {
 
 // MARK: - YouTubePlayerVideoInformationAPI+Concurrency
 
-@available(iOS 15.0.0, macOS 12.0.0, *)
 public extension YouTubePlayerVideoInformationAPI {
     
     /// Retrieve the YouTubePlayer Information
@@ -180,5 +170,3 @@ public extension YouTubePlayerVideoInformationAPI {
     }
     
 }
-
-#endif
