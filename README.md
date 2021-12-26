@@ -48,7 +48,7 @@ struct ContentView: View {
 - [x] Play YouTube videos with just one line of code 📺
 - [x] YouTube [Terms of Service](https://developers.google.com/youtube/terms/api-services-terms-of-service) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
-- [x] Support for SwiftUI and UIKit 🧑‍🎨
+- [x] Support for SwiftUI, UIKit and AppKit 🧑‍🎨
 - [x] Runs on iOS and macOS 📱 🖥
 - [x] `async/await` support ⛓
 
@@ -223,27 +223,21 @@ Additionally, a `YouTubePlayer` allows you to access the underlying YouTube play
 
 #### Async/Await
 
-Asynchronous functions on a `YouTubePlayer` are generally constructed with a completion closure parameter to retrieve the result of the asynchronous operation.
+All asynchronous functions on a `YouTubePlayer` can be invoked by either supplying a completion closure or by using async/await.
 
 ```swift
-// Retrieve the current PlaybackMetadata via a completion closure
+// Async/Await: Retrieve the current PlaybackMetadata
+let playbackMetadata = try await youTubePlayer.getPlaybackMetadata()
+
+// Completion-Closure: Retrieve the current PlaybackMetadata
 youTubePlayer.getPlaybackMetadata { result in
     switch result {
     case .success(let playbackMetadata):
-        print(
-            "Title", playbackMetadata.title,
-            "Author", playbackMetadata.author
-        )
-    case .failure(let youTubePlayerAPIError):
-        print("Error", youTubePlayerAPIError)
+        print(playbackMetadata)
+    case .failure(let error):
+        print(error)
     }
 }
-```
-
-On `iOS >= 15.0` and `macOS >= 12.0` you can use `async/await` to execute the asynchronous function.
-```swift
-// Retrieve the current PlaybackMetadata
-let playbackMetadata = try await youTubePlayer.getPlaybackMetadata()
 ```
 
 #### Playback controls and player settings
@@ -282,22 +276,22 @@ youTubePlayer.playbackRatePublisher
 
 ```swift
 // Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
-youTubePlayer.getVideoLoadedFraction { _ in }
+try await youTubePlayer.getVideoLoadedFraction()
 
 // A Publisher that emits a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
 youTubePlayer.videoLoadedFractionPublisher()
 
 // Retrieve the PlaybackState of the player video
-youTubePlayer.getPlaybackState { _ in }
+try await youTubePlayer.getPlaybackState()
 
 // Retrieve the elapsed time in seconds since the video started playing
-youTubePlayer.getCurrentTime { _ in }
+try await youTubePlayer.getCurrentTime()
 
 /// A Publisher that emits the current elapsed time in seconds since the video started playing
 youTubePlayer.currentTimePublisher()
 
 // Retrieve the current PlaybackMetadata
-youTubePlayer.getPlaybackMetadata { _ in }
+try await youTubePlayer.getPlaybackMetadata()
 
 // A Publisher that emits the current PlaybackMetadata
 youTubePlayer.playbackMetadataPublisher
@@ -335,10 +329,10 @@ youTubePlayer.mute()
 youTubePlayer.unmute()
 
 // Retrieve Bool value if the player is muted
-youTubePlayer.isMuted { _ in }
+try await youTubePlayer.isMuted()
 
 // Retrieve the player's current volume, an integer between 0 and 100
-youTubePlayer.getVolume { _ in }
+try await youTubePlayer.getVolume()
 
 // Sets the volume
 youTubePlayer.set(volume: 50)
@@ -354,19 +348,19 @@ youTubePlayer.showStatsForNerds()
 youTubePlayer.hideStatsForNerds()
 
 // Retrieve the YouTubePlayer Information
-youTubePlayer.getInformation { _ in }
+try await youTubePlayer.getInformation()
 
 // Retrieve the duration in seconds of the currently playing video
-youTubePlayer.getDuration { _ in }
+try await youTubePlayer.getDuration()
 
 // A Publisher that emits the duration in seconds of the currently playing video
 youTubePlayer.durationPublisher
 
 // Retrieve the YouTube.com URL for the currently loaded/playing video
-youTubePlayer.getVideoURL { _ in }
+try await youTubePlayer.getVideoURL()
 
 // Retrieve the embed code for the currently loaded/playing video
-youTubePlayer.getVideoEmbedCode { _ in }
+try await youTubePlayer.getVideoEmbedCode()
 ```
 
 #### Playing a video in a playlist
@@ -388,17 +382,17 @@ youTubePlayer.setLoop(enabled: true)
 youTubePlayer.setShuffle(enabled: true)
 
 // This function returns an array of the video IDs in the playlist as they are currently ordered
-youTubePlayer.getPlaylist { _ in }
+try await youTubePlayer.getPlaylist()
 
 // This function returns the index of the playlist video that is currently playing
-youTubePlayer.getPlaylistIndex { _ in }
+try await youTubePlayer.getPlaylistIndex()
 ```
 
 #### Controlling playback of 360° videos
 
 ```swift
 // Retrieves properties that describe the viewer's current perspective
-youTubePlayer.get360DegreePerspective { _ in }
+try await youTubePlayer.get360DegreePerspective()
 
 // Sets the video orientation for playback of a 360° video
 youTubePlayer.set(
@@ -415,13 +409,13 @@ youTubePlayer.set(
 
 ```swift
 // This function retrieves the playback rate of the currently playing video
-youTubePlayer.getPlaybackRate { _ in }
+try await youTubePlayer.getPlaybackRate()
 
 // This function sets the suggested playback rate for the current video
 youTubePlayer.set(playbackRate: 1.5)
 
 // This function returns the set of playback rates in which the current video is available
-youTubePlayer.getAvailablePlaybackRates { _ in }
+try await youTubePlayer.getAvailablePlaybackRates()
 ```
 
 ## Credits
