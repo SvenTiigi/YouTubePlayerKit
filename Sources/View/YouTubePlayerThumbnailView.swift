@@ -60,15 +60,22 @@ public extension YouTubePlayerThumbnailView {
 
 private extension YouTubePlayerThumbnailView {
     
-    /// Start fetching metadata
-    func startFetchingMetadata() {
+    /// Start fetching metadata from an optional URL
+    /// - Parameter url: The optional URL to fetch start fetching metadata
+    func startFetchingMetadata(
+        from url: URL?
+    ) {
         // Verify URL is available
-        guard let url = self.url else {
+        guard let url = url else {
             // Otherwise return out of function
             return
         }
+        // Clear current metadata
+        self.metadata = nil
+        // Initialize a new MetadataProvider
+        let metadataProvider = LPMetadataProvider()
         // Start fetching metadata for URL
-        LPMetadataProvider().startFetchingMetadata(
+        metadataProvider.startFetchingMetadata(
             for: url
         ) { metadata, _ in
             // Set Metadata
@@ -89,13 +96,17 @@ extension YouTubePlayerThumbnailView: View {
             metaData: self.metadata
         )
         .disabled(!self.isUserInteractionEnabled)
-        .onAppear(perform: self.startFetchingMetadata)
+        .onAppear {
+            self.startFetchingMetadata(
+                from: self.url
+            )
+        }
         if #available(iOS 14.0, macOS 11.0, *) {
             linkView
-                .onChange(of: self.url) { _ in
-                    self.metadata = nil
-                    self.startFetchingMetadata()
-                }
+                .onChange(
+                    of: self.url,
+                    perform: self.startFetchingMetadata
+                )
         } else {
             linkView
         }
