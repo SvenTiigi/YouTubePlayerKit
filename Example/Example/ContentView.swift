@@ -52,14 +52,13 @@ extension ContentView: View {
                                 Button(
                                     action: {
                                         self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
-                                    },
-                                    label: {
-                                        YouTubePlayerThumbnailView(
-                                            wwdcKeynote.youTubeURL,
-                                            isUserInteractionEnabled: false
-                                        )
                                     }
-                                )
+                                ) {
+                                    YouTubePlayerThumbnailView(
+                                        wwdcKeynote.youTubeURL,
+                                        isUserInteractionEnabled: false
+                                    )
+                                }
                             }
                         }
                         .padding()
