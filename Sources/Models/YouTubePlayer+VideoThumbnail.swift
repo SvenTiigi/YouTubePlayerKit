@@ -195,6 +195,23 @@ public extension YouTubePlayer.VideoThumbnail {
         .resume()
     }
     
+    /// Retrieve the Image of this VideoThumbnail
+    /// - Parameters:
+    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
+    func image(
+        resolution: Resolution = .maximum,
+        urlSession: URLSession = .shared
+    ) async throws -> Image {
+        try await withCheckedThrowingContinuation { continuation in
+            self.image(
+                resolution: resolution,
+                urlSession: urlSession,
+                completion: continuation.resume
+            )
+        }
+    }
+    
 }
 
 // MARK: - VideoThumbnail+ImagePublisher
@@ -222,31 +239,3 @@ public extension YouTubePlayer.VideoThumbnail {
     }
     
 }
-
-// Compiler-Check for Swift Version >= 5.5
-// Temporarily: Exclude macOS as macOS 12.0 GitHub CI image is currently not available
-#if swift(>=5.5) && !os(macOS)
-
-@available(iOS 15.0.0, macOS 12.0.0, *)
-public extension YouTubePlayer.VideoThumbnail {
-    
-    /// Retrieve the Image of this VideoThumbnail
-    /// - Parameters:
-    ///   - resolution: The specified Resolution. Default value `.maximum`
-    ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
-    func image(
-        resolution: Resolution = .maximum,
-        urlSession: URLSession = .shared
-    ) async throws -> Image {
-        try await withCheckedThrowingContinuation { continuation in
-            self.image(
-                resolution: resolution,
-                urlSession: urlSession,
-                completion: continuation.resume
-            )
-        }
-    }
-    
-}
-
-#endif
