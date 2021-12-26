@@ -34,31 +34,36 @@ extension ContentView: View {
     /// The content and behavior of the view
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                YouTubePlayerView(
-                    self.youTubePlayer,
-                    placeholderOverlay: {
-                        ProgressView()
-                    }
-                )
-                .frame(height: 220)
-                ScrollView {
-                    VStack(spacing: 20) {
-                        ForEach(self.wwdcKeynotes) { wwdcKeynote in
-                            Button(
-                                action: {
-                                    self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
-                                },
-                                label: {
-                                    YouTubePlayerThumbnailView(
-                                        wwdcKeynote.youTubeURL,
-                                        isUserInteractionEnabled: false
-                                    )
-                                }
-                            )
+            ScrollView {
+                LazyVStack(
+                    pinnedViews: [.sectionHeaders]
+                ) {
+                    Section(
+                        header: YouTubePlayerView(
+                            self.youTubePlayer,
+                            placeholderOverlay: {
+                                ProgressView()
+                            }
+                        )
+                        .frame(height: 220)
+                    ) {
+                        VStack(spacing: 20) {
+                            ForEach(self.wwdcKeynotes) { wwdcKeynote in
+                                Button(
+                                    action: {
+                                        self.youTubePlayer.source = .url(wwdcKeynote.youTubeURL)
+                                    },
+                                    label: {
+                                        YouTubePlayerThumbnailView(
+                                            wwdcKeynote.youTubeURL,
+                                            isUserInteractionEnabled: false
+                                        )
+                                    }
+                                )
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
             }
             .navigationBarTitle(" WWDC Keynotes")
