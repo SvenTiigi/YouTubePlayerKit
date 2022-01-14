@@ -48,12 +48,24 @@ extension YouTubePlayerWebView {
                 self?.playbackStateSubject.send(playbackState)
             }
         case .onStateChange:
-            // Send PlaybackState
-            javaScriptEvent
-                .data
-                .flatMap(Int.init)
+            // Verify YouTubePlayer PlaybackState is available
+            guard let playbackState: YouTubePlayer.PlaybackState? = {
+                // Verify JavaScript Event Data is available
+                guard let javaScriptEventData = javaScriptEvent.data else {
+                    // Otherwise return ended state
+                    return .ended
+                }
+                // Return PlaybackState from JavaScript Event Code
+                return Int(
+                    javaScriptEventData
+                )
                 .flatMap(YouTubePlayer.PlaybackState.init)
-                .map(self.playbackStateSubject.send)
+            }() else {
+                // Otherwise return out of function
+                return
+            }
+            // Send PlaybackState
+            self.playbackStateSubject.send(playbackState)
         case .onPlaybackQualityChange:
             // Send PlaybackQuality
             javaScriptEvent
