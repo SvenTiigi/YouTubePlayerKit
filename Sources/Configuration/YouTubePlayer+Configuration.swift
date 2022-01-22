@@ -89,6 +89,9 @@ public extension YouTubePlayer {
         /// This value is used in YouTube Analytics reporting when the YouTube player is embedded
         public var referrer: String?
         
+        /// This parameter lets you set a custom user agent to pass to the WKWebView
+        public var customUserAgent: String?
+        
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
@@ -111,7 +114,8 @@ public extension YouTubePlayer {
             playInline: Bool? = nil,
             showRelatedVideos: Bool? = nil,
             startTime: Int? = nil,
-            referrer: String? = nil
+            referrer: String? = nil,
+            customUserAgent: String? = nil
         ) {
             self.isUserInteractionEnabled = isUserInteractionEnabled
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
@@ -132,6 +136,7 @@ public extension YouTubePlayer {
             self.showRelatedVideos = showRelatedVideos
             self.startTime = startTime
             self.referrer = referrer
+            self.customUserAgent = customUserAgent
         }
         
     }
