@@ -89,7 +89,7 @@ public extension YouTubePlayer {
         /// This value is used in YouTube Analytics reporting when the YouTube player is embedded
         public var referrer: String?
         
-        /// This parameter lets you set a custom user agent to pass to the WKWebView
+        /// An optional custom user agent of the underlying web view
         public var customUserAgent: String?
         
         // MARK: Initializer
