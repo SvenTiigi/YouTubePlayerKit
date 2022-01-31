@@ -59,24 +59,19 @@
             // Send onIframeAPIReady event
             sendYouTubePlayerEvent('onIframeAPIReady');
         });
-
-        // On window resize
-        window.onresize = () => {
-            // Adjust YouTubePlayer Size
-            adjustYouTubePlayerSize();
-        }
         
         // Adjust YouTubePlayer Size
-        function adjustYouTubePlayerSize() {
+        function adjustYouTubePlayerWithSize(width, height) {
             // Check if YouTubePlayer is unavailable
             if (!player) {
                 // Return out of function
                 return;
             }
+            
             // Set Player size
             player.setSize(
-                window.innerWidth,
-                window.innerHeight
+                width,
+                height
             );
         }
         
