@@ -81,9 +81,16 @@ private extension YouTubePlayerWebView {
         self.frameObservation = self
             .publisher(for: \.frame)
             .sink { [weak self] frame in
-                // Adjust YouTubePlayer Size
+                // Initialize parameters
+                let parameters = [
+                    frame.width,
+                    frame.height
+                ]
+                .map(String.init)
+                .joined(separator: ",")
+                // Set YouTubePlayer Size
                 self?.evaluate(
-                    javaScript: "adjustYouTubePlayerWithSize(\(frame.width), \(frame.height))"
+                    javaScript: "setYouTubePlayerSize(\(parameters));"
                 )
             }
         // Set YouTubePlayerAPI on current Player
