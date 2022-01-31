@@ -92,6 +92,10 @@ public extension YouTubePlayer {
         /// An optional custom user agent of the underlying web view
         public var customUserAgent: String?
         
+        /// This parameter controls the amount of delay used when resizing the web player after a frame change
+        /// A delay is needed to ensure that the underlying window of the WKWebView has resized
+        public var frameObserverDelay: Double?
+
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
@@ -115,7 +119,8 @@ public extension YouTubePlayer {
             showRelatedVideos: Bool? = nil,
             startTime: Int? = nil,
             referrer: String? = nil,
-            customUserAgent: String? = nil
+            customUserAgent: String? = nil,
+            frameObserverDelay: Double? = nil
         ) {
             self.isUserInteractionEnabled = isUserInteractionEnabled
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
@@ -137,6 +142,7 @@ public extension YouTubePlayer {
             self.startTime = startTime
             self.referrer = referrer
             self.customUserAgent = customUserAgent
+            self.frameObserverDelay = frameObserverDelay
         }
         
     }

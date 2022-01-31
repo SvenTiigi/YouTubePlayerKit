@@ -84,7 +84,7 @@ private extension YouTubePlayerWebView {
             // the underlying window of the WKWebView
             // has resized properly
             .delay(
-                for: 0.1,
+                for: .seconds(self.player.configuration.frameObserverDelay ?? 0.1),
                 scheduler: DispatchQueue.main
             )
             .sink { [weak self] _ in
