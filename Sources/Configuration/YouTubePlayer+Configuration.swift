@@ -91,7 +91,7 @@ public extension YouTubePlayer {
         
         /// An optional custom user agent of the underlying web view
         public var customUserAgent: String?
-        
+
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
