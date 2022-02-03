@@ -80,17 +80,17 @@ private extension YouTubePlayerWebView {
         // Setup frame observation
         self.frameObservation = self
             .publisher(for: \.frame)
-            // Add a slight delay to ensure
-            // the underlying window of the WKWebView
-            // has resized properly
-            .delay(
-                for: 0.1,
-                scheduler: DispatchQueue.main
-            )
-            .sink { [weak self] _ in
-                // Adjust YouTubePlayer Size
+            .sink { [weak self] frame in
+                // Initialize parameters
+                let parameters = [
+                    frame.width,
+                    frame.height
+                ]
+                .map(String.init)
+                .joined(separator: ",")
+                // Set YouTubePlayer Size
                 self?.evaluate(
-                    javaScript: "adjustYouTubePlayerSize()"
+                    javaScript: "setYouTubePlayerSize(\(parameters));"
                 )
             }
         // Set YouTubePlayerAPI on current Player
