@@ -57,6 +57,8 @@ extension YouTubePlayerWebView {
             .configuration
             .allowsPictureInPictureMediaPlayback ?? true
         #endif
+        // Set custom user agent
+        self.customUserAgent = self.player.configuration.customUserAgent
         // Load HTML string
         self.loadHTMLString(
             youTubePlayerHTML.contents,
