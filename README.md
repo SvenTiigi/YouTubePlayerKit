@@ -209,7 +209,7 @@ let configuration = YouTubePlayer.Configuration(
 )
 
 let youTubePlayer = YouTubePlayer(
-    source: "https://youtube.com/watch?v=psL_5RIBqnY",
+    source: .url("https://youtube.com/watch?v=psL_5RIBqnY"),
     configuration: configuration
 )
 ```
