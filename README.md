@@ -136,7 +136,7 @@ Additionally, you can update the `configuration` of a `YouTubePlayer` to update 
 ```swift
 youTubePlayer.configuration = .init(
     isUserInteractionEnabled: true,
-    autPlay: true
+    autoPlay: true
 )
 ```
 > Note: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
