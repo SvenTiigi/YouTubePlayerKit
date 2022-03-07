@@ -70,6 +70,8 @@ dependencies: [
 
 Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `YouTubePlayerKit`.
 
+> When integrating YouTubePlayerKit to a macOS or Mac Catalyst target please ensure to enable "Outgoing Connections (Client)" in the "Signing & Capabilities" sections.
+
 ## App Store Review
 
 When submitting an app to the App Store which includes the `YouTubePlayerKit`, please ensure to add a link to the [YouTube API Terms of Services](https://developers.google.com/youtube/terms/api-services-terms-of-service) in the review notes.
@@ -136,7 +138,7 @@ Additionally, you can update the `configuration` of a `YouTubePlayer` to update 
 ```swift
 youTubePlayer.configuration = .init(
     isUserInteractionEnabled: true,
-    autPlay: true
+    autoPlay: true
 )
 ```
 > Note: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
@@ -209,7 +211,7 @@ let configuration = YouTubePlayer.Configuration(
 )
 
 let youTubePlayer = YouTubePlayer(
-    source: "https://youtube.com/watch?v=psL_5RIBqnY",
+    source: .url("https://youtube.com/watch?v=psL_5RIBqnY"),
     configuration: configuration
 )
 ```
