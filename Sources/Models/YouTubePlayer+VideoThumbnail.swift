@@ -22,33 +22,67 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// The YouTubePlayer Source
-        private let source: Source
+        /// The YouTubePlayer Source Identifier
+        private let sourceID: Source.ID
         
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.VideoThumbnail`
-        /// from a video URL or throws an `BadVideoURLError`
-        /// - Parameter videoURL: The video URL
+        /// - Parameter sourceID: The YouTubePlayer Source Identifier
         public init(
-            videoURL: String
-        ) throws {
-            // Verify YouTubePlayer Source can be initialized from video URL
-            guard let source: YouTubePlayer.Source = .url(videoURL) else {
-                // Otherwise throw BadVideoURLError
-                throw BadVideoURLError(
-                    videoURL: videoURL
-                )
-            }
-            // Initialize Source
-            self.source = source
+            sourceID: Source.ID
+        ) {
+            self.sourceID = sourceID
         }
         
     }
     
 }
 
-// MARK: - VideoThumbnail+BadVideoURLError
+// MARK: - VideoThumbnail+init(source:)
+
+public extension YouTubePlayer.VideoThumbnail {
+    
+    /// The Unsupported Source Error
+    struct UnsupportedSourceError: Hashable, Error {
+        
+        // MARK: Properties
+        
+        /// The unsupported YouTubePlayer Source
+        public let source: YouTubePlayer.Source
+        
+        // MARK: Initializer
+        
+        /// Creates a new instance of `YouTubePlayer.VideoThumbnail.UnsupportedSourceError`
+        /// - Parameter source: The unsupported YouTubePlayer Source
+        public init(
+            source: YouTubePlayer.Source
+        ) {
+            self.source = source
+        }
+        
+    }
+    
+    /// Creates a new instance of `YouTubePlayer.VideoThumbnail`
+    /// from a YouTubePlayer Source  or throws an `UnsupportedSourceError`.
+    /// Supported YouTubePlayer Sources are `video` and `playlist`
+    /// - Parameter videoURL: The video URL
+    init(
+        source: YouTubePlayer.Source
+    ) throws {
+        switch source {
+        case .video(let id, _, _), .playlist(let id, _, _):
+            self.init(sourceID: id)
+        case .channel:
+            throw UnsupportedSourceError(
+                source: source
+            )
+        }
+    }
+    
+}
+
+// MARK: - VideoThumbnail+init(videoURL:)
 
 public extension YouTubePlayer.VideoThumbnail {
     
@@ -72,6 +106,23 @@ public extension YouTubePlayer.VideoThumbnail {
         
     }
     
+    /// Creates a new instance of `YouTubePlayer.VideoThumbnail`
+    /// from a video URL or throws an `BadVideoURLError`
+    /// - Parameter videoURL: The video URL
+    init(
+        videoURL: String
+    ) throws {
+        // Verify YouTubePlayer Source can be initialized from video URL
+        guard let source: YouTubePlayer.Source = .url(videoURL) else {
+            // Otherwise throw BadVideoURLError
+            throw BadVideoURLError(
+                videoURL: videoURL
+            )
+        }
+        // Initialize with Source
+        try self.init(source: source)
+    }
+    
 }
 
 // MARK: - VideoThumbnail+Resolution
@@ -83,17 +134,14 @@ public extension YouTubePlayer.VideoThumbnail {
     enum Resolution: String, Codable, Hashable, CaseIterable {
         /// The default thumbnail image. The default thumbnail for a video or a resource
         /// that refers to a video, such as a playlist item or search result is 120px wide and 90px tall.
-        /// The default thumbnail for a channel is 88px wide and 88px tall.
         case `default`
         /// A higher resolution version of the thumbnail image.
         /// For a video (or a resource that refers to a video),
         /// this image is 320px wide and 180px tall.
-        /// For a channel, this image is 240px wide and 240px tall.
         case medium = "mqdefault"
         /// A high resolution version of the thumbnail image.
         /// For a video (or a resource that refers to a video),
         /// this image is 480px wide and 360px tall.
-        /// For a channel, this image is 800px wide and 800px tall.
         case high = "hqdefault"
         /// An even higher resolution version of the thumbnail image than the high resolution image.
         /// This image is available for some videos and other resources
@@ -109,19 +157,56 @@ public extension YouTubePlayer.VideoThumbnail {
     
 }
 
+// MARK: - VideoThumbnail+Resolution+size
+
+public extension YouTubePlayer.VideoThumbnail.Resolution {
+    
+    /// The size in pixels
+    var size: CGSize {
+        switch self {
+        case .default:
+            return .init(
+                width: 120,
+                height: 90
+            )
+        case .medium:
+            return .init(
+                width: 320,
+                height: 180
+            )
+        case .high:
+            return .init(
+                width: 480,
+                height: 360
+            )
+        case .standard:
+            return .init(
+                width: 640,
+                height: 480
+            )
+        case .maximum:
+            return .init(
+                width: 1280,
+                height: 720
+            )
+        }
+    }
+    
+}
+
 // MARK: - VideoThumbnail+URL
 
 public extension YouTubePlayer.VideoThumbnail {
     
     /// Retrieve the VideoThumbnail URL for a given Resolution
-    /// - Parameter resolution: The Resolution. Default value `.maximum`
+    /// - Parameter resolution: The Resolution. Default value `.standard`
     /// - Returns: A string representation of the URL
     func url(
-        resolution: Resolution = .maximum
+        resolution: Resolution = .standard
     ) -> String {
         [
             Self.hostURL,
-            self.source.id,
+            self.sourceID,
             [
                 resolution.rawValue,
                 Self.fileExtension
@@ -155,11 +240,11 @@ public extension YouTubePlayer.VideoThumbnail {
     
     /// Retrieve the Image of this VideoThumbnail
     /// - Parameters:
-    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - resolution: The specified Resolution. Default value `.standard`
     ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
     ///   - completion: The completion closure
     func image(
-        resolution: Resolution = .maximum,
+        resolution: Resolution = .standard,
         urlSession: URLSession = .shared,
         completion: @escaping (Result<Image, ImageError>) -> Void
     ) {
@@ -195,12 +280,18 @@ public extension YouTubePlayer.VideoThumbnail {
         .resume()
     }
     
+}
+
+// MARK: - VideoThumbnail+image
+
+public extension YouTubePlayer.VideoThumbnail {
+    
     /// Retrieve the Image of this VideoThumbnail
     /// - Parameters:
-    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - resolution: The specified Resolution. Default value `.standard`
     ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
     func image(
-        resolution: Resolution = .maximum,
+        resolution: Resolution = .standard,
         urlSession: URLSession = .shared
     ) async throws -> Image {
         try await withCheckedThrowingContinuation { continuation in
@@ -214,16 +305,16 @@ public extension YouTubePlayer.VideoThumbnail {
     
 }
 
-// MARK: - VideoThumbnail+ImagePublisher
+// MARK: - VideoThumbnail+imagePublisher
 
 public extension YouTubePlayer.VideoThumbnail {
     
     /// Retrieve a Publisher that emits the Image of this VideoThumbnail or an ImageError
     /// - Parameters:
-    ///   - resolution: The specified Resolution. Default value `.maximum`
+    ///   - resolution: The specified Resolution. Default value `.standard`
     ///   - urlSession: The URLSession used to load the Image. Default value `.shared`
     func imagePublisher(
-        resolution: Resolution = .maximum,
+        resolution: Resolution = .standard,
         urlSession: URLSession = .shared
     ) -> AnyPublisher<Image, ImageError> {
         Deferred {
