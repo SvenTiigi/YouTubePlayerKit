@@ -92,7 +92,7 @@ public extension YouTubePlayer.Source {
                 }
             case "embed":
                 // Check if a video identifier is available
-                if let videoId = url?.pathComponents[safe: 1] {
+                if let videoId = url?.pathComponents[safe: 2] {
                     // Return video source
                     return .video(
                         id: videoId,
@@ -101,7 +101,7 @@ public extension YouTubePlayer.Source {
                 }
             case "c", "user":
                 // Check if a channel name is available
-                if let channelName = url?.pathComponents[safe: 1] {
+                if let channelName = url?.pathComponents[safe: 2] {
                     // Return channel source
                     return .channel(
                         name: channelName
