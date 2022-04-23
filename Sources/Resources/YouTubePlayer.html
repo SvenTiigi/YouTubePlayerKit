@@ -52,14 +52,15 @@
                 %@
             );
             // Set initial size
-            player.setSize(
-                window.innerWidth,
-                window.innerHeight
-            );
+            setYouTubePlayerSize();
             // Send onIframeAPIReady event
             sendYouTubePlayerEvent('onIframeAPIReady');
         });
-        
+
+        window.onresize = () => {
+            setYouTubePlayerSize();
+        }
+
         // Set YouTubePlayer Size
         function setYouTubePlayerSize(width, height) {
             // Check if YouTubePlayer is unavailable
@@ -73,7 +74,7 @@
                 height
             );
         }
-        
+
         // Send YouTubePlayer Event with optional data
         function sendYouTubePlayerEvent(event, data) {
             var locationHref = 'youtubeplayer://' + event;
