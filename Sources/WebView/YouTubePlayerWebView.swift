@@ -105,7 +105,13 @@ private extension YouTubePlayerWebView {
         // Disable opaque
         self.isOpaque = false
         // Set autoresizing masks
-        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.autoresizingMask = {
+            #if os(macOS)
+            return [.width, .height]
+            #else
+            return [.flexibleWidth, .flexibleHeight]
+            #endif
+        }()
         // Disable scrolling
         self.scrollView.isScrollEnabled = false
         // Disable bounces of ScrollView
