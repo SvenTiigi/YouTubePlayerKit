@@ -52,27 +52,35 @@
                 %@
             );
             // Set initial size
-            setYouTubePlayerSize();
+            setYouTubePlayerSize(
+                window.innerWidth,
+                window.innerHeight
+            );
             // Send onIframeAPIReady event
             sendYouTubePlayerEvent('onIframeAPIReady');
         });
-
+        
+        
+        // On window resize
         window.onresize = () => {
-            setYouTubePlayerSize();
+            // Set YouTubePlayer Size
+            setYouTubePlayerSize(
+                window.innerWidth, 
+                window.innerHeight
+            );
         }
 
         // Set YouTubePlayer Size
         function setYouTubePlayerSize(width, height) {
-            // Check if YouTubePlayer is unavailable
-            if (!player) {
-                // Return out of function
-                return;
+            // Check if YouTubePlayer is available
+            if (player) {
+                // Set Player size
+                player.setSize(
+                    width,
+                    height
+                );
             }
-            // Set Player size
-            player.setSize(
-                width,
-                height
-            );
+            
         }
 
         // Send YouTubePlayer Event with optional data
