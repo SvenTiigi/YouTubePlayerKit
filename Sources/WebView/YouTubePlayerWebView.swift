@@ -29,6 +29,9 @@ final class YouTubePlayerWebView: WKWebView {
         .flatMap { ["https://", $0.lowercased()].joined() }
         .flatMap(URL.init)
     
+    /// The LayoutSubviews Lifecycle Subject
+    private lazy var layoutSubviewsLifecycleSubject = PassthroughSubject<CGRect, Never>()
+    
     /// The frame observation Cancellable
     private var frameObservation: AnyCancellable?
     
@@ -69,6 +72,15 @@ final class YouTubePlayerWebView: WKWebView {
         nil
     }
     
+    // MARK: View-Lifecycle
+    
+    /// Layout Subviews
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Send frame on LayoutSubviewsLifecycle Subject
+        self.layoutSubviewsLifecycleSubject.send(self.frame)
+    }
+    
 }
 
 // MARK: - Setup
@@ -79,7 +91,15 @@ private extension YouTubePlayerWebView {
     func setup() {
         // Setup frame observation
         self.frameObservation = self
-            .publisher(for: \.frame)
+            .publisher(
+                for: \.frame,
+                options: [.new]
+            )
+            .merge(
+                with: self.layoutSubviewsLifecycleSubject
+            )
+            .map(\.size)
+            .removeDuplicates()
             .sink { [weak self] frame in
                 // Initialize parameters
                 let parameters = [
@@ -105,7 +125,13 @@ private extension YouTubePlayerWebView {
         // Disable opaque
         self.isOpaque = false
         // Set autoresizing masks
-        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.autoresizingMask = {
+            #if os(macOS)
+            return [.width, .height]
+            #else
+            return [.flexibleWidth, .flexibleHeight]
+            #endif
+        }()
         // Disable scrolling
         self.scrollView.isScrollEnabled = false
         // Disable bounces of ScrollView
