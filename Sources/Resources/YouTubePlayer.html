@@ -52,23 +52,13 @@
                 %@
             );
             // Set initial size
-            setYouTubePlayerSize(
+            player.setSize(
                 window.innerWidth,
                 window.innerHeight
             );
             // Send onIframeAPIReady event
             sendYouTubePlayerEvent('onIframeAPIReady');
         });
-        
-        
-        // On window resize
-        window.onresize = () => {
-            // Set YouTubePlayer Size
-            setYouTubePlayerSize(
-                window.innerWidth, 
-                window.innerHeight
-            );
-        }
 
         // Set YouTubePlayer Size
         function setYouTubePlayerSize(width, height) {
