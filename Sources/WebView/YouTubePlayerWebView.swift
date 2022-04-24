@@ -29,8 +29,8 @@ final class YouTubePlayerWebView: WKWebView {
         .flatMap { ["https://", $0.lowercased()].joined() }
         .flatMap(URL.init)
     
-    /// The LayoutSubviews Lifecycle Subject
-    private lazy var layoutSubviewsLifecycleSubject = PassthroughSubject<CGRect, Never>()
+    /// The Layout Lifecycle Subject
+    private lazy var layoutLifecycleSubject = PassthroughSubject<CGRect, Never>()
     
     /// The frame observation Cancellable
     private var frameObservation: AnyCancellable?
@@ -74,12 +74,21 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: View-Lifecycle
     
+    #if os(iOS)
     /// Layout Subviews
     override func layoutSubviews() {
         super.layoutSubviews()
-        // Send frame on LayoutSubviewsLifecycle Subject
-        self.layoutSubviewsLifecycleSubject.send(self.frame)
+        // Send frame on Layout Subject
+        self.layoutLifecycleSubject.send(self.frame)
     }
+    #elseif os(macOS)
+    /// Perform layout
+    override func layout() {
+        super.layout()
+        // Send frame on Layout Subject
+        self.layoutLifecycleSubject.send(self.frame)
+    }
+    #endif
     
 }
 
@@ -96,7 +105,7 @@ private extension YouTubePlayerWebView {
                 options: [.new]
             )
             .merge(
-                with: self.layoutSubviewsLifecycleSubject
+                with: self.layoutLifecycleSubject
             )
             .map(\.size)
             .removeDuplicates()
