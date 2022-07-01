@@ -56,6 +56,18 @@ extension YouTubePlayerWebView {
         self.configuration.allowsPictureInPictureMediaPlayback = self.player
             .configuration
             .allowsPictureInPictureMediaPlayback ?? true
+        // Update contentInsetAdjustmentBehavior
+        self.scrollView.contentInsetAdjustmentBehavior = self.player
+            .configuration
+            .automaticallyAdjustsContentInsets
+            .flatMap { $0 ? .automatic : .never }
+            ?? .automatic
+        #else
+        // Update automaticallyAdjustsContentInsets
+        self.enclosingScrollView?.automaticallyAdjustsContentInsets = self.player
+            .configuration
+            .automaticallyAdjustsContentInsets
+            ?? true
         #endif
         // Set custom user agent
         self.customUserAgent = self.player.configuration.customUserAgent
