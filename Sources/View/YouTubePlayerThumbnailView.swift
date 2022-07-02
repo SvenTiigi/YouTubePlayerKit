@@ -11,9 +11,6 @@ public struct YouTubePlayerThumbnailView {
     /// The URL
     private let url: URL?
     
-    /// A Bool value if user interactions are enabled
-    private let isUserInteractionEnabled: Bool
-    
     /// The LinkPresentation Metadata
     @State
     private var metadata: LPLinkMetadata?
@@ -23,13 +20,10 @@ public struct YouTubePlayerThumbnailView {
     /// Creates a new instance of `YouTubePlayerThumbnailView`
     /// - Parameters:
     ///   - url: The URL
-    ///   - isUserInteractionEnabled: A Bool value if user interactions are enabled. Default value `true`
     public init(
-        _ url: URL?,
-        isUserInteractionEnabled: Bool = true
+        _ url: URL?
     ) {
         self.url = url
-        self.isUserInteractionEnabled = isUserInteractionEnabled
     }
     
 }
@@ -41,16 +35,13 @@ public extension YouTubePlayerThumbnailView {
     /// Creates a new instance of `YouTubePlayerThumbnailView`
     /// - Parameters:
     ///   - url: The URL
-    ///   - isUserInteractionEnabled: A Bool value if user interactions are enabled. Default value `true`
     init(
-        _ url: String,
-        isUserInteractionEnabled: Bool = true
+        _ url: String
     ) {
         self.init(
             .init(
                 string: url
-            ),
-            isUserInteractionEnabled: isUserInteractionEnabled
+            )
         )
     }
     
@@ -95,7 +86,6 @@ extension YouTubePlayerThumbnailView: View {
             url: self.url,
             metaData: self.metadata
         )
-        .disabled(!self.isUserInteractionEnabled)
         .onAppear {
             self.startFetchingMetadata(
                 from: self.url
