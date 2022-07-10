@@ -10,6 +10,7 @@ final class YouTubePlayerSourceTests: XCTestCase {
             "https://youtube.com/embed/psL_5RIBqnY",
             "https://youtube.com/c/iJustine",
             "https://youtube.com/user/iJustine",
+            "https://youtube.com/v/0e6HWEy1ZRE"
         ]
         for url in urls {
             XCTAssertNotNil(YouTubePlayer.Source.url(url))
