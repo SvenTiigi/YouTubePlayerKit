@@ -107,6 +107,15 @@ public extension YouTubePlayer.Source {
                         name: channelName
                     )
                 }
+            case "v":
+                // Check if a video identifier is available
+                if let videoId = url?.pathComponents[safe: 2] {
+                    // Return video source
+                    return .video(
+                        id: videoId,
+                        startSeconds: startSeconds
+                    )
+                }
             default:
                 break
             }
