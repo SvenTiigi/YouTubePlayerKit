@@ -67,10 +67,9 @@ final class YouTubePlayerWebView: WKWebView {
         self.setup()
     }
     
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
-    }
+    /// Initializer with NSCoder is unavailable
+    @available(*, unavailable, message: "Initializer with NSCoder is unavailable")
+    required init?(coder: NSCoder) { nil }
     
     // MARK: View-Lifecycle
     
