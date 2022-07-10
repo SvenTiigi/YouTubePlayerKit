@@ -55,9 +55,9 @@ extension ContentView: View {
                                     }
                                 ) {
                                     YouTubePlayerThumbnailView(
-                                        wwdcKeynote.youTubeURL,
-                                        isUserInteractionEnabled: false
+                                        wwdcKeynote.youTubeURL
                                     )
+                                    .disabled(true)
                                 }
                             }
                         }
