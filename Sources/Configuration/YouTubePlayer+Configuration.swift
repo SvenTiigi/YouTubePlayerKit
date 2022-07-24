@@ -10,11 +10,6 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// A Boolean value that determines whether
-        /// user events are ignored and removed from the event queue.
-        /// - Note: This property is excluded from encoding
-        public var isUserInteractionEnabled: Bool?
-        
         /// A Boolean value indicating if safe area insets should be added automatically to content insets
         /// - Note: This property is excluded from encoding
         public var automaticallyAdjustsContentInsets: Bool?
@@ -22,6 +17,10 @@ public extension YouTubePlayer {
         /// A Boolean value that indicates whether HTML5 videos can play Picture in Picture.
         /// - Note: This property is excluded from encoding
         public var allowsPictureInPictureMediaPlayback: Bool?
+        
+        /// The OpenURLAction
+        /// - Note: This property is excluded from encoding
+        public var openURLAction: OpenURLAction
         
         /// This parameter specifies whether the initial video
         /// will automatically start to play when the player loads
@@ -100,9 +99,9 @@ public extension YouTubePlayer {
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
         public init(
-            isUserInteractionEnabled: Bool? = nil,
             automaticallyAdjustsContentInsets: Bool? = nil,
             allowsPictureInPictureMediaPlayback: Bool? = nil,
+            openURLAction: OpenURLAction = .default,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
             showCaptions: Bool? = nil,
@@ -122,9 +121,9 @@ public extension YouTubePlayer {
             referrer: String? = nil,
             customUserAgent: String? = nil
         ) {
-            self.isUserInteractionEnabled = isUserInteractionEnabled
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
+            self.openURLAction = openURLAction
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
             self.showCaptions = showCaptions
@@ -167,7 +166,6 @@ public extension YouTubePlayer.Configuration {
     }
     
 }
-
 
 // MARK: - Encodable
 

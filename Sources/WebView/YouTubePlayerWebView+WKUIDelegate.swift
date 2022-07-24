@@ -17,11 +17,11 @@ extension YouTubePlayerWebView: WKUIDelegate {
         for navigationAction: WKNavigationAction,
         windowFeatures: WKWindowFeatures
     ) -> WKWebView? {
-        // Open URL if available
-        navigationAction
-            .request
-            .url
-            .flatMap(self.open)
+        // Check if the request url is available
+        if let url = navigationAction.request.url {
+            // Open URL
+            self.player.configuration.openURLAction(url)
+        }
         // Return nil as the URL has already been handled
         return nil
     }

@@ -64,7 +64,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.1.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.2.0")
 ]
 ```
 
@@ -137,7 +137,6 @@ Additionally, you can update the `configuration` of a `YouTubePlayer` to update 
 
 ```swift
 youTubePlayer.configuration = .init(
-    isUserInteractionEnabled: true,
     autoPlay: true
 )
 ```
@@ -200,8 +199,10 @@ The `YouTubePlayer.Configuration` allows you to configure various [parameters](h
 
 ```swift
 let configuration = YouTubePlayer.Configuration(
-    // Disable user interaction
-    isUserInteractionEnabled: false,
+    // Custom action to perform when a URL gets opened
+    openURLAction: { url in
+        // ...
+    }
     // Enable auto play
     autoPlay: true,
     // Hide controls
