@@ -1,4 +1,8 @@
-import Foundation
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 // MARK: - YouTubePlayer+Configuration+OpenURLAction
 
@@ -28,16 +32,20 @@ public extension YouTubePlayer.Configuration {
             self.handler = handler
         }
         
-        // MARK: Call as Function
-        
-        /// Call OpenURLAction as function
-        /// - Parameter url: The URL which should be opened
-        public func callAsFunction(
-            _ url: URL
-        ) {
-            self.handler(url)
-        }
-        
+    }
+    
+}
+
+// MARK: - Call as Function
+
+public extension YouTubePlayer.Configuration.OpenURLAction {
+    
+    /// Call OpenURLAction as function
+    /// - Parameter url: The URL which should be opened
+    func callAsFunction(
+        _ url: URL
+    ) {
+        self.handler(url)
     }
     
 }
@@ -68,5 +76,33 @@ extension YouTubePlayer.Configuration.OpenURLAction: Hashable {
     public func hash(
         into hasher: inout Hasher
     ) {}
+    
+}
+
+// MARK: - Default
+
+public extension YouTubePlayer.Configuration.OpenURLAction {
+    
+    /// The default OpenURLAction
+    static let `default` = Self { url in
+        #if os(macOS)
+        NSWorkspace
+            .shared
+            .open(
+                [url],
+                withAppBundleIdentifier: "com.apple.Safari",
+                options: .init(),
+                additionalEventParamDescriptor: nil,
+                launchIdentifiers: nil
+            )
+        #else
+        UIApplication
+            .shared
+            .open(
+                url,
+                options: .init()
+            )
+        #endif
+    }
     
 }
