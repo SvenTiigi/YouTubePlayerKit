@@ -202,7 +202,7 @@ let configuration = YouTubePlayer.Configuration(
     // Custom action to perform when a URL gets opened
     openURLAction: { url in
         // ...
-    }
+    },
     // Enable auto play
     autoPlay: true,
     // Hide controls
