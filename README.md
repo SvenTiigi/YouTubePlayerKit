@@ -137,7 +137,6 @@ Additionally, you can update the `configuration` of a `YouTubePlayer` to update 
 
 ```swift
 youTubePlayer.configuration = .init(
-    isUserInteractionEnabled: true,
     autoPlay: true
 )
 ```
@@ -200,8 +199,6 @@ The `YouTubePlayer.Configuration` allows you to configure various [parameters](h
 
 ```swift
 let configuration = YouTubePlayer.Configuration(
-    // Disable user interaction
-    isUserInteractionEnabled: false,
     // Enable auto play
     autoPlay: true,
     // Hide controls

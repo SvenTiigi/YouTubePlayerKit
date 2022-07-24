@@ -10,11 +10,6 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// A Boolean value that determines whether
-        /// user events are ignored and removed from the event queue.
-        /// - Note: This property is excluded from encoding
-        public var isUserInteractionEnabled: Bool?
-        
         /// A Boolean value indicating if safe area insets should be added automatically to content insets
         /// - Note: This property is excluded from encoding
         public var automaticallyAdjustsContentInsets: Bool?
@@ -104,7 +99,6 @@ public extension YouTubePlayer {
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
         public init(
-            isUserInteractionEnabled: Bool? = nil,
             automaticallyAdjustsContentInsets: Bool? = nil,
             allowsPictureInPictureMediaPlayback: Bool? = nil,
             openURLAction: OpenURLAction = .default,
@@ -127,7 +121,6 @@ public extension YouTubePlayer {
             referrer: String? = nil,
             customUserAgent: String? = nil
         ) {
-            self.isUserInteractionEnabled = isUserInteractionEnabled
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
             self.openURLAction = openURLAction

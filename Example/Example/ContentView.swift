@@ -58,12 +58,10 @@ extension ContentView: View {
                             label: {
                                 YouTubePlayerView(
                                     .init(
-                                        source: .url(wwdcKeynote.youTubeURL),
-                                        configuration: .init(
-                                            isUserInteractionEnabled: false
-                                        )
+                                        source: .url(wwdcKeynote.youTubeURL)
                                     )
                                 )
+                                .disabled(true)
                                 .frame(height: 150)
                                 .background(Color(.systemBackground))
                                 .cornerRadius(12)
