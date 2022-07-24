@@ -23,6 +23,10 @@ public extension YouTubePlayer {
         /// - Note: This property is excluded from encoding
         public var allowsPictureInPictureMediaPlayback: Bool?
         
+        /// The OpenURLAction
+        /// - Note: This property is excluded from encoding
+        public var openURLAction: OpenURLAction
+        
         /// This parameter specifies whether the initial video
         /// will automatically start to play when the player loads
         public var autoPlay: Bool?
@@ -103,6 +107,7 @@ public extension YouTubePlayer {
             isUserInteractionEnabled: Bool? = nil,
             automaticallyAdjustsContentInsets: Bool? = nil,
             allowsPictureInPictureMediaPlayback: Bool? = nil,
+            openURLAction: OpenURLAction = .default,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
             showCaptions: Bool? = nil,
@@ -125,6 +130,7 @@ public extension YouTubePlayer {
             self.isUserInteractionEnabled = isUserInteractionEnabled
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
+            self.openURLAction = openURLAction
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
             self.showCaptions = showCaptions
@@ -167,7 +173,6 @@ public extension YouTubePlayer.Configuration {
     }
     
 }
-
 
 // MARK: - Encodable
 
