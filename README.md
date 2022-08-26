@@ -336,9 +336,6 @@ try await youTubePlayer.isMuted()
 
 // Retrieve the player's current volume, an integer between 0 and 100
 try await youTubePlayer.getVolume()
-
-// Sets the volume
-youTubePlayer.set(volume: 50)
 ```
 
 #### Retrieving video information

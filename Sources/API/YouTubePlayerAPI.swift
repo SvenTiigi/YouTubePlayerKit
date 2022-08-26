@@ -205,6 +205,9 @@ public protocol YouTubePlayerVolumeAPI: AnyObject {
     
     /// Sets the volume.
     /// Accepts an integer between 0 and 100
+    /// - Note: This function is part of the official YouTube Player iFrame API
+    ///  but due to limitations and restrictions of the underlying WKWebView
+    ///  the call has no effect on the actual volume of the device
     /// - Parameter volume: The volume
     func set(
         volume: Int
