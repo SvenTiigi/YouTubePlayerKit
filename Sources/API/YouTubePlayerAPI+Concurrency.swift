@@ -1,3 +1,4 @@
+#if compiler(>=5.5) && canImport(_Concurrency)
 import Foundation
 
 // MARK: - YouTubePlayer360DegreePerspectiveAPI+Concurrency
@@ -170,3 +171,4 @@ public extension YouTubePlayerVideoInformationAPI {
     }
     
 }
+#endif
