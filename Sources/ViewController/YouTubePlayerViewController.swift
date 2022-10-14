@@ -21,18 +21,8 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
     
     // MARK: Properties
     
-    /// The YouTubePlayerWebView
-    private let webView: YouTubePlayerWebView
-    
     /// The YouTubePlayer
-    public var player: YouTubePlayer {
-        get {
-            self.webView.player
-        }
-        set {
-            self.webView.player = newValue
-        }
-    }
+    public let player: YouTubePlayer
     
     // MARK: Initializer
     
@@ -42,9 +32,7 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
     public init(
         player: YouTubePlayer
     ) {
-        // Initialize WebView
-        self.webView = .init(player: player)
-        // Super init
+        self.player = player
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -64,16 +52,18 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
         )
     }
     
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
-    }
+    /// Initializer with NSCoder is unavailable.
+    /// Use `init(player:)`
+    @available(*, unavailable)
+    public required init?(
+        coder aDecoder: NSCoder
+    ) { nil }
     
     // MARK: View-Lifecycle
     
     /// Creates the view that the controller manages
     public override func loadView() {
-        self.view = self.webView
+        self.view = self.player.webView
     }
     
 }

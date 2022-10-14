@@ -35,15 +35,17 @@ extension YouTubePlayer.Options {
     
     /// Creates a new instance of `YouTubePlayer.Options`
     /// - Parameters:
-    ///   - player: The YouTubePlayer
+    ///   - playerSource: The optional YouTubePlayer Source
+    ///   - playerConfiguration: The YouTubePlayer Configuration
     ///   - originURL: The optional origin URL
     /// - Throws: If Options failed to construct
     init(
-        player: YouTubePlayer,
+        playerSource: YouTubePlayer.Source?,
+        playerConfiguration: YouTubePlayer.Configuration,
         originURL: URL?
     ) throws {
         // Retrieve Player Configuration as JSON
-        var playerConfiguration = try player.configuration.json()
+        var playerConfiguration = try playerConfiguration.json()
         // Initialize Configuration
         var configuration: [String: Any] = [
             CodingKeys.width.rawValue: "100%",
@@ -63,7 +65,7 @@ extension YouTubePlayer.Options {
                 }
         ]
         // Switch on Source
-        switch player.source {
+        switch playerSource {
         case .video(let id, let startSeconds, _):
             // Set video id
             configuration[CodingKeys.videoId.rawValue] = id

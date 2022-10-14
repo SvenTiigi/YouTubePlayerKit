@@ -1,12 +1,48 @@
 import Foundation
 
-// MARK: - YouTubePlayerWebView+handle(javaScriptEvent:)
+// MARK: - YouTubePlayer+handle(webViewEvent:)
 
-extension YouTubePlayerWebView {
+extension YouTubePlayer {
     
-    /// Handle YouTubePlayer JavaScriptEvent
-    /// - Parameters:
-    ///   - javaScriptEvent: The YouTubePlayer JavaScriptEvent
+    /// Handle a YouTubePlayerWebView Event
+    /// - Parameter webViewEvent: The YouTubePlayerWebView Event
+    func handle(
+        webViewEvent: YouTubePlayerWebView.Event
+    ) {
+        switch webViewEvent {
+        case .receivedJavaScriptEvent(let javaScriptEvent):
+            // Handle JavaScriptEvent
+            self.handle(
+                javaScriptEvent: javaScriptEvent
+            )
+        case .frameChanged(let frame):
+            // Initialize parameters
+            let parameters = [
+                frame.size.width,
+                frame.size.height
+            ]
+            .map(String.init)
+            .joined(separator: ",")
+            // Set YouTubePlayer Size
+            self.webView.evaluate(
+                javaScript: .init("setYouTubePlayerSize(\(parameters));")
+            )
+        case .webContentProcessDidTerminate:
+            // Send web content process did terminate error
+            self.playerStateSubject.send(
+                .error(.webContentProcessDidTerminate)
+            )
+        }
+    }
+    
+}
+
+// MARK: - YouTubePlayer+handle(javaScriptEvent:)
+
+private extension YouTubePlayer {
+    
+    /// Handle incoming JavaScriptEvent
+    /// - Parameter javaScriptEvent: The YouTubePlayer JavaScriptEvent
     func handle(
         javaScriptEvent: YouTubePlayer.JavaScriptEvent
     ) {
@@ -23,12 +59,12 @@ extension YouTubePlayerWebView {
             // Send ready state
             self.playerStateSubject.send(.ready)
             // Check if autoPlay is enabled
-            if self.player.configuration.autoPlay == true {
+            if self.configuration.autoPlay == true {
                 // Play Video
                 self.play()
             }
             // Retrieve the current PlaybackRate
-            self.player.getPlaybackRate { [weak self] result in
+            self.getPlaybackRate { [weak self] result in
                 // Verify PlaybackRate is available
                 guard case .success(let playbackRate) = result else {
                     // Otherwise ignore the error and return out of function
@@ -38,7 +74,7 @@ extension YouTubePlayerWebView {
                 self?.playbackRateSubject.send(playbackRate)
             }
             // Retrieve the current PlaybackState
-            self.player.getPlaybackState { [weak self] result in
+            self.getPlaybackState { [weak self] result in
                 // Verify PlaybackState is available
                 guard case .success(let playbackState) = result else {
                     // Otherwise ignore the error and return out of function
@@ -71,13 +107,13 @@ extension YouTubePlayerWebView {
             javaScriptEvent
                 .data
                 .flatMap(YouTubePlayer.PlaybackQuality.init)
-                .map(self.playbackQualitySubject.send)
+                .map { self.playbackQualitySubject.send($0) }
         case .onPlaybackRateChange:
             // Send PlaybackRate
             javaScriptEvent
                 .data
                 .flatMap(YouTubePlayer.PlaybackRate.init)
-                .map(self.playbackRateSubject.send)
+                .map { self.playbackRateSubject.send($0) }
         case .onError:
             // Send error state
             javaScriptEvent
@@ -85,7 +121,7 @@ extension YouTubePlayerWebView {
                 .flatMap(Int.init)
                 .flatMap(YouTubePlayer.Error.init)
                 .map { .error($0) }
-                .map(self.playerStateSubject.send)
+                .map { self.playerStateSubject.send($0) }
         }
     }
     

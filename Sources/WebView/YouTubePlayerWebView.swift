@@ -9,18 +9,8 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Properties
     
-    /// The YouTubePlayer
-    var player: YouTubePlayer {
-        didSet {
-            // Verify YouTubePlayer reference has changed
-            guard self.player !== oldValue else {
-                // Otherwise return out of function
-                return
-            }
-            // Re-Load Player
-            self.loadPlayer()
-        }
-    }
+    /// The YouTubePlayer Configuration
+    private(set) var playerConfiguration: YouTubePlayer.Configuration
     
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle
@@ -29,25 +19,14 @@ final class YouTubePlayerWebView: WKWebView {
         .flatMap { ["https://", $0.lowercased()].joined() }
         .flatMap(URL.init)
     
+    /// The YouTubePlayerWebView Event PassthroughSubject
+    private(set) lazy var eventSubject = PassthroughSubject<Event, Never>()
+    
     /// The Layout Lifecycle Subject
     private lazy var layoutLifecycleSubject = PassthroughSubject<CGRect, Never>()
     
     /// The frame observation Cancellable
     private var frameObservation: AnyCancellable?
-    
-    // MARK: Subjects
-    
-    /// The YouTubePlayer State CurrentValueSubject
-    private(set) lazy var playerStateSubject = CurrentValueSubject<YouTubePlayer.State?, Never>(nil)
-    
-    /// The YouTubePlayer PlaybackState CurrentValueSubject
-    private(set) lazy var playbackStateSubject = CurrentValueSubject<YouTubePlayer.PlaybackState?, Never>(nil)
-    
-    /// The YouTubePlayer PlaybackQuality CurrentValueSubject
-    private(set) lazy var playbackQualitySubject = CurrentValueSubject<YouTubePlayer.PlaybackQuality?, Never>(nil)
-    
-    /// The YouTubePlayer PlaybackRate CurrentValueSubject
-    private(set) lazy var playbackRateSubject = CurrentValueSubject<YouTubePlayer.PlaybackRate?, Never>(nil)
     
     // MARK: Initializer
     
@@ -56,21 +35,36 @@ final class YouTubePlayerWebView: WKWebView {
     init(
         player: YouTubePlayer
     ) {
-        // Set player
-        self.player = player
+        // Set player configuration
+        self.playerConfiguration = player.configuration
         // Super init
         super.init(
             frame: .zero,
-            configuration: .youTubePlayer
+            configuration: {
+                // Initialize WebView Configuration
+                let configuration = WKWebViewConfiguration()
+                #if !os(macOS)
+                // Allows inline media playback
+                configuration.allowsInlineMediaPlayback = true
+                #endif
+                // No media types requiring user action for playback
+                configuration.mediaTypesRequiringUserActionForPlayback = []
+                // Return configuration
+                return configuration
+            }()
         )
         // Setup
         self.setup()
+        // Load
+        self.load(using: player)
     }
     
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
-    }
+    /// Initializer with NSCoder is unavailable.
+    /// Use `init(player:)`
+    @available(*, unavailable)
+    required init?(
+        coder aDecoder: NSCoder
+    ) { nil }
     
     // MARK: View-Lifecycle
     
@@ -107,23 +101,13 @@ private extension YouTubePlayerWebView {
             .merge(
                 with: self.layoutLifecycleSubject
             )
-            .map(\.size)
             .removeDuplicates()
             .sink { [weak self] frame in
-                // Initialize parameters
-                let parameters = [
-                    frame.width,
-                    frame.height
-                ]
-                .map(String.init)
-                .joined(separator: ",")
-                // Set YouTubePlayer Size
-                self?.evaluate(
-                    javaScript: "setYouTubePlayerSize(\(parameters));"
+                // Send frame changed event
+                self?.eventSubject.send(
+                    .frameChanged(frame)
                 )
             }
-        // Set YouTubePlayerAPI on current Player
-        self.player.api = self
         // Set navigation delegate
         self.navigationDelegate = self
         // Set ui delegate
@@ -146,28 +130,70 @@ private extension YouTubePlayerWebView {
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
         #endif
-        // Load YouTubePlayer
-        self.loadPlayer()
     }
     
 }
 
-// MARK: - WKWebViewConfiguration+youTubePlayer
+// MARK: - YouTubePlayerWebView+loadPlayer
 
-private extension WKWebViewConfiguration {
+extension YouTubePlayerWebView {
     
-    /// The YouTubePlayer WKWebViewConfiguration
-    static var youTubePlayer: WKWebViewConfiguration {
-        // Initialize WebView Configuration
-        let configuration = WKWebViewConfiguration()
+    /// Load the YouTubePlayer to this WKWebView
+    /// - Returns: A Bool value if the YouTube player has been successfully loaded
+    @discardableResult
+    func load(
+        using player: YouTubePlayer
+    ) -> Bool {
+        // Declare YouTubePlayer HTML
+        let youTubePlayerHTML: YouTubePlayer.HTML
+        do {
+            // Try to initialize YouTubePlayer HTML
+            youTubePlayerHTML = try .init(
+                options: .init(
+                    playerSource: player.source,
+                    playerConfiguration: player.configuration,
+                    originURL: self.originURL
+                )
+            )
+        } catch {
+            // Send error state
+            player.playerStateSubject.send(
+                .error(
+                    .setupFailed(error)
+                )
+            )
+            // Return false as setup has failed
+            return false
+        }
+        // Update player configuration
+        self.playerConfiguration = player.configuration
         #if !os(macOS)
-        // Allows inline media playback
-        configuration.allowsInlineMediaPlayback = true
+        // Update allows Picture-in-Picture media playback
+        self.configuration.allowsPictureInPictureMediaPlayback = player
+            .configuration
+            .allowsPictureInPictureMediaPlayback ?? true
+        // Update contentInsetAdjustmentBehavior
+        self.scrollView.contentInsetAdjustmentBehavior = player
+            .configuration
+            .automaticallyAdjustsContentInsets
+            .flatMap { $0 ? .automatic : .never }
+            ?? .automatic
+        #else
+        // Update automaticallyAdjustsContentInsets
+        self.enclosingScrollView?.automaticallyAdjustsContentInsets = player
+            .configuration
+            .automaticallyAdjustsContentInsets
+            ?? true
         #endif
-        // No media types requiring user action for playback
-        configuration.mediaTypesRequiringUserActionForPlayback = []
-        // Return configuration
-        return configuration
+        // Set custom user agent
+        self.customUserAgent = player.configuration.customUserAgent
+        // Load HTML string
+        self.loadHTMLString(
+            youTubePlayerHTML.contents,
+            baseURL: self.originURL
+        )
+        // Return success
+        return true
     }
     
 }
