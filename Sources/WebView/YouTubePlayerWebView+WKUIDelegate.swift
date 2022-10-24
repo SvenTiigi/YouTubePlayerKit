@@ -20,7 +20,7 @@ extension YouTubePlayerWebView: WKUIDelegate {
         // Check if the request url is available
         if let url = navigationAction.request.url {
             // Open URL
-            self.player.configuration.openURLAction(url)
+            self.playerConfiguration.openURLAction(url)
         }
         // Return nil as the URL has already been handled
         return nil

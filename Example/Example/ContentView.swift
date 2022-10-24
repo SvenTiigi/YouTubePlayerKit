@@ -15,7 +15,7 @@ struct ContentView {
 
     /// The YouTube Player
     private let youTubePlayer = YouTubePlayer(
-        source: .url(WWDCKeynote.wwdc2021.youTubeURL)
+        source: .url(WWDCKeynote.wwdc2022.youTubeURL)
     )
     
     /// All  WWDC Keynotes

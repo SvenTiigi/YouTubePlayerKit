@@ -40,15 +40,36 @@ public final class YouTubePlayer: ObservableObject {
         }
     }
     
-    /// The YouTubePlayerAPI
-    weak var api: YouTubePlayerAPI? {
-        didSet {
-            self.objectWillChange.send()
-        }
-    }
+    /// The YouTubePlayer State CurrentValueSubject
+    private(set) lazy var playerStateSubject = CurrentValueSubject<YouTubePlayer.State?, Never>(nil)
     
-    /// The Cancellables
-    var cancellables = Set<AnyCancellable>()
+    /// The YouTubePlayer PlaybackState CurrentValueSubject
+    private(set) lazy var playbackStateSubject = CurrentValueSubject<YouTubePlayer.PlaybackState?, Never>(nil)
+    
+    /// The YouTubePlayer PlaybackQuality CurrentValueSubject
+    private(set) lazy var playbackQualitySubject = CurrentValueSubject<YouTubePlayer.PlaybackQuality?, Never>(nil)
+    
+    /// The YouTubePlayer PlaybackRate CurrentValueSubject
+    private(set) lazy var playbackRateSubject = CurrentValueSubject<YouTubePlayer.PlaybackRate?, Never>(nil)
+    
+    /// The YouTubePlayer WebView
+    private(set) lazy var webView: YouTubePlayerWebView = {
+        // Initialize a YouTubePlayerWebView
+        let webView = YouTubePlayerWebView(player: self)
+        // Subscribe to YouTubePlayerWebView Event Subject
+        self.webViewEventSubscription = webView
+            .eventSubject
+            .sink { [weak self] event in
+                // Handle YouTubePlayer WebView Event
+                self?.handle(
+                    webViewEvent: event
+                )
+            }
+        return webView
+    }()
+    
+    /// The YouTubePlayer WebView Event Subscription
+    private var webViewEventSubscription: AnyCancellable?
     
     // MARK: Initializer
     
@@ -94,8 +115,7 @@ extension YouTubePlayer: Equatable {
         lhs: YouTubePlayer,
         rhs: YouTubePlayer
     ) -> Bool {
-        lhs.source == rhs.source
-            && lhs.configuration == rhs.configuration
+        lhs.source == rhs.source && lhs.configuration == rhs.configuration
     }
 
 }

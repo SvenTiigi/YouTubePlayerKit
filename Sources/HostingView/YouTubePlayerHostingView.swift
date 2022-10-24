@@ -21,18 +21,8 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     // MARK: Properties
     
-    /// The YouTubePlayerWebView
-    private let webView: YouTubePlayerWebView
-    
     /// The YouTubePlayer
-    public var player: YouTubePlayer {
-        get {
-            self.webView.player
-        }
-        set {
-            self.webView.player = newValue
-        }
-    }
+    public let player: YouTubePlayer
     
     // MARK: Initializer
     
@@ -42,16 +32,9 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     public init(
         player: YouTubePlayer
     ) {
-        self.webView = .init(player: player)
+        self.player = player
         super.init(frame: .zero)
-        self.webView.autoresizingMask = {
-            #if os(macOS)
-            return [.width, .height]
-            #else
-            return [.flexibleWidth, .flexibleHeight]
-            #endif
-        }()
-        self.addSubview(self.webView)
+        self.addSubview(self.player.webView)
     }
     
     /// Creates a new instance of `YouTubePlayerHostView`
@@ -70,9 +53,11 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
         )
     }
     
-    /// Initializer with NSCoder always returns nil
-    required init?(coder: NSCoder) {
-        nil
-    }
+    /// Initializer with NSCoder is unavailable.
+    /// Use `init(player:)`
+    @available(*, unavailable)
+    public required init?(
+        coder aDecoder: NSCoder
+    ) { nil }
     
 }

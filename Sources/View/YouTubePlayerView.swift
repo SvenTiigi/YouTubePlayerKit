@@ -87,7 +87,7 @@ private extension YouTubePlayerWebView {
         func makeUIView(
             context: Context
         ) -> YouTubePlayerWebView {
-            .init(player: self.player)
+            self.player.webView
         }
         
         /// Update YouTubePlayerWebView
@@ -97,9 +97,7 @@ private extension YouTubePlayerWebView {
         func updateUIView(
             _ uiView: YouTubePlayerWebView,
             context: Context
-        ) {
-            uiView.player = self.player
-        }
+        ) {}
         
     }
     #else
@@ -115,7 +113,7 @@ private extension YouTubePlayerWebView {
         func makeNSView(
             context: Context
         ) -> YouTubePlayerWebView {
-            .init(player: self.player)
+            self.player.webView
         }
         
         /// Update YouTubePlayerWebView
@@ -125,9 +123,7 @@ private extension YouTubePlayerWebView {
         func updateNSView(
             _ nsView: YouTubePlayerWebView,
             context: Context
-        ) {
-            nsView.player = self.player
-        }
+        ) {}
         
     }
     #endif

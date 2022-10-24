@@ -1,5 +1,41 @@
 import Foundation
 
+// MARK: - YouTubePlayerWebView+JavaScript
+
+extension YouTubePlayerWebView {
+    
+    /// A JavaScript
+    struct JavaScript: Codable, Hashable {
+        
+        // MARK: Properties
+        
+        /// The raw value of the JavaScript
+        let rawValue: String
+        
+        // MARK: Initializer
+        
+        /// Creates a new instance of `YouTubePlayerWebView.JavaScript`
+        /// - Parameter rawValue: The JavaScript
+        init(
+            _ rawValue: String
+        ) {
+            self.rawValue = rawValue.last != ";" ? "\(rawValue);" : rawValue
+        }
+        
+        // MARK: Player
+        
+        /// Create YouTubePlayer JavaScript
+        /// - Parameter operator: The operator (function, property)
+        static func player(
+            _ operator: String
+        ) -> Self {
+            .init("\(YouTubePlayer.HTML.playerVariableName).\(`operator`)")
+        }
+        
+    }
+    
+}
+
 // MARK: - YouTubePlayerWebView+evaluate
 
 extension YouTubePlayerWebView {
@@ -11,13 +47,13 @@ extension YouTubePlayerWebView {
     ///   - converter: The JavaScriptEvaluationResponseConverter
     ///   - completion: The completion closure when the JavaScript has finished executing
     func evaluate<Response>(
-        javaScript: String,
+        javaScript: JavaScript,
         converter: JavaScriptEvaluationResponseConverter<Response>,
         completion: @escaping (Result<Response, YouTubePlayerAPIError>) -> Void
     ) {
         // Evaluate JavaScript
         self.evaluateJavaScript(
-            javaScript
+            javaScript.rawValue
         ) { javaScriptResponse, error in
             // Initialize Result
             let result: Result<Response, YouTubePlayerAPIError> = {
@@ -26,7 +62,7 @@ extension YouTubePlayerWebView {
                     // Return failure with YouTubePlayerAPIError
                     return .failure(
                         .init(
-                            javaScript: javaScript,
+                            javaScript: javaScript.rawValue,
                             javaScriptResponse: javaScriptResponse,
                             underlyingError: error,
                             reason: (error as NSError)
@@ -49,7 +85,7 @@ extension YouTubePlayerWebView {
     /// Evaluates the given JavaScript
     /// - Parameter javaScript: The JavaScript that should be evaluated
     func evaluate(
-        javaScript: String
+        javaScript: JavaScript
     ) {
         // Evaluate JavaScript with `empty` Converter
         self.evaluate(
@@ -69,9 +105,6 @@ extension YouTubePlayerWebView {
     struct JavaScriptEvaluationResponseConverter<Output> {
         
         // MARK: Typealias
-        
-        /// The JavaScript typealias
-        typealias JavaScript = String
         
         /// The JavaScript Response typealias
         typealias JavaScriptResponse = Any?
@@ -140,7 +173,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
                 // Otherwise return failure
                 return .failure(
                     .init(
-                        javaScript: javaScript,
+                        javaScript: javaScript.rawValue,
                         javaScriptResponse: javaScriptResponse,
                         reason: [
                             "Type-Cast failed",
@@ -179,7 +212,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
                         // Otherwise return failure
                         return .failure(
                             .init(
-                                javaScript: javaScript,
+                                javaScript: javaScript.rawValue,
                                 javaScriptResponse: output,
                                 reason: [
                                     "Unknown",
@@ -225,7 +258,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
                         // Return failure
                         return .failure(
                             .init(
-                                javaScript: javaScript,
+                                javaScript: javaScript.rawValue,
                                 javaScriptResponse: output,
                                 underlyingError: error,
                                 reason: "Malformed JSON"
@@ -244,7 +277,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
                         // Return failure
                         return .failure(
                             .init(
-                                javaScript: javaScript,
+                                javaScript: javaScript.rawValue,
                                 javaScriptResponse: output,
                                 underlyingError: error,
                                 reason: "Decoding failed: \(error)"

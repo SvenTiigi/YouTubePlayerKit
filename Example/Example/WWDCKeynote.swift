@@ -63,6 +63,7 @@ extension WWDCKeynote {
         .wwdc2019,
         .wwdc2020,
         .wwdc2021,
+        .wwdc2022
     ]
     
 }
@@ -109,6 +110,11 @@ extension WWDCKeynote {
     static let wwdc2021: Self = .init(
         year: 2021,
         youTubeURL: "https://www.youtube.com/watch?v=0TD96VTf0Xs"
+    )
+    
+    static let wwdc2022: Self = .init(
+        year: 2022,
+        youTubeURL: "https://www.youtube.com/watch?v=q5D55G7Ejs8"
     )
     
 }

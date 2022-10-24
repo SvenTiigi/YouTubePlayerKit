@@ -22,9 +22,9 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
         }
         // Check if a JavaScriptEvent can be initialized from request URL
         if let javaScriptEvent = YouTubePlayer.JavaScriptEvent(url: url) {
-            // Handle JavaScriptEvent
-            self.handle(
-                javaScriptEvent: javaScriptEvent
+            // Send received JavaScriptEvent
+            self.eventSubject.send(
+                .receivedJavaScriptEvent(javaScriptEvent)
             )
             // Cancel navigation action
             return decisionHandler(.cancel)
@@ -57,7 +57,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             }
         }
         // Open URL
-        self.player.configuration.openURLAction(url)
+        self.playerConfiguration.openURLAction(url)
         // Cancel navigation action
         decisionHandler(.cancel)
     }
@@ -67,11 +67,9 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(
         _ webView: WKWebView
     ) {
-        // Send error state
-        self.playerStateSubject.send(
-            .error(
-                .webContentProcessDidTerminate
-            )
+        // Send web content process did terminate event
+        self.eventSubject.send(
+            .webContentProcessDidTerminate
         )
     }
     
