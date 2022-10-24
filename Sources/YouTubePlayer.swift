@@ -53,7 +53,20 @@ public final class YouTubePlayer: ObservableObject {
     private(set) lazy var playbackRateSubject = CurrentValueSubject<YouTubePlayer.PlaybackRate?, Never>(nil)
     
     /// The YouTubePlayer WebView
-    private(set) lazy var webView = YouTubePlayerWebView(player: self)
+    private(set) lazy var webView: YouTubePlayerWebView = {
+        // Initialize a YouTubePlayerWebView
+        let webView = YouTubePlayerWebView(player: self)
+        // Subscribe to YouTubePlayerWebView Event Subject
+        self.webViewEventSubscription = webView
+            .eventSubject
+            .sink { [weak self] event in
+                // Handle YouTubePlayer WebView Event
+                self?.handle(
+                    webViewEvent: event
+                )
+            }
+        return webView
+    }()
     
     /// The YouTubePlayer WebView Event Subscription
     private var webViewEventSubscription: AnyCancellable?
@@ -70,14 +83,6 @@ public final class YouTubePlayer: ObservableObject {
     ) {
         self.source = source
         self.configuration = configuration
-        self.webViewEventSubscription = self.webView
-            .eventSubject
-            .sink { [weak self] event in
-                // Handle YouTubePlayer WebView Event
-                self?.handle(
-                    webViewEvent: event
-                )
-            }
     }
     
 }
