@@ -11,8 +11,8 @@ final class YouTubePlayerHTMLTests: XCTestCase {
     }
     
     func testUnavailableResourceError() {
-        XCTAssertNil(
-            try? YouTubePlayer.HTML(
+        XCTAssertThrowsError(
+            try YouTubePlayer.HTML(
                 options: .init(json: .init()),
                 resource: .init(
                     fileName: "UnavailableResource",

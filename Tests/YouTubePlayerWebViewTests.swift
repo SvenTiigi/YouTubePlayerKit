@@ -12,6 +12,16 @@ final class YouTubePlayerWebViewTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     
     func testReady() {
+        let expectation = self.expectation(description: #function)
+        _ = self.player.webView
+        self.player
+            .statePublisher
+            .filter { $0 == .ready }
+            .sink { _ in
+                expectation.fulfill()
+            }
+            .store(in: &self.cancellables)
+        self.wait(for: [expectation], timeout: 30)
     }
     
 }
