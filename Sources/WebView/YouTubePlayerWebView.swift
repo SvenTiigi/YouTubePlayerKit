@@ -69,6 +69,12 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: View-Lifecycle
     
     #if os(iOS)
+    /// View did move to window
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        // Send did removed or move to window event
+        self.eventSubject.send(self.window == nil ? .didRemovedFromWindow : .didMoveToWindow)
+    }
     /// Layout Subviews
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -76,6 +82,12 @@ final class YouTubePlayerWebView: WKWebView {
         self.layoutLifecycleSubject.send(self.frame)
     }
     #elseif os(macOS)
+    /// View did move to window
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        // Send did removed or move to window event
+        self.eventSubject.send(self.window == nil ? .didRemovedFromWindow : .didMoveToWindow)
+    }
     /// Perform layout
     override func layout() {
         super.layout()
