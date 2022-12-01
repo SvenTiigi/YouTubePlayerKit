@@ -15,6 +15,11 @@ extension YouTubePlayer {
             self.handle(
                 javaScriptEvent: javaScriptEvent
             )
+        case .didMoveToWindow:
+            break
+        case .didRemovedFromWindow:
+            // Stop player
+            self.stop()
         case .frameChanged(let frame):
             // Initialize parameters
             let parameters = [
