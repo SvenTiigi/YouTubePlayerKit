@@ -1,7 +1,7 @@
 <br/>
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/logo.png" width="30%" alt="logo">
+    <img src="Assets/logo.png" width="30%" alt="logo">
 </p>
 
 <h1 align="center">YouTubePlayerKit</h1>
@@ -13,33 +13,39 @@
 </p>
 
 <p align="center">
-   <a href="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/ci.yml">
-       <img src="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/ci.yml/badge.svg" alt="CI status">
+   <a href="https://swiftpackageindex.com/SvenTiigi/YouTubePlayerKit">
+    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSvenTiigi%2FYouTubePlayerKit%2Fbadge%3Ftype%3Dswift-versions" alt="Swift Version">
    </a>
-   <a href="https://sventiigi.github.io/YouTubePlayerKit">
-      <img src="https://github.com/SvenTiigi/YouTubePlayerKit/blob/gh-pages/badge.svg" alt="Documentation">
+   <a href="https://swiftpackageindex.com/SvenTiigi/VanMoofKit">
+    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSvenTiigi%2FYouTubePlayerKit%2Fbadge%3Ftype%3Dplatforms" alt="Platforms">
    </a>
-   <img src="https://img.shields.io/badge/platform-iOS%20%7C%20macOS-F05138" alt="Platform">
+   <br/>
+   <a href="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/build_and_test.yml">
+       <img src="https://github.com/SvenTiigi/YouTubePlayerKit/actions/workflows/build_and_test.yml/badge.svg" alt="Build and Test Status">
+   </a>
+   <a href="https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/">
+       <img src="https://img.shields.io/badge/Documentation-DocC-blue" alt="Documentation">
+   </a>
    <a href="https://twitter.com/SvenTiigi/">
       <img src="https://img.shields.io/badge/Twitter-@SvenTiigi-blue.svg?style=flat" alt="Twitter">
    </a>
 </p>
 
-<img align="right" width="307" src="https://raw.githubusercontent.com/SvenTiigi/YouTubePlayerKit/gh-pages/readme-assets/example-app.png" alt="Example application">
+<img align="right" width="307" src="Assets/example-app.png" alt="Example application">
 
 ```swift
 import SwiftUI
 import YouTubePlayerKit
 
 struct ContentView: View {
-    
+
     var body: some View {
         //  WWDC 2019 Keynote
         YouTubePlayerView(
             "https://youtube.com/watch?v=psL_5RIBqnY"
         )
     }
-    
+
 }
 ```
 
@@ -107,6 +113,7 @@ struct ContentView: View {
 
 }
 ```
+
 > Check out the additional [`YouTubePlayerView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/View/YouTubePlayerView%2BInit.swift) initializer to place an overlay for a given state.
 
 When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostingView`.
@@ -140,6 +147,7 @@ youTubePlayer.configuration = .init(
     autoPlay: true
 )
 ```
+
 > Note: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
 
 Since `YouTubePlayer` is conform to the [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) protocol you can listen for changes whenever the `source` or `configuration` of a `YouTubePlayer` gets updated.
@@ -152,7 +160,7 @@ youTubePlayer
 
 ## YouTubePlayer
 
-A `YouTubePlayer` is the central object which needs to be passed to every `YouTubePlayerView`, `YouTubePlayerViewController` or `YouTubePlayerHostingView` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API. 
+A `YouTubePlayer` is the central object which needs to be passed to every `YouTubePlayerView`, `YouTubePlayerViewController` or `YouTubePlayerHostingView` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API.
 
 Therefore, you can easily initialize a `YouTubePlayer` by using a string literal as seen in the previous examples.
 
@@ -191,6 +199,7 @@ Additionally, you can use a URL to initialize a `YouTubePlayer.Source`
 ```swift
 let urlSource: YouTubePlayer.Source? = .url("https://youtube.com/watch?v=psL_5RIBqnY")
 ```
+
 > When using a URL the `YouTubePlayer.Source` will be optional
 
 ### Configuration
@@ -216,6 +225,7 @@ let youTubePlayer = YouTubePlayer(
     configuration: configuration
 )
 ```
+
 > Check out the [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Configuration/YouTubePlayer%2BConfiguration.swift) to get a list of all available parameters.
 
 ### API
@@ -320,6 +330,7 @@ youTubePlayer.update(
     )
 )
 ```
+
 > Note: updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
 #### Changing the player volume
@@ -419,6 +430,7 @@ try await youTubePlayer.getAvailablePlaybackRates()
 ```
 
 ## Credits
+
 - [youtube/youtube-ios-player-helper](https://github.com/youtube/youtube-ios-player-helper)
 
 ## License
