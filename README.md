@@ -76,7 +76,7 @@ dependencies: [
 
 Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `YouTubePlayerKit`.
 
-> When integrating YouTubePlayerKit to a macOS or Mac Catalyst target please ensure to enable "Outgoing Connections (Client)" in the "Signing & Capabilities" sections.
+> **Note**: When integrating YouTubePlayerKit to a macOS or Mac Catalyst target please ensure to enable "Outgoing Connections (Client)" in the "Signing & Capabilities" sections.
 
 ## App Store Review
 
@@ -148,7 +148,7 @@ youTubePlayer.configuration = .init(
 )
 ```
 
-> Note: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
+> **Note**: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
 
 Since `YouTubePlayer` is conform to the [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) protocol you can listen for changes whenever the `source` or `configuration` of a `YouTubePlayer` gets updated.
 
