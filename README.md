@@ -331,7 +331,7 @@ youTubePlayer.update(
 )
 ```
 
-> Note: updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
+> **Note**: Updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
 #### Changing the player volume
 
