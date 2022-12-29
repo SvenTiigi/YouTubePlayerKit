@@ -70,7 +70,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.2.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.3.0")
 ]
 ```
 
@@ -83,6 +83,11 @@ Or navigate to your Xcode project then select `Swift Packages`, click the â€œ+â€
 When submitting an app to the App Store which includes the `YouTubePlayerKit`, please ensure to add a link to the [YouTube API Terms of Services](https://developers.google.com/youtube/terms/api-services-terms-of-service) in the review notes.
 
 > https://developers.google.com/youtube/terms/api-services-terms-of-service
+
+## Limitations
+
+- Audio background playback is not supported as it violates the YouTube Terms of Service.
+- Simultaneous playback of multiple YouTube players is not supported.
 
 ## Usage
 
