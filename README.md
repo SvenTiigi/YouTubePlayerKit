@@ -64,8 +64,6 @@ Check out the example application to see YouTubePlayerKit in action. Simply open
 
 ## Installation
 
-### Swift Package Manager
-
 To integrate using Apple's [Swift Package Manager](https://swift.org/package-manager/), add the following as a dependency to your `Package.swift`:
 
 ```swift
