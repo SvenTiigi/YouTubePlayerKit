@@ -60,4 +60,9 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
         coder aDecoder: NSCoder
     ) { nil }
     
+    /// Deinit
+    deinit {
+        self.player.pause()
+    }
+    
 }

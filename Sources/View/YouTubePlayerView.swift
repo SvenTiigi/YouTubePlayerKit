@@ -92,12 +92,23 @@ private extension YouTubePlayerWebView {
         
         /// Update YouTubePlayerWebView
         /// - Parameters:
-        ///   - uiView: The YouTubePlayerWebView
+        ///   - playerWebView: The YouTubePlayerWebView
         ///   - context: The Context
         func updateUIView(
-            _ uiView: YouTubePlayerWebView,
+            _ playerWebView: YouTubePlayerWebView,
             context: Context
         ) {}
+        
+        /// Dismantle YouTubePlayerWebView
+        /// - Parameters:
+        ///   - playerWebView: The YouTubePlayerWebView
+        ///   - coordinator: The Coordinaotr
+        static func dismantleUIView(
+            _ playerWebView: YouTubePlayerWebView,
+            coordinator: Void
+        ) {
+            playerWebView.player?.pause()
+        }
         
     }
     #else
@@ -118,12 +129,23 @@ private extension YouTubePlayerWebView {
         
         /// Update YouTubePlayerWebView
         /// - Parameters:
-        ///   - nsView: The YouTubePlayerWebView
+        ///   - playerWebView: The YouTubePlayerWebView
         ///   - context: The Context
         func updateNSView(
-            _ nsView: YouTubePlayerWebView,
+            _ playerWebView: YouTubePlayerWebView,
             context: Context
         ) {}
+        
+        /// Dismantle YouTubePlayerWebView
+        /// - Parameters:
+        ///   - playerWebView: The YouTubePlayerWebView
+        ///   - coordinator: The Coordinaotr
+        static func dismantleNSView(
+            _ playerWebView: YouTubePlayerWebView,
+            coordinator: Void
+        ) {
+            playerWebView.player?.pause()
+        }
         
     }
     #endif

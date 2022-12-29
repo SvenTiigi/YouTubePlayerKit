@@ -57,7 +57,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             }
         }
         // Open URL
-        self.playerConfiguration.openURLAction(url)
+        self.player?.configuration.openURLAction(url)
         // Cancel navigation action
         decisionHandler(.cancel)
     }

@@ -59,6 +59,11 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
         coder aDecoder: NSCoder
     ) { nil }
     
+    /// Deinit
+    deinit {
+        self.player.pause()
+    }
+    
     // MARK: View-Lifecycle
     
     /// Creates the view that the controller manages

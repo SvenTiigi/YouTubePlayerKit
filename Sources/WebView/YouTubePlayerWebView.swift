@@ -9,8 +9,8 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Properties
     
-    /// The YouTubePlayer Configuration
-    private(set) var playerConfiguration: YouTubePlayer.Configuration
+    /// The YouTubePlayer
+    private(set) weak var player: YouTubePlayer?
     
     /// The origin URL
     private(set) lazy var originURL: URL? = Bundle
@@ -25,8 +25,8 @@ final class YouTubePlayerWebView: WKWebView {
     /// The Layout Lifecycle Subject
     private lazy var layoutLifecycleSubject = PassthroughSubject<CGRect, Never>()
     
-    /// The frame observation Cancellable
-    private var frameObservation: AnyCancellable?
+    /// The cancellables
+    var cancellables = Set<AnyCancellable>()
     
     // MARK: Initializer
     
@@ -35,8 +35,8 @@ final class YouTubePlayerWebView: WKWebView {
     init(
         player: YouTubePlayer
     ) {
-        // Set player configuration
-        self.playerConfiguration = player.configuration
+        // Set player
+        self.player = player
         // Super init
         super.init(
             frame: .zero,
@@ -69,12 +69,6 @@ final class YouTubePlayerWebView: WKWebView {
     // MARK: View-Lifecycle
     
     #if os(iOS)
-    /// View did move to window
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        // Send did removed or move to window event
-        self.eventSubject.send(self.window == nil ? .didRemovedFromWindow : .didMoveToWindow)
-    }
     /// Layout Subviews
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -82,12 +76,6 @@ final class YouTubePlayerWebView: WKWebView {
         self.layoutLifecycleSubject.send(self.frame)
     }
     #elseif os(macOS)
-    /// View did move to window
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        // Send did removed or move to window event
-        self.eventSubject.send(self.window == nil ? .didRemovedFromWindow : .didMoveToWindow)
-    }
     /// Perform layout
     override func layout() {
         super.layout()
@@ -105,21 +93,21 @@ private extension YouTubePlayerWebView {
     /// Setup YouTubePlayerWebView
     func setup() {
         // Setup frame observation
-        self.frameObservation = self
-            .publisher(
-                for: \.frame,
-                options: [.new]
+        self.publisher(
+            for: \.frame,
+            options: [.new]
+        )
+        .merge(
+            with: self.layoutLifecycleSubject
+        )
+        .removeDuplicates()
+        .sink { [weak self] frame in
+            // Send frame changed event
+            self?.eventSubject.send(
+                .frameChanged(frame)
             )
-            .merge(
-                with: self.layoutLifecycleSubject
-            )
-            .removeDuplicates()
-            .sink { [weak self] frame in
-                // Send frame changed event
-                self?.eventSubject.send(
-                    .frameChanged(frame)
-                )
-            }
+        }
+        .store(in: &self.cancellables)
         // Set navigation delegate
         self.navigationDelegate = self
         // Set ui delegate
@@ -177,8 +165,8 @@ extension YouTubePlayerWebView {
             // Return false as setup has failed
             return false
         }
-        // Update player configuration
-        self.playerConfiguration = player.configuration
+        // Update player
+        self.player = player
         #if !os(macOS)
         // Update allows Picture-in-Picture media playback
         self.configuration.allowsPictureInPictureMediaPlayback = player

@@ -22,16 +22,25 @@ extension YouTubePlayerWebView {
             self.rawValue = rawValue.last != ";" ? "\(rawValue);" : rawValue
         }
         
-        // MARK: Player
-        
-        /// Create YouTubePlayer JavaScript
-        /// - Parameter operator: The operator (function, property)
-        static func player(
-            _ operator: String
-        ) -> Self {
-            .init("\(YouTubePlayer.HTML.playerVariableName).\(`operator`)")
-        }
-        
+    }
+    
+}
+
+// MARK: - YouTubePlayerWebView+JavaScript+player
+
+extension YouTubePlayerWebView.JavaScript {
+   
+    /// Bool value if the JavaScript contains a YouTube player usage e.g. function call or property access
+    var containsPlayerUsage: Bool {
+        self.rawValue.starts(with: YouTubePlayer.HTML.playerVariableName)
+    }
+    
+    /// Create YouTubePlayer JavaScript
+    /// - Parameter operator: The operator (function, property)
+    static func player(
+        _ operator: String
+    ) -> Self {
+        .init("\(YouTubePlayer.HTML.playerVariableName).\(`operator`)")
     }
     
 }
@@ -51,34 +60,62 @@ extension YouTubePlayerWebView {
         converter: JavaScriptEvaluationResponseConverter<Response>,
         completion: @escaping (Result<Response, YouTubePlayerAPIError>) -> Void
     ) {
-        // Evaluate JavaScript
-        self.evaluateJavaScript(
-            javaScript.rawValue
-        ) { javaScriptResponse, error in
-            // Initialize Result
-            let result: Result<Response, YouTubePlayerAPIError> = {
-                // Check if an Error is available
-                if let error = error {
-                    // Return failure with YouTubePlayerAPIError
-                    return .failure(
-                        .init(
-                            javaScript: javaScript.rawValue,
-                            javaScriptResponse: javaScriptResponse,
-                            underlyingError: error,
-                            reason: (error as NSError)
-                                .userInfo["WKJavaScriptExceptionMessage"] as? String
+        // Initialize evaluate javascript closure
+        let evaluateJavaScript = { [weak self] in
+            // Evaluate JavaScript
+            self?.evaluateJavaScript(
+                javaScript.rawValue
+            ) { javaScriptResponse, error in
+                // Initialize Result
+                let result: Result<Response, YouTubePlayerAPIError> = {
+                    // Check if an Error is available
+                    if let error = error {
+                        // Return failure with YouTubePlayerAPIError
+                        return .failure(
+                            .init(
+                                javaScript: javaScript.rawValue,
+                                javaScriptResponse: javaScriptResponse,
+                                underlyingError: error,
+                                reason: (error as NSError)
+                                    .userInfo["WKJavaScriptExceptionMessage"] as? String
+                            )
                         )
-                    )
-                } else {
-                    // Execute Converter and retrieve Result
-                    return converter(
-                        javaScript,
-                        javaScriptResponse
-                    )
-                }
-            }()
-            // Invoke completion with Result
-            completion(result)
+                    } else {
+                        // Execute Converter and retrieve Result
+                        return converter(
+                            javaScript,
+                            javaScriptResponse
+                        )
+                    }
+                }()
+                // Invoke completion with Result
+                completion(result)
+            }
+        }
+        // Check if JavaScript contains player usage
+        if javaScript.containsPlayerUsage {
+            // Switch on player state
+            switch self.player?.state {
+            case nil, .idle:
+                // Subscribe to state publisher
+                self.player?
+                    .statePublisher
+                    // Only include non idle states
+                    .filter { $0.isIdle == false }
+                    // Receive the first state
+                    .first()
+                    .sink { _ in
+                        // Evaluate the JavaScript
+                        evaluateJavaScript()
+                    }
+                    .store(in: &self.cancellables)
+            case .ready, .error:
+                // Synchronously evaluate the JavaScript
+                evaluateJavaScript()
+            }
+        } else {
+            // Otherwise synchronously evaluate the JavaScript
+            evaluateJavaScript()
         }
     }
     
