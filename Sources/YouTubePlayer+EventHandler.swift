@@ -64,7 +64,7 @@ private extension YouTubePlayer {
             // Send ready state
             self.playerStateSubject.send(.ready)
             // Check if autoPlay is enabled
-            if self.configuration.autoPlay == true {
+            if self.configuration.autoPlay == true && self.source != nil {
                 // Play Video
                 self.play()
             }
