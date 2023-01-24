@@ -92,6 +92,20 @@ extension YouTubePlayerWebView {
                 completion(result)
             }
         }
+        // Initialize execute javascript closure
+        let executeJavaScript = {
+            // Check if is main thread
+            if Thread.isMainThread {
+                // Evaluate javascript
+                evaluateJavaScript()
+            } else {
+                // Dispatch on main queue
+                DispatchQueue.main.async {
+                    // Evaluate javascript
+                    evaluateJavaScript()
+                }
+            }
+        }
         // Check if JavaScript contains player usage
         if javaScript.containsPlayerUsage {
             // Switch on player state
@@ -105,17 +119,17 @@ extension YouTubePlayerWebView {
                     // Receive the first state
                     .first()
                     .sink { _ in
-                        // Evaluate the JavaScript
-                        evaluateJavaScript()
+                        // Execute the JavaScript
+                        executeJavaScript()
                     }
                     .store(in: &self.cancellables)
             case .ready, .error:
-                // Synchronously evaluate the JavaScript
-                evaluateJavaScript()
+                // Synchronously execute the JavaScript
+                executeJavaScript()
             }
         } else {
-            // Otherwise synchronously evaluate the JavaScript
-            evaluateJavaScript()
+            // Otherwise synchronously execute the JavaScript
+            executeJavaScript()
         }
     }
     
