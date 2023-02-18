@@ -84,6 +84,16 @@ final class YouTubePlayerWebView: WKWebView {
     }
     #endif
     
+    #if os(macOS)
+    /// ScrollWheel Event
+    /// - Parameter event: The NSEvent
+    override func scrollWheel(with event: NSEvent) {
+        // Explicity overriden without super invocation
+        // to disable scrolling on macOS
+        self.nextResponder?.scrollWheel(with: event)
+    }
+    #endif
+    
 }
 
 // MARK: - Setup
