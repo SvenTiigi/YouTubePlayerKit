@@ -18,6 +18,10 @@ public extension YouTubePlayer {
         /// - Note: This property is excluded from encoding
         public var allowsPictureInPictureMediaPlayback: Bool?
         
+        /// The FullscreenMode
+        /// - Note: This property is excluded from encoding
+        public var fullscreenMode: FullscreenMode
+        
         /// The OpenURLAction
         /// - Note: This property is excluded from encoding
         public var openURLAction: OpenURLAction
@@ -101,6 +105,7 @@ public extension YouTubePlayer {
         public init(
             automaticallyAdjustsContentInsets: Bool? = nil,
             allowsPictureInPictureMediaPlayback: Bool? = nil,
+            fullscreenMode: FullscreenMode = .system,
             openURLAction: OpenURLAction = .default,
             autoPlay: Bool? = nil,
             captionLanguage: String? = nil,
@@ -123,6 +128,7 @@ public extension YouTubePlayer {
         ) {
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
+            self.fullscreenMode = fullscreenMode
             self.openURLAction = openURLAction
             self.autoPlay = autoPlay
             self.captionLanguage = captionLanguage
