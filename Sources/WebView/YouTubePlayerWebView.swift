@@ -46,6 +46,17 @@ final class YouTubePlayerWebView: WKWebView {
                 #if !os(macOS)
                 // Allows inline media playback
                 configuration.allowsInlineMediaPlayback = true
+                if #available(iOS 15.4, *) {
+                    configuration.preferences.isElementFullscreenEnabled = true
+                } else {
+                    configuration.preferences.setValue(true, forKey: "fullScreenEnabled")
+                }
+                #else
+                if #available(macOS 12.3, *) {
+                    configuration.preferences.isElementFullscreenEnabled = true
+                } else {
+                    configuration.preferences.setValue(true, forKey: "fullScreenEnabled")
+                }
                 #endif
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = []
