@@ -122,11 +122,6 @@ private extension YouTubePlayerWebView {
         self.navigationDelegate = self
         // Set ui delegate
         self.uiDelegate = self
-        #if !os(macOS)
-        // Set clear background color
-        self.backgroundColor = .clear
-        // Disable opaque
-        self.isOpaque = false
         // Set autoresizing masks
         self.autoresizingMask = {
             #if os(macOS)
@@ -135,8 +130,15 @@ private extension YouTubePlayerWebView {
             return [.flexibleWidth, .flexibleHeight]
             #endif
         }()
+        #if !os(macOS)
+        // Set clear background color
+        self.backgroundColor = .clear
+        // Disable opaque
+        self.isOpaque = false
         // Disable scrolling
         self.scrollView.isScrollEnabled = false
+        self.scrollView.showsVerticalScrollIndicator = false
+        self.scrollView.showsHorizontalScrollIndicator = false
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
         #endif
