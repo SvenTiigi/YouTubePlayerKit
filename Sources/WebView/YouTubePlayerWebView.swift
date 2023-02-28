@@ -195,6 +195,10 @@ extension YouTubePlayerWebView {
             .automaticallyAdjustsContentInsets
             ?? true
         #endif
+        // Set HTML element fullscreen enabled if fullscreen mode is set to web
+        // which results in a fullscreen YouTube player web user interface
+        // instead of the system fullscreen AVPlayerViewController
+        self.configuration.preferences.isHTMLElementFullscreenEnabled = player.configuration.fullscreenMode == .web
         // Set custom user agent
         self.customUserAgent = player.configuration.customUserAgent
         // Load HTML string
@@ -204,6 +208,33 @@ extension YouTubePlayerWebView {
         )
         // Return success
         return true
+    }
+    
+}
+
+// MARK: - WKPreferences+isFullscreenEnabled
+
+private extension WKPreferences {
+    
+    /// The `fullScreenEnabled` key used as fallback under iOS 15.4 and macOS 12.3
+    static let fullScreenEnabledKey = "fullScreenEnabled"
+    
+    /// Bool value if fullscreen HTML element is enabled.
+    var isHTMLElementFullscreenEnabled: Bool {
+        get {
+            if #available(iOS 15.4, macOS 12.3, *) {
+                return self.isElementFullscreenEnabled
+            } else {
+                return (self.value(forKey: Self.fullScreenEnabledKey) as? Bool) == true
+            }
+        }
+        set {
+            if #available(iOS 15.4, macOS 12.3, *) {
+                self.isElementFullscreenEnabled = newValue
+            } else {
+                self.setValue(newValue, forKey: Self.fullScreenEnabledKey)
+            }
+        }
     }
     
 }
