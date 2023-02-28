@@ -8,8 +8,8 @@ public extension YouTubePlayer.Configuration {
     enum FullscreenMode: String, Codable, Hashable, CaseIterable {
         /// System fullscreen mode (AVPlayerViewController).
         case system
-        /// YouTube fullscreen mode showing the YouTube player web user interface.
-        case youTube
+        /// Web fullscreen mode (YouTube web player)
+        case web
     }
     
 }

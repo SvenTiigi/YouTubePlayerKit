@@ -195,10 +195,10 @@ extension YouTubePlayerWebView {
             .automaticallyAdjustsContentInsets
             ?? true
         #endif
-        // Set HTML element fullscreen enabled if fullscreen mode is set to YouTube
+        // Set HTML element fullscreen enabled if fullscreen mode is set to web
         // which results in a fullscreen YouTube player web user interface
         // instead of the system fullscreen AVPlayerViewController
-        self.configuration.preferences.isHTMLElementFullscreenEnabled = player.configuration.fullscreenMode == .youTube
+        self.configuration.preferences.isHTMLElementFullscreenEnabled = player.configuration.fullscreenMode == .web
         // Set custom user agent
         self.customUserAgent = player.configuration.customUserAgent
         // Load HTML string
