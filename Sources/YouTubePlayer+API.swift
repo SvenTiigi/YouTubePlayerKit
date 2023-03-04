@@ -15,7 +15,7 @@ extension YouTubePlayer: YouTubePlayerConfigurationAPI {
         self.stop()
         // Destroy Player
         self.webView.evaluate(
-            javaScript: .player("destroy()"),
+            javaScript: .player(function: "destroy"),
             converter: .empty
         ) { [weak self] _ in
             // Update YouTubePlayer Configuration
@@ -172,7 +172,10 @@ extension YouTubePlayer: YouTubePlayerQueueingAPI {
         }
         // Evaluate JavaScript
         self.webView.evaluate(
-            javaScript: .player("\(javaScriptFunctionName)(\(parameterJSONString))")
+            javaScript: .player(
+                function: javaScriptFunctionName,
+                parameters: parameterJSONString
+            )
         )
     }
     
@@ -243,21 +246,21 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
     /// Plays the currently cued/loaded video
     public func play() {
         self.webView.evaluate(
-            javaScript: .player("playVideo()")
+            javaScript: .player(function: "playVideo")
         )
     }
     
     /// Pauses the currently playing video
     public func pause() {
         self.webView.evaluate(
-            javaScript: .player("pauseVideo()")
+            javaScript: .player(function: "pauseVideo")
         )
     }
     
     /// Stops and cancels loading of the current video
     public func stop() {
         self.webView.evaluate(
-            javaScript: .player("stopVideo()")
+            javaScript: .player(function: "stopVideo")
         )
     }
     
@@ -270,7 +273,10 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
         allowSeekAhead: Bool
     ) {
         self.webView.evaluate(
-            javaScript: .player("seekTo(\(seconds), \(String(allowSeekAhead)))")
+            javaScript: .player(
+                function: "seekTo",
+                parameters: String(seconds), String(allowSeekAhead)
+            )
         )
     }
     
@@ -286,7 +292,7 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
         completion: @escaping (Result<YouTubePlayer.Perspective360Degree, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getSphericalProperties()"),
+            javaScript: .player(function: "getSphericalProperties"),
             converter: .typeCast(
                 to: [String: Any].self
             )
@@ -309,7 +315,10 @@ extension YouTubePlayer: YouTubePlayer360DegreePerspectiveAPI {
         let jsonString = String(decoding: jsonData, as: UTF8.self)
         // Evaluate JavaScript
         self.webView.evaluate(
-            javaScript: .player("setSphericalProperties(\(jsonString))")
+            javaScript: .player(
+                function: "setSphericalProperties",
+                parameters: jsonString
+            )
         )
     }
     
@@ -322,14 +331,14 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
     /// This function loads and plays the next video in the playlist
     public func nextVideo() {
         self.webView.evaluate(
-            javaScript: .player("nextVideo()")
+            javaScript: .player(function: "nextVideo")
         )
     }
     
     /// This function loads and plays the previous video in the playlist
     public func previousVideo() {
         self.webView.evaluate(
-            javaScript: .player("previousVideo()")
+            javaScript: .player(function: "previousVideo")
         )
     }
     
@@ -339,7 +348,10 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         at index: Int
     ) {
         self.webView.evaluate(
-            javaScript: .player("playVideoAt(\(index))")
+            javaScript: .player(
+                function: "playVideoAt",
+                parameters: String(index)
+            )
         )
     }
     
@@ -350,7 +362,10 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         enabled: Bool
     ) {
         self.webView.evaluate(
-            javaScript: .player("setLoop(\(String(enabled)))")
+            javaScript: .player(
+                function: "setLoop",
+                parameters: String(enabled)
+            )
         )
     }
     
@@ -361,7 +376,10 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         enabled: Bool
     ) {
         self.webView.evaluate(
-            javaScript: .player("setShuffle(\(String(enabled)))")
+            javaScript: .player(
+                function: "setShuffle",
+                parameters: String(enabled)
+            )
         )
     }
     
@@ -371,7 +389,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         completion: @escaping (Result<[String], YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getPlaylist()"),
+            javaScript: .player(function: "getPlaylist"),
             converter: .typeCast(),
             completion: completion
         )
@@ -383,7 +401,7 @@ extension YouTubePlayer: YouTubePlayerPlaylistAPI {
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getPlaylistIndex()"),
+            javaScript: .player(function: "getPlaylistIndex"),
             converter: .typeCast(),
             completion: completion
         )
@@ -398,14 +416,14 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
     /// Mutes the player
     public func mute() {
         self.webView.evaluate(
-            javaScript: .player("mute()")
+            javaScript: .player(function: "mute")
         )
     }
     
     /// Unmutes the player
     public func unmute() {
         self.webView.evaluate(
-            javaScript: .player("unMute()")
+            javaScript: .player(function: "unMute")
         )
     }
     
@@ -415,7 +433,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
         completion: @escaping (Result<Bool, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("isMuted()"),
+            javaScript: .player(function: "isMuted"),
             converter: .typeCast(),
             completion: completion
         )
@@ -427,7 +445,7 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
         completion: @escaping (Result<Int, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getVolume()"),
+            javaScript: .player(function: "getVolume"),
             converter: .typeCast(),
             completion: completion
         )
@@ -449,7 +467,10 @@ extension YouTubePlayer: YouTubePlayerVolumeAPI {
         #endif
         let volume = max(0, min(volume, 100))
         self.webView.evaluate(
-            javaScript: .player("setVolume(\(volume))")
+            javaScript: .player(
+                function: "setVolume",
+                parameters: String(volume)
+            )
         )
     }
     
@@ -465,7 +486,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
         completion: @escaping (Result<YouTubePlayer.PlaybackRate, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getPlaybackRate()"),
+            javaScript: .player(function: "getPlaybackRate"),
             converter: .typeCast(),
             completion: completion
         )
@@ -477,7 +498,10 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
         playbackRate: YouTubePlayer.PlaybackRate
     ) {
         self.webView.evaluate(
-            javaScript: .player("setPlaybackRate(\(playbackRate))")
+            javaScript: .player(
+                function: "setPlaybackRate",
+                parameters: String(playbackRate)
+            )
         )
     }
     
@@ -487,7 +511,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackRateAPI {
         completion: @escaping (Result<[YouTubePlayer.PlaybackRate], YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getAvailablePlaybackRates()"),
+            javaScript: .player(function: "getAvailablePlaybackRates"),
             converter: .typeCast(),
             completion: completion
         )
@@ -505,7 +529,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getVideoLoadedFraction()"),
+            javaScript: .player(function: "getVideoLoadedFraction"),
             converter: .typeCast(),
             completion: completion
         )
@@ -517,7 +541,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         completion: @escaping (Result<YouTubePlayer.PlaybackState, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getPlayerState()"),
+            javaScript: .player(function: "getPlayerState"),
             converter: .typeCast(
                 to: Int.self
             )
@@ -532,7 +556,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getCurrentTime()"),
+            javaScript: .player(function: "getCurrentTime"),
             converter: .typeCast(),
             completion: completion
         )
@@ -544,7 +568,7 @@ extension YouTubePlayer: YouTubePlayerPlaybackAPI {
         completion: @escaping (Result<YouTubePlayer.PlaybackMetadata, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getVideoData()"),
+            javaScript: .player(function: "getVideoData"),
             converter: .typeCast(
                 to: [String: Any].self
             )
@@ -562,14 +586,14 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
     /// Show Stats for Nerds which displays additional video information
     public func showStatsForNerds() {
         self.webView.evaluate(
-            javaScript: .player("showVideoInfo()")
+            javaScript: .player(function: "showVideoInfo")
         )
     }
     
     /// Hide Stats for Nerds
     public func hideStatsForNerds() {
         self.webView.evaluate(
-            javaScript: .player("hideVideoInfo()")
+            javaScript: .player(function: "hideVideoInfo")
         )
     }
     
@@ -594,7 +618,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
         completion: @escaping (Result<Double, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getDuration()"),
+            javaScript: .player(function: "getDuration"),
             converter: .typeCast(),
             completion: completion
         )
@@ -606,7 +630,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getVideoUrl()"),
+            javaScript: .player(function: "getVideoUrl"),
             converter: .typeCast(),
             completion: completion
         )
@@ -618,7 +642,7 @@ extension YouTubePlayer: YouTubePlayerVideoInformationAPI {
         completion: @escaping (Result<String, YouTubePlayerAPIError>) -> Void
     ) {
         self.webView.evaluate(
-            javaScript: .player("getVideoEmbedCode()"),
+            javaScript: .player(function: "getVideoEmbedCode"),
             converter: .typeCast(),
             completion: completion
         )

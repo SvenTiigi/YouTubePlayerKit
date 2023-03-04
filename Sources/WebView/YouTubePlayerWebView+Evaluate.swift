@@ -43,6 +43,17 @@ extension YouTubePlayerWebView.JavaScript {
         .init("\(YouTubePlayer.HTML.playerVariableName).\(`operator`)")
     }
     
+    /// Create YouTubePlayer JavaScript with function
+    /// - Parameters:
+    ///   - function: The function name
+    ///   - parameters: The parameters.
+    static func player(
+        function: String,
+        parameters: String...
+    ) -> Self {
+        self.player("\(function)(\(parameters.joined(separator: ", ")))")
+    }
+    
 }
 
 // MARK: - YouTubePlayerWebView+evaluate
