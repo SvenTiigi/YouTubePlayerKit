@@ -47,6 +47,10 @@ final class YouTubePlayerWebView: WKWebView {
                 // Allows inline media playback
                 configuration.allowsInlineMediaPlayback = true
                 #endif
+                // Disable text interaction / selection
+                if #available(iOS 14.5, macOS 11.3, *) {
+                    configuration.preferences.isTextInteractionEnabled = false
+                }
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = []
                 // Return configuration
