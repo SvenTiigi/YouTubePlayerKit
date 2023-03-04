@@ -122,6 +122,8 @@ private extension YouTubePlayerWebView {
         self.navigationDelegate = self
         // Set ui delegate
         self.uiDelegate = self
+        // Disable link preview
+        self.allowsLinkPreview = false
         // Set autoresizing masks
         self.autoresizingMask = {
             #if os(macOS)
