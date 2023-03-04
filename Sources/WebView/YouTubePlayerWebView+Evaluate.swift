@@ -69,7 +69,7 @@ extension YouTubePlayerWebView {
     func evaluate<Response>(
         javaScript: JavaScript,
         converter: JavaScriptEvaluationResponseConverter<Response>,
-        completion: @escaping (Result<Response, YouTubePlayerAPIError>) -> Void
+        completion: @escaping (Result<Response, YouTubePlayer.APIError>) -> Void
     ) {
         // Initialize evaluate javascript closure
         let evaluateJavaScript = { [weak self] in
@@ -78,7 +78,7 @@ extension YouTubePlayerWebView {
                 javaScript.rawValue
             ) { javaScriptResponse, error in
                 // Initialize Result
-                let result: Result<Response, YouTubePlayerAPIError> = {
+                let result: Result<Response, YouTubePlayer.APIError> = {
                     // Check if an Error is available
                     if let error = error {
                         // Return failure with YouTubePlayerAPIError
@@ -172,7 +172,7 @@ extension YouTubePlayerWebView {
         typealias JavaScriptResponse = Any?
         
         /// The Convert closure typealias
-        typealias Convert = (JavaScript, JavaScriptResponse) -> Result<Output, YouTubePlayerAPIError>
+        typealias Convert = (JavaScript, JavaScriptResponse) -> Result<Output, YouTubePlayer.APIError>
         
         // MARK: Properties
         
@@ -199,7 +199,7 @@ extension YouTubePlayerWebView {
         func callAsFunction(
             _ javaScript: JavaScript,
             _ javaScriptResponse: JavaScriptResponse
-        ) -> Result<Output, YouTubePlayerAPIError> {
+        ) -> Result<Output, YouTubePlayer.APIError> {
             self.convert(
                 javaScript,
                 javaScriptResponse
