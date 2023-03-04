@@ -92,6 +92,7 @@ extension ContentView: View {
                         : .systemGroupedBackground
                 )
             )
+            .scrollContentBackground(.hidden)
         }
         .edgesIgnoringSafeArea(.bottom)
         .navigationViewStyle(StackNavigationViewStyle())
