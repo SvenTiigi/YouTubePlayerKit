@@ -11,6 +11,8 @@ extension YouTubePlayer {
     ) {
         switch webViewEvent {
         case .receivedJavaScriptEvent(let javaScriptEvent):
+            // Send object will change event
+            self.objectWillChange.send()
             // Handle JavaScriptEvent
             self.handle(
                 javaScriptEvent: javaScriptEvent
@@ -28,6 +30,8 @@ extension YouTubePlayer {
                 javaScript: .init("setYouTubePlayerSize(\(parameters));")
             )
         case .webContentProcessDidTerminate:
+            // Send object will change event
+            self.objectWillChange.send()
             // Send web content process did terminate error
             self.playerStateSubject.send(
                 .error(.webContentProcessDidTerminate)
