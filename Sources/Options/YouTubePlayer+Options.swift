@@ -99,7 +99,9 @@ extension YouTubePlayer.Options {
             break
         }
         // Check if an origin URL is available
-        if let originURL = originURL {
+        // and the player configuration doesn't contain an origin
+        if let originURL = originURL,
+           playerConfiguration[YouTubePlayer.Configuration.CodingKeys.origin.rawValue] == nil {
             // Set origin URL
             playerConfiguration[
                 YouTubePlayer.Configuration.CodingKeys.origin.rawValue

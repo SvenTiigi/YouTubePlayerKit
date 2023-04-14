@@ -81,6 +81,12 @@ public extension YouTubePlayer {
         /// Set the parameter value to true to prevent the YouTube logo from displaying in the control bar.
         public var useModestBranding: Bool?
         
+        /// This parameter provides an extra security measure for the IFrame API
+        /// and is only supported for IFrame embeds. If you are using the IFrame API,
+        /// which means you are setting the `enableJavaScriptAPI` parameter value to `true`,
+        /// you should always specify your domain as the origin parameter value.
+        public var origin: String?
+        
         /// This parameter controls whether videos play inline or fullscreen on iOS
         public var playInline: Bool?
         
@@ -120,6 +126,7 @@ public extension YouTubePlayer {
             showAnnotations: Bool? = nil,
             loopEnabled: Bool? = nil,
             useModestBranding: Bool? = nil,
+            origin: String? = nil,
             playInline: Bool? = nil,
             showRelatedVideos: Bool? = nil,
             startTime: Int? = nil,
@@ -143,6 +150,7 @@ public extension YouTubePlayer {
             self.showAnnotations = showAnnotations
             self.loopEnabled = loopEnabled
             self.useModestBranding = useModestBranding
+            self.origin = origin
             self.playInline = playInline
             self.showRelatedVideos = showRelatedVideos
             self.startTime = startTime
@@ -220,6 +228,7 @@ extension YouTubePlayer.Configuration: Encodable {
         try container.encodeIfPresent(self.showAnnotations.flatMap { $0 ? 1 : 3 }, forKey: .showAnnotations)
         try container.encodeIfPresent(self.loopEnabled?.bit, forKey: .loopEnabled)
         try container.encodeIfPresent(self.useModestBranding?.bit, forKey: .useModestBranding)
+        try container.encodeIfPresent(self.origin, forKey: .origin)
         try container.encodeIfPresent(self.playInline?.bit, forKey: .playInline)
         try container.encodeIfPresent(self.showRelatedVideos?.bit, forKey: .showRelatedVideos)
         try container.encodeIfPresent(self.startTime, forKey: .startTime)
