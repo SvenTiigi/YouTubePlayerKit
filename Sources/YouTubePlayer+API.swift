@@ -273,7 +273,14 @@ extension YouTubePlayer: YouTubePlayerVideoAPI {
             javaScript: .player("seekTo(\(seconds), \(String(allowSeekAhead)))")
         )
     }
-    
+
+    /// Closes all media presentations(Full screen/Picture in Picture) of the current video
+    @available(iOS 15.0 , macOS 12.0, *)
+    public func closeAllMediaPresentations() {
+        Task { @MainActor in
+            await self.webView.closeAllMediaPresentations()
+        }
+    }
 }
 
 // MARK: - YouTubePlayer360DegreePerspectiveAPI
