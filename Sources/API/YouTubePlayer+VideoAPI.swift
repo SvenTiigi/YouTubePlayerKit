@@ -40,5 +40,12 @@ public extension YouTubePlayer {
             )
         )
     }
-    
+
+    /// Closes all media presentations(Full screen/Picture in Picture) of the current video
+    @available(iOS 15.0 , macOS 12.0, *)
+    func closeAllMediaPresentations() {
+        Task { @MainActor in
+            await self.webView.closeAllMediaPresentations()
+        }
+    }
 }
