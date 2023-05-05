@@ -275,6 +275,12 @@ youTubePlayer.stop()
 
 // Seek to 60 seconds
 youTubePlayer.seek(to: 60, allowSeekAhead: false)
+
+// Closes any current picture-in-picture video and fullscreen video
+await youTubePlayer.closeAllMediaPresentations
+
+// Take a snapshot image from the current video
+let snapshotImage = try await youTubePlayer.takeSnapshot()
 ```
 
 #### Events
