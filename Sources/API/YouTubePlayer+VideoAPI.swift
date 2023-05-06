@@ -1,9 +1,4 @@
-#if os(macOS)
-import AppKit
-#else
-import UIKit
-#endif
-import WebKit
+import Foundation
 
 /// The YouTubePlayer Video API
 /// - Read more: https://developers.google.com/youtube/iframe_api_reference#Playback_controls
@@ -61,43 +56,6 @@ public extension YouTubePlayer {
     @MainActor
     func closeAllMediaPresentations() async {
         await self.webView.closeAllMediaPresentations()
-    }
-    #endif
-    
-    #if os(macOS)
-    /// A snapshot representing a `NSImage`
-    typealias Snapshot = NSImage
-    #else
-    /// A snapshot representing an `UIImage`
-    typealias Snapshot = UIImage
-    #endif
-    
-    /// Generates a platform-native image from the underlying web view’s contents asynchronously.
-    /// - Parameters:
-    ///   - configuration: The object that specifies the portion of the web view to capture, and other capture-related behaviors.
-    ///   - completionHandler: The completion handler to call when the image is ready.
-    func takeSnapshot(
-        configuration: WKSnapshotConfiguration? = nil,
-        completionHandler: @escaping (Result<Snapshot, Swift.Error>) -> Void
-    ) {
-        self.webView.takeSnapshot(with: configuration) { image, error in
-            if let image = image {
-                completionHandler(.success(image))
-            } else {
-                completionHandler(.failure(error ?? WKError(.unknown)))
-            }
-        }
-    }
-    
-    #if compiler(>=5.5) && canImport(_Concurrency)
-    /// Generates a platform-native image from the underlying web view’s contents asynchronously.
-    /// - Parameters:
-    ///   - configuration: The object that specifies the portion of the web view to capture, and other capture-related behaviors.
-    @MainActor
-    func takeSnapshot(
-        configuration: WKSnapshotConfiguration? = nil
-    ) async throws -> Snapshot {
-        try await self.webView.takeSnapshot(configuration: configuration)
     }
     #endif
     
