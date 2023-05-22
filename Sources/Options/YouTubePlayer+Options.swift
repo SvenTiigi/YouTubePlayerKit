@@ -45,7 +45,7 @@ extension YouTubePlayer.Options {
         originURL: URL?
     ) throws {
         // Retrieve Player Configuration as JSON
-        var playerConfiguration = try playerConfiguration.json()
+        var playerConfigurationJSON = try playerConfiguration.json()
         // Initialize Configuration
         var configuration: [String: Any] = [
             CodingKeys.width.rawValue: "100%",
@@ -72,26 +72,32 @@ extension YouTubePlayer.Options {
             // Check if a start seconds are available
             if let startSeconds = startSeconds {
                 // Set start time on player configuration
-                playerConfiguration[
+                playerConfigurationJSON[
                     YouTubePlayer.Configuration.CodingKeys.startTime.rawValue
                 ] = startSeconds
             }
+            // Check if loop is enabled
+            if playerConfiguration.loopEnabled == true {
+                // Add playlist parameter with video id
+                // as this parameter is required to make looping work
+                playerConfigurationJSON[YouTubePlayer.Configuration.ListType.playlist.rawValue] = id
+            }
         case .playlist(let id, _, _):
             // Set playlist
-            playerConfiguration[
+            playerConfigurationJSON[
                 YouTubePlayer.Configuration.CodingKeys.listType.rawValue
             ] = YouTubePlayer.Configuration.ListType.playlist.rawValue
             // Set playlist id
-            playerConfiguration[
+            playerConfigurationJSON[
                 YouTubePlayer.Configuration.CodingKeys.list.rawValue
             ] = id
         case .channel(let name, _, _):
             // Set user uploads
-            playerConfiguration[
+            playerConfigurationJSON[
                 YouTubePlayer.Configuration.CodingKeys.listType.rawValue
             ] = YouTubePlayer.Configuration.ListType.userUploads.rawValue
             // Set channel id
-            playerConfiguration[
+            playerConfigurationJSON[
                 YouTubePlayer.Configuration.CodingKeys.list.rawValue
             ] = name
         case nil:
@@ -101,14 +107,14 @@ extension YouTubePlayer.Options {
         // Check if an origin URL is available
         // and the player configuration doesn't contain an origin
         if let originURL = originURL,
-           playerConfiguration[YouTubePlayer.Configuration.CodingKeys.origin.rawValue] == nil {
+           playerConfigurationJSON[YouTubePlayer.Configuration.CodingKeys.origin.rawValue] == nil {
             // Set origin URL
-            playerConfiguration[
+            playerConfigurationJSON[
                 YouTubePlayer.Configuration.CodingKeys.origin.rawValue
             ] = originURL.absoluteString
         }
         // Set Player Configuration
-        configuration[CodingKeys.playerVars.rawValue] = playerConfiguration
+        configuration[CodingKeys.playerVars.rawValue] = playerConfigurationJSON
         // Make JSON string from Configuration
         self.json = try configuration.jsonString()
     }
