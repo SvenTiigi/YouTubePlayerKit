@@ -46,6 +46,7 @@ public extension YouTubePlayer {
                 function: "setSphericalProperties",
                 parameters: jsonString
             )
+            .embedInAnonymousFunction()
         )
     }
     

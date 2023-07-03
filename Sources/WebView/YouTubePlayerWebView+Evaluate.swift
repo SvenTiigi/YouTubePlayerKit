@@ -56,6 +56,17 @@ extension YouTubePlayerWebView.JavaScript {
     
 }
 
+// MARK: - YouTubePlayerWebView+JavaScript+embedInAnonymousFunction
+
+extension YouTubePlayerWebView.JavaScript {
+    
+    /// Embed JavaScript in an anonymous function
+    func embedInAnonymousFunction() -> Self {
+        .init("(function(){\(self.rawValue)})()")
+    }
+    
+}
+
 // MARK: - YouTubePlayerWebView+evaluate
 
 extension YouTubePlayerWebView {
