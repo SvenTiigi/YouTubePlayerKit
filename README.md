@@ -89,6 +89,7 @@ When submitting an app to the App Store which includes the `YouTubePlayerKit`, p
 
 - Audio background playback is not supported as it violates the YouTube Terms of Service.
 - Simultaneous playback of multiple YouTube players is not supported.
+- Controlling playback of [360° videos](https://developers.google.com/youtube/iframe_api_reference#Spherical_Video_Controls) is not supported on iOS and macOS.
 
 ## Usage
 
@@ -408,23 +409,6 @@ try await youTubePlayer.getPlaylist()
 
 // This function returns the index of the playlist video that is currently playing
 try await youTubePlayer.getPlaylistIndex()
-```
-
-#### Controlling playback of 360° videos
-
-```swift
-// Retrieves properties that describe the viewer's current perspective
-try await youTubePlayer.get360DegreePerspective()
-
-// Sets the video orientation for playback of a 360° video
-youTubePlayer.set(
-    perspective360Degree: .init(
-        yaw: 50,
-        pitch: 20,
-        roll: 60,
-        fov: 10
-    )
-)
 ```
 
 #### Setting the playback rate
