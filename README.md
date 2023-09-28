@@ -101,7 +101,8 @@ import YouTubePlayerKit
 
 struct ContentView: View {
 
-    let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
+    @StateObject
+    var youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 
     var body: some View {
         YouTubePlayerView(self.youTubePlayer) { state in

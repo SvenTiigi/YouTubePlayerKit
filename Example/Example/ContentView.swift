@@ -13,13 +13,14 @@ import YouTubePlayerKit
 /// The ContentView
 struct ContentView {
 
-    /// The YouTube Player
-    private let youTubePlayer = YouTubePlayer(
-        source: .url(WWDCKeynote.wwdc2022.youTubeURL)
-    )
-    
     /// All  WWDC Keynotes
     private let wwdcKeynotes: [WWDCKeynote] = WWDCKeynote.all.sorted(by: >)
+    
+    /// The YouTube Player
+    @StateObject
+    private var youTubePlayer = YouTubePlayer(
+        source: .url(WWDCKeynote.wwdc2022.youTubeURL)
+    )
     
     /// The color scheme
     @Environment(\.colorScheme)
