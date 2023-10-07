@@ -48,4 +48,11 @@ public extension YouTubePlayer {
         }
     }
     
+    /// Reloads the YouTubePlayer.
+    func reload() {
+        self.update(
+            configuration: self.configuration
+        )
+    }
+    
 }
