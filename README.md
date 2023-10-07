@@ -346,6 +346,13 @@ youTubePlayer.update(
 
 > **Note**: Updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
+#### Reload
+
+```swift
+// Reloads the player
+youTubePlayer.reload()
+```
+
 #### Changing the player volume
 
 ```swift
