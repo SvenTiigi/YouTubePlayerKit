@@ -90,15 +90,6 @@ public extension YouTubePlayer.Source {
                         startSeconds: startSeconds
                     )
                 }
-            case "embed":
-                // Check if a video identifier is available
-                if let videoId = url?.pathComponents[safe: 2] {
-                    // Return video source
-                    return .video(
-                        id: videoId,
-                        startSeconds: startSeconds
-                    )
-                }
             case "c", "user":
                 // Check if a channel name is available
                 if let channelName = url?.pathComponents[safe: 2] {
@@ -107,7 +98,7 @@ public extension YouTubePlayer.Source {
                         name: channelName
                     )
                 }
-            case "v":
+            default:
                 // Check if a video identifier is available
                 if let videoId = url?.pathComponents[safe: 2] {
                     // Return video source
@@ -116,8 +107,6 @@ public extension YouTubePlayer.Source {
                         startSeconds: startSeconds
                     )
                 }
-            default:
-                break
             }
         }
         // Otherwise return nil
