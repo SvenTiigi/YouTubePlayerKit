@@ -4,17 +4,27 @@ import XCTest
 final class YouTubePlayerSourceTests: XCTestCase {
     
     func testURLs() throws {
-        let urls = [
-            "https://youtube.com/watch?v=psL_5RIBqnY",
-            "https://youtu.be/psL_5RIBqnY",
-            "https://youtube.com/embed/psL_5RIBqnY",
-            "https://youtube.com/c/iJustine",
-            "https://youtube.com/user/iJustine",
-            "https://youtube.com/v/0e6HWEy1ZRE"
-        ]
-        for url in urls {
-            XCTAssertNotNil(YouTubePlayer.Source.url(url))
-        }
+        let testCandidate = UUID().uuidString
+        XCTAssertEqual(
+            YouTubePlayer.Source.url("https://youtube.com/watch?v=\(testCandidate)"),
+            .video(id: testCandidate)
+        )
+        XCTAssertEqual(
+            YouTubePlayer.Source.url("https://youtu.be/\(testCandidate)"),
+            .video(id: testCandidate)
+        )
+        XCTAssertEqual(
+            YouTubePlayer.Source.url("https://youtube.com/_/\(testCandidate)"),
+            .video(id: testCandidate)
+        )
+        XCTAssertEqual(
+            YouTubePlayer.Source.url("https://youtube.com/c/\(testCandidate)"),
+            .channel(name: testCandidate)
+        )
+        XCTAssertEqual(
+            YouTubePlayer.Source.url("https://youtube.com/user/\(testCandidate)"),
+            .channel(name: testCandidate)
+        )
     }
     
 }
