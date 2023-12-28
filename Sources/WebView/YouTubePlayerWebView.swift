@@ -53,6 +53,10 @@ final class YouTubePlayerWebView: WKWebView {
                 }
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = []
+
+                let script = WKUserScript(source: Self.userScriptSource, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+                configuration.userContentController.addUserScript(script)
+
                 // Return configuration
                 return configuration
             }()
@@ -126,6 +130,8 @@ private extension YouTubePlayerWebView {
         self.navigationDelegate = self
         // Set ui delegate
         self.uiDelegate = self
+        // set script message handler
+        configuration.userContentController.add(self, name: Self.messageHandlerName)
         // Disable link preview
         self.allowsLinkPreview = false
         // Set autoresizing masks

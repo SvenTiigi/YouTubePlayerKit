@@ -23,6 +23,11 @@ public extension YouTubePlayer {
         self.playbackStateSubject.value
     }
 
+    /// The current YouTubePlayer PictureInPicture, if available
+    var pictureInPicture: PictureInPictureState? {
+        self.playerPictureInPictureSubject.value
+    }
+
     /// A Boolean value that determines if the player is currently playing.
     var isPlaying: Bool {
         self.playbackState == .playing
@@ -77,4 +82,11 @@ public extension YouTubePlayer {
             .eraseToAnyPublisher()
     }
     
+    /// A Publisher that emits the current YouTubePlayer PlaybackRate
+    var pictureInPicturePublisher: AnyPublisher<PictureInPictureState, Never> {
+        self.playerPictureInPictureSubject
+            .compactMap { $0 }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
 }
