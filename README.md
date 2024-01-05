@@ -77,7 +77,8 @@ dependencies: [
 
 Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `YouTubePlayerKit`.
 
-> **Note**: When integrating YouTubePlayerKit to a macOS or Mac Catalyst target please ensure to enable "Outgoing Connections (Client)" in the "Signing & Capabilities" sections.
+> [!NOTE]
+> When integrating YouTubePlayerKit to a macOS or Mac Catalyst target please ensure to enable "Outgoing Connections (Client)" in the "Signing & Capabilities" sections.
 
 ## App Store Review
 
@@ -86,7 +87,6 @@ When submitting an app to the App Store which includes the `YouTubePlayerKit`, p
 > https://developers.google.com/youtube/terms/api-services-terms-of-service
 
 ## Limitations
-
 - Audio background playback is not supported as it violates the YouTube Terms of Service.
 - Simultaneous playback of multiple YouTube players is not supported.
 - Controlling playback of [360° videos](https://developers.google.com/youtube/iframe_api_reference#Spherical_Video_Controls) is not supported on iOS and macOS.
@@ -122,8 +122,6 @@ struct ContentView: View {
 }
 ```
 
-> Check out the additional [`YouTubePlayerView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/View/YouTubePlayerView%2BInit.swift) initializer to place an overlay for a given state.
-
 When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostingView`.
 
 ```swift
@@ -155,8 +153,8 @@ youTubePlayer.configuration = .init(
     autoPlay: true
 )
 ```
-
-> **Note**: Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
+> [!NOTE]
+> Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
 
 Since `YouTubePlayer` is conform to the [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) protocol you can listen for changes whenever the `source` or `configuration` of a `YouTubePlayer` gets updated.
 
@@ -208,8 +206,6 @@ Additionally, you can use a URL to initialize a `YouTubePlayer.Source`
 let urlSource: YouTubePlayer.Source? = .url("https://youtube.com/watch?v=psL_5RIBqnY")
 ```
 
-> When using a URL the `YouTubePlayer.Source` will be optional
-
 ### Configuration
 
 The `YouTubePlayer.Configuration` allows you to configure various [parameters](https://developers.google.com/youtube/player_parameters) of the underlying YouTube iFrame player.
@@ -236,13 +232,12 @@ let youTubePlayer = YouTubePlayer(
 )
 ```
 
+> [!TIP]
 > Check out the [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Configuration/YouTubePlayer%2BConfiguration.swift) to get a list of all available parameters.
 
 ### API
 
 Additionally, a `YouTubePlayer` allows you to access the underlying YouTube player iFrame API in order to play, pause, seek or retrieve information like the current playback quality or title of the video that is currently playing.
-
-> Check out the [`YouTubePlayerAPI`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/API/YouTubePlayerAPI.swift) protocol to get a list of all available functions and properties.
 
 #### Async/Await
 
@@ -343,8 +338,8 @@ youTubePlayer.update(
     )
 )
 ```
-
-> **Note**: Updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
+> [!NOTE]
+> Updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
 #### Reload
 
@@ -435,28 +430,3 @@ try await youTubePlayer.getAvailablePlaybackRates()
 ## Credits
 
 - [youtube/youtube-ios-player-helper](https://github.com/youtube/youtube-ios-player-helper)
-
-## License
-
-```
-YouTubePlayerKit
-Copyright (c) 2023 Sven Tiigi sven.tiigi@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-```
