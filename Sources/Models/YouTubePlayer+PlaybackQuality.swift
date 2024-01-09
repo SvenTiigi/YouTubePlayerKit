@@ -20,6 +20,8 @@ public extension YouTubePlayer {
         case hd1080
         /// High resolution
         case highResolution = "highres"
+        // Unknown
+        case unknown
     }
     
 }
