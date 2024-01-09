@@ -133,8 +133,20 @@ extension YouTubePlayerWebView {
             // Switch on player state
             switch self.player?.state {
             case nil, .idle:
+                // Verify a player is available
+                guard let player = self.player else {
+                    // Otherwise return out of function and complete with failure
+                    return completion(
+                        .failure(
+                            .init(
+                                javaScript: javaScript.rawValue,
+                                reason: "YouTubePlayer has been deallocated"
+                            )
+                        )
+                    )
+                }
                 // Subscribe to state publisher
-                self.player?
+                let cancellable = player
                     .statePublisher
                     // Only include non idle states
                     .filter { $0.isIdle == false }
@@ -144,7 +156,11 @@ extension YouTubePlayerWebView {
                         // Execute the JavaScript
                         executeJavaScript()
                     }
-                    .store(in: &self.cancellables)
+                // Dispatch on main queue
+                DispatchQueue.main.async { [weak self] in
+                    // Retain cancellable
+                    self?.cancellables.insert(cancellable)
+                }
             case .ready, .error:
                 // Synchronously execute the JavaScript
                 executeJavaScript()
