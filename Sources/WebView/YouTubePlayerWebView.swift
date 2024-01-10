@@ -136,6 +136,9 @@ private extension YouTubePlayerWebView {
             return [.flexibleWidth, .flexibleHeight]
             #endif
         }()
+        if #available(iOS 15.0, macOS 12.0, *) {
+            self.underPageBackgroundColor = .clear
+        }
         #if !os(macOS)
         // Set clear background color
         self.backgroundColor = .clear
