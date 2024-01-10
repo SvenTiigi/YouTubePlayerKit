@@ -16,7 +16,7 @@ on:
 jobs:
   iOS:
     name: Build and test on iOS
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build
