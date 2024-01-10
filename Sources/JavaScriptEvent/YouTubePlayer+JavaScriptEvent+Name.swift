@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer.JavaScriptEvent {
     
     /// The YouTubePlayer JavaScriptEvent Name
-    enum Name: String, Codable, Hashable, CaseIterable {
+    enum Name: String, Codable, Hashable, Sendable, CaseIterable {
         /// iFrame API is ready
         case onIframeAPIReady
         /// iFrame API failed to load

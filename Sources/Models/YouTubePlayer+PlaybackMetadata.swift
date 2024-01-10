@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer PlaybackMetadata
-    struct PlaybackMetadata: Codable, Hashable {
+    struct PlaybackMetadata: Codable, Hashable, Sendable {
         
         // MARK: Properties
         

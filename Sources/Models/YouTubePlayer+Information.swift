@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer Information
-    struct Information: Codable, Hashable {
+    struct Information: Codable, Hashable, Sendable {
         
         // MARK: Properties
         

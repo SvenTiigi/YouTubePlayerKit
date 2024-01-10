@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer {
     
     /// The YouTubePlayer HTML
-    struct HTML: Hashable {
+    struct HTML: Codable, Hashable, Sendable {
         
         /// The HTML contents
         let contents: String

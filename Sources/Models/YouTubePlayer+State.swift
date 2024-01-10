@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer State
-    enum State {
+    enum State: Sendable {
         /// Idle
         case idle
         /// Ready

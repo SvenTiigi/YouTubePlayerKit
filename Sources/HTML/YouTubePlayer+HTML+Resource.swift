@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer.HTML {
     
     /// A YouTubePlayer HTML Resource
-    struct Resource: Codable, Hashable {
+    struct Resource: Codable, Hashable, Sendable {
         
         /// The file name
         let fileName: String

@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer {
     
     /// A YouTubePlayer JavaScriptEvent
-    struct JavaScriptEvent: Codable, Hashable {
+    struct JavaScriptEvent: Codable, Hashable, Sendable {
         
         /// The JavaScriptEvent Name
         let name: Name

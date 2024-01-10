@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayerWebView {
     
     /// A YouTubePlayerWebView Event
-    enum Event {
+    enum Event: Sendable {
         /// Received JavaScriptEvent from YouTubePlayer
         case receivedJavaScriptEvent(YouTubePlayer.JavaScriptEvent)
         /// The frame of the YouTubePlayerWebView changed

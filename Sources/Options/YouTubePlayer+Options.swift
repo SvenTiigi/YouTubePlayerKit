@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer {
     
     /// The YouTubePlayer Options
-    struct Options: Hashable {
+    struct Options: Hashable, Sendable {
         
         /// The JSON string representation
         let json: String

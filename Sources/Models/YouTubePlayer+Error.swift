@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer Error
-    enum Error: Swift.Error {
+    enum Error: Swift.Error, Sendable {
         /// Player setup failed with Error
         case setupFailed(Swift.Error)
         /// The web views underlying web content process was terminated

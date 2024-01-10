@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayer.Configuration {
     
     /// The YouTubePlayer Configuration ListType
-    enum ListType: String, Codable, Hashable, CaseIterable {
+    enum ListType: String, Codable, Hashable, Sendable, CaseIterable {
         /// Playlist
         case playlist
         /// User uploads / channel

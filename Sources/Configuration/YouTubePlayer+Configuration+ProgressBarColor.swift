@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer.Configuration {
     
     /// The YouTubePlayer Configuration ProgressBar Color
-    enum ProgressBarColor: String, Codable, Hashable, CaseIterable {
+    enum ProgressBarColor: String, Codable, Hashable, Sendable, CaseIterable {
         /// YouTube red color
         case red
         /// White color

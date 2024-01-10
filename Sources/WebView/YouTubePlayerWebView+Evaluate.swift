@@ -5,7 +5,7 @@ import Foundation
 extension YouTubePlayerWebView {
     
     /// A JavaScript
-    struct JavaScript: Codable, Hashable {
+    struct JavaScript: Codable, Hashable, Sendable {
         
         // MARK: Properties
         

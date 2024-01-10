@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// The YouTubePlayer Source
-    enum Source: Hashable {
+    enum Source: Hashable, Sendable {
         /// Video
         case video(
             id: String,
