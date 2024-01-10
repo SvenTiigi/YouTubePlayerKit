@@ -58,8 +58,7 @@ struct ContentView: View {
 - [x] YouTube [Terms of Service](https://developers.google.com/youtube/terms/api-services-terms-of-service) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI, UIKit and AppKit 🧑‍🎨
-- [x] Runs on iOS and macOS 📱 🖥
-- [x] `async/await` support ⛓
+- [x] Runs on iOS, macOS and visionOS 📱 🖥 👓
 
 ## Example
 
@@ -71,7 +70,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.5.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.6.0")
 ]
 ```
 
@@ -87,6 +86,7 @@ When submitting an app to the App Store which includes the `YouTubePlayerKit`, p
 > https://developers.google.com/youtube/terms/api-services-terms-of-service
 
 ## Limitations
+
 - Audio background playback is not supported as it violates the YouTube Terms of Service.
 - Simultaneous playback of multiple YouTube players is not supported.
 - Controlling playback of [360° videos](https://developers.google.com/youtube/iframe_api_reference#Spherical_Video_Controls) is not supported on iOS and macOS.
@@ -153,6 +153,7 @@ youTubePlayer.configuration = .init(
     autoPlay: true
 )
 ```
+
 > [!NOTE]
 > Updating the `YouTubePlayer.Configuration` will result in a reload of the YouTubePlayer.
 
@@ -338,6 +339,7 @@ youTubePlayer.update(
     )
 )
 ```
+
 > [!NOTE]
 > Updating the `YouTubePlayer.Configuration` will result in a reload of the entire YouTubePlayer
 
