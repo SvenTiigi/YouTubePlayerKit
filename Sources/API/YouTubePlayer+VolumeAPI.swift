@@ -5,18 +5,48 @@ import Foundation
 public extension YouTubePlayer {
     
     /// Mutes the player
-    func mute() {
+    /// - Parameter completion: The completion closure
+    func mute(
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
         self.webView.evaluate(
-            javaScript: .player(function: "mute")
+            javaScript: .player(function: "mute"),
+            completion: completion
         )
     }
     
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Mutes the player
+    func mute() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.mute(
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
+    
     /// Unmutes the player
-    func unmute() {
+    /// - Parameter completion: The completion closure
+    func unmute(
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
         self.webView.evaluate(
-            javaScript: .player(function: "unMute")
+            javaScript: .player(function: "unMute"),
+            completion: completion
         )
     }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Unmutes the player
+    func unmute() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.unmute(
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
     
     /// Retrieve the Bool value if the player is muted
     /// - Parameter completion: The completion closure
@@ -65,9 +95,12 @@ public extension YouTubePlayer {
     /// - Note: This function is part of the official YouTube Player iFrame API
     ///  but due to limitations and restrictions of the underlying WKWebView
     ///  the call has no effect on the actual volume of the device
-    /// - Parameter volume: The volume
+    /// - Parameters:
+    ///   - volume: The volume
+    ///   - completion: The completion closure
     func set(
-        volume: Int
+        volume: Int,
+        completion: ((Result<Void, APIError>) -> Void)? = nil
     ) {
         #if DEBUG
         print(
@@ -79,8 +112,29 @@ public extension YouTubePlayer {
             javaScript: .player(
                 function: "setVolume",
                 parameters: String(volume)
-            )
+            ),
+            completion: completion
         )
     }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Sets the volume.
+    /// Accepts an integer between 0 and 100
+    /// - Note: This function is part of the official YouTube Player iFrame API
+    ///  but due to limitations and restrictions of the underlying WKWebView
+    ///  the call has no effect on the actual volume of the device
+    /// - Parameters:
+    ///   - volume: The volume
+    func set(
+        volume: Int
+    ) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.set(
+                volume: volume,
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
     
 }

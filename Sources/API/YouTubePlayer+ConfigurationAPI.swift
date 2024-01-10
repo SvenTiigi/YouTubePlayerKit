@@ -5,9 +5,12 @@ public extension YouTubePlayer {
     
     /// Update YouTubePlayer Configuration
     /// - Note: Updating the Configuration will result in a reload of the entire YouTubePlayer
-    /// - Parameter configuration: The YouTubePlayer Configuration
+    /// - Parameters:
+    ///   - configuration: The YouTubePlayer Configuration
+    ///   - completion: The completion closure
     func update(
-        configuration: Configuration
+        configuration: Configuration,
+        completion: (() -> Void)? = nil
     ) {
         // Stop Player
         self.stop()
@@ -45,14 +48,49 @@ public extension YouTubePlayer {
             }
             // Re-Load Player
             self.webView.load(using: self)
+            // Invoke completion
+            completion?()
         }
     }
     
-    /// Reloads the YouTubePlayer.
-    func reload() {
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Update YouTubePlayer Configuration
+    /// - Note: Updating the Configuration will result in a reload of the entire YouTubePlayer
+    /// - Parameters:
+    ///   - configuration: The YouTubePlayer Configuration
+    func update(
+        configuration: Configuration
+    ) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.update(
+                configuration: configuration,
+                completion: continuation.resume
+            )
+        }
+    }
+    #endif
+    
+    /// Reloads the YouTubePlayer
+    /// - Parameter completion: The completion closure
+    func reload(
+        completion: (() -> Void)? = nil
+    ) {
         self.update(
-            configuration: self.configuration
+            configuration: self.configuration,
+            completion: completion
         )
     }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Reloads the YouTubePlayer
+    /// - Parameter completion: The completion closure
+    func reload() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.reload(
+                completion: continuation.resume
+            )
+        }
+    }
+    #endif
     
 }

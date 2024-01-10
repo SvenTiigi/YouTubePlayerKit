@@ -6,18 +6,48 @@ import Foundation
 public extension YouTubePlayer {
     
     /// Show Stats for Nerds which displays additional video information
-    func showStatsForNerds() {
+    /// - Parameter completion: The completion closure
+    func showStatsForNerds(
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
         self.webView.evaluate(
-            javaScript: .player(function: "showVideoInfo")
+            javaScript: .player(function: "showVideoInfo"),
+            completion: completion
         )
     }
     
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Show Stats for Nerds which displays additional video information
+    func showStatsForNerds() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.showStatsForNerds(
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
+    
     /// Hide Stats for Nerds
-    func hideStatsForNerds() {
+    /// - Parameter completion: The completion closure
+    func hideStatsForNerds(
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
         self.webView.evaluate(
-            javaScript: .player(function: "hideVideoInfo")
+            javaScript: .player(function: "hideVideoInfo"),
+            completion: completion
         )
     }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Hide Stats for Nerds
+    func hideStatsForNerds() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.hideStatsForNerds(
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
     
     /// Retrieve the YouTubePlayer Information
     /// - Parameter completion: The completion closure
