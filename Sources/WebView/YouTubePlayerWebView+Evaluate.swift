@@ -171,16 +171,19 @@ extension YouTubePlayerWebView {
         }
     }
     
-    /// Evaluates the given JavaScript
-    /// - Parameter javaScript: The JavaScript that should be evaluated
+    /// Evaluates the JavaScript
+    /// - Parameters:
+    ///   - javaScript: The JavaScript that should be evaluated
+    ///   - completion: The completion closure when the JavaScript has finished executing
     func evaluate(
-        javaScript: JavaScript
+        javaScript: JavaScript,
+        completion: ((Result<Void, YouTubePlayer.APIError>) -> Void)? = nil
     ) {
         // Evaluate JavaScript with `empty` Converter
         self.evaluate(
             javaScript: javaScript,
             converter: .empty,
-            completion: { _ in }
+            completion: { completion?($0) }
         )
     }
     
