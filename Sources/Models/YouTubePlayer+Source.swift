@@ -62,7 +62,7 @@ public extension YouTubePlayer.Source {
         // Initialize PathComponents and drop first which is the leading "/"
         let pathComponents = url?.pathComponents.dropFirst()
         // Check if URL host has YouTube share url host
-        if url?.host?.hasSuffix("youtu.be") == true {
+        if url?.host?.lowercased().hasSuffix("youtu.be") == true {
             // Check if a video id is available
             if let videoId = pathComponents?.first {
                 // Return video source
@@ -71,7 +71,7 @@ public extension YouTubePlayer.Source {
                     startSeconds: startSeconds
                 )
             }
-        } else {
+        } else if url?.host?.lowercased().contains("youtube") == true {
             // Otherwise switch on first path component
             switch pathComponents?.first {
             case "watch":
