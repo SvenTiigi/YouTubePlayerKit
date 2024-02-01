@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     name: Build example project
-    runs-on: macOS-latest
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v2
