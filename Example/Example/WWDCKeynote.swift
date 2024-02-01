@@ -1,10 +1,3 @@
-//
-//  WWDCKeynote.swift
-//  Example
-//
-//  Created by Sven Tiigi on 21.09.21.
-//
-
 import Foundation
 
 // MARK: - WWDCKeynote
@@ -63,7 +56,8 @@ extension WWDCKeynote {
         .wwdc2019,
         .wwdc2020,
         .wwdc2021,
-        .wwdc2022
+        .wwdc2022,
+        .wwdc2023
     ]
     
 }
@@ -115,6 +109,11 @@ extension WWDCKeynote {
     static let wwdc2022: Self = .init(
         year: 2022,
         youTubeURL: "https://www.youtube.com/watch?v=q5D55G7Ejs8"
+    )
+    
+    static let wwdc2023: Self = .init(
+        year: 2023,
+        youTubeURL: "https://www.youtube.com/watch?v=GYkq9Rgoj8E"
     )
     
 }
