@@ -58,7 +58,7 @@ struct ContentView: View {
 - [x] YouTube [Terms of Service](https://developers.google.com/youtube/terms/api-services-terms-of-service) compliant implementation ✅
 - [x] Access to all native YouTube iFrame [APIs](https://developers.google.com/youtube/iframe_api_reference) 👩‍💻👨‍💻
 - [x] Support for SwiftUI, UIKit and AppKit 🧑‍🎨
-- [x] Runs on iOS and macOS 📱 🖥
+- [x] Runs on iOS, macOS and visionOS 📱 🖥 👓
 
 ## Example
 
@@ -70,7 +70,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.6.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.7.0")
 ]
 ```
 
