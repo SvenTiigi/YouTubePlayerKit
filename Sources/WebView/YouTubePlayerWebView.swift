@@ -48,7 +48,7 @@ final class YouTubePlayerWebView: WKWebView {
                 configuration.allowsInlineMediaPlayback = true
                 #endif
                 // Disable text interaction / selection
-                if #available(iOS 14.5, macOS 11.3, *) {
+                if #available(iOS 14.5, macOS 11.3, visionOS 1.0, *) {
                     configuration.preferences.isTextInteractionEnabled = false
                 }
                 // No media types requiring user action for playback
@@ -72,17 +72,17 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: View-Lifecycle
     
-    #if os(iOS)
-    /// Layout Subviews
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Send frame on Layout Subject
-        self.layoutLifecycleSubject.send(self.frame)
-    }
-    #elseif os(macOS)
+    #if os(macOS)
     /// Perform layout
     override func layout() {
         super.layout()
+        // Send frame on Layout Subject
+        self.layoutLifecycleSubject.send(self.frame)
+    }
+    #else
+    /// Layout Subviews
+    override func layoutSubviews() {
+        super.layoutSubviews()
         // Send frame on Layout Subject
         self.layoutLifecycleSubject.send(self.frame)
     }
@@ -128,6 +128,8 @@ private extension YouTubePlayerWebView {
         self.uiDelegate = self
         // Disable link preview
         self.allowsLinkPreview = false
+        // Disable gesture navigation
+        self.allowsBackForwardNavigationGestures = false
         // Set autoresizing masks
         self.autoresizingMask = {
             #if os(macOS)
@@ -136,7 +138,7 @@ private extension YouTubePlayerWebView {
             return [.flexibleWidth, .flexibleHeight]
             #endif
         }()
-        if #available(iOS 15.0, macOS 12.0, *) {
+        if #available(iOS 15.0, macOS 12.0, visionOS 1.0, *) {
             self.underPageBackgroundColor = .clear
         }
         #if !os(macOS)
@@ -233,14 +235,14 @@ private extension WKPreferences {
     /// Bool value if fullscreen HTML element is enabled.
     var isHTMLElementFullscreenEnabled: Bool {
         get {
-            if #available(iOS 15.4, macOS 12.3, *) {
+            if #available(iOS 15.4, macOS 12.3, visionOS 1.0, *) {
                 return self.isElementFullscreenEnabled
             } else {
                 return (self.value(forKey: Self.fullScreenEnabledKey) as? Bool) == true
             }
         }
         set {
-            if #available(iOS 15.4, macOS 12.3, *) {
+            if #available(iOS 15.4, macOS 12.3, visionOS 1.0, *) {
                 self.isElementFullscreenEnabled = newValue
             } else {
                 self.setValue(newValue, forKey: Self.fullScreenEnabledKey)
