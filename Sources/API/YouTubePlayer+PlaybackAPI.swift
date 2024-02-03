@@ -93,18 +93,21 @@ public extension YouTubePlayer {
     /// Retrieve the elapsed time in seconds since the video started playing
     /// - Parameter completion: The completion closure
     func getCurrentTime(
-        completion: @escaping (Result<Double, APIError>) -> Void
+        completion: @escaping (Result<Measurement<UnitDuration>, APIError>) -> Void
     ) {
         self.webView.evaluate(
             javaScript: .player(function: "getCurrentTime"),
-            converter: .typeCast(),
-            completion: completion
-        )
+            converter: .typeCast(to: Double.self)
+        ) { result in
+            completion(
+                result.map { .init(value: $0, unit: .seconds) }
+            )
+        }
     }
     
     #if compiler(>=5.5) && canImport(_Concurrency)
     /// Returns the elapsed time in seconds since the video started playing
-    func getCurrentTime() async throws -> Double {
+    func getCurrentTime() async throws -> Measurement<UnitDuration> {
         try await withCheckedThrowingContinuation { continuation in
             self.getCurrentTime(
                 completion: continuation.resume
@@ -117,7 +120,7 @@ public extension YouTubePlayer {
     /// - Parameter updateInterval: The update TimeInterval in seconds to retrieve the current elapsed time. Default value `0.5`
     func currentTimePublisher(
         updateInterval: TimeInterval = 0.5
-    ) -> AnyPublisher<Double, Never> {
+    ) -> AnyPublisher<Measurement<UnitDuration>, Never> {
         Just(
             .init()
         )
