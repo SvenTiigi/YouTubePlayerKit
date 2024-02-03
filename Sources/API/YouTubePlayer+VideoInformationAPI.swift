@@ -76,18 +76,21 @@ public extension YouTubePlayer {
     /// Retrieve the duration in seconds of the currently playing video
     /// - Parameter completion: The completion closure
     func getDuration(
-        completion: @escaping (Result<Double, APIError>) -> Void
+        completion: @escaping (Result<Measurement<UnitDuration>, APIError>) -> Void
     ) {
         self.webView.evaluate(
             javaScript: .player(function: "getDuration"),
-            converter: .typeCast(),
-            completion: completion
-        )
+            converter: .typeCast(to: Double.self)
+        ) { result in
+            completion(
+                result.map { .init(value: $0, unit: .seconds) }
+            )
+        }
     }
     
     #if compiler(>=5.5) && canImport(_Concurrency)
     /// Returns the duration in seconds of the currently playing video
-    func getDuration() async throws -> Double {
+    func getDuration() async throws -> Measurement<UnitDuration> {
         try await withCheckedThrowingContinuation { continuation in
             self.getDuration(completion: continuation.resume)
         }
@@ -95,7 +98,7 @@ public extension YouTubePlayer {
     #endif
     
     /// A Publisher that emits the duration in seconds of the currently playing video
-    var durationPublisher: AnyPublisher<Double, Never> {
+    var durationPublisher: AnyPublisher<Measurement<UnitDuration>, Never> {
         self.playbackStatePublisher
             .filter { $0 == .playing }
             .flatMap { _ in
