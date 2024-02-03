@@ -44,6 +44,40 @@ extension YouTubePlayer.Source: Identifiable {
     
 }
 
+// MARK: - Set Seconds
+
+public extension YouTubePlayer.Source {
+    
+    /// Sets the start time.
+    /// - Parameter startTime: The start time.
+    mutating func set(
+        startTime: Measurement<UnitDuration>
+    ) {
+        let startSeconds = Int(startTime.converted(to: .seconds).value)
+        switch self {
+        case .video(let id, _, let endSeconds):
+            self = .video(
+                id: id,
+                startSeconds: startSeconds,
+                endSeconds: endSeconds
+            )
+        case .playlist(let id, let index, _):
+            self = .playlist(
+                id: id,
+                index: index,
+                startSeconds: startSeconds
+            )
+        case .channel(let name, let index, _):
+            self = .channel(
+                name: name,
+                index: index,
+                startSeconds: startSeconds
+            )
+        }
+    }
+    
+}
+
 // MARK: - Source+url
 
 public extension YouTubePlayer.Source {
