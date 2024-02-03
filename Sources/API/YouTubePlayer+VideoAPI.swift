@@ -72,18 +72,18 @@ public extension YouTubePlayer {
     
     /// Seeks to a specified time in the video
     /// - Parameters:
-    ///   - seconds: The seconds parameter identifies the time to which the player should advance
-    ///   - allowSeekAhead: Determines whether the player will make a new request to the server
+    ///   - time: The parameter identifies the time to which the player should advance
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
     ///   - completion: The completion closure
     func seek(
-        to seconds: Double,
-        allowSeekAhead: Bool,
+        to time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true,
         completion: ((Result<Void, APIError>) -> Void)? = nil
     ) {
         self.webView.evaluate(
             javaScript: .player(
                 function: "seekTo",
-                parameters: String(seconds), String(allowSeekAhead)
+                parameters: String(time.converted(to: .seconds).value), String(allowSeekAhead)
             ),
             completion: completion
         )
@@ -92,16 +92,102 @@ public extension YouTubePlayer {
     #if compiler(>=5.5) && canImport(_Concurrency)
     /// Seeks to a specified time in the video
     /// - Parameters:
-    ///   - seconds: The seconds parameter identifies the time to which the player should advance
-    ///   - allowSeekAhead: Determines whether the player will make a new request to the server
+    ///   - time: The parameter identifies the time to which the player should advance
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
     ///   - completion: The completion closure
     func seek(
-        to seconds: Double,
-        allowSeekAhead: Bool
+        to time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true
     ) async throws {
         try await withCheckedThrowingContinuation { continuation in
             self.seek(
-                to: seconds, 
+                to: time,
+                allowSeekAhead: allowSeekAhead,
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
+    
+    /// Fast forward by the given time.
+    /// - Parameters:
+    ///   - time: The time to fast forward.
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
+    ///   - completion: The completion closure.
+    func fastForward(
+        by time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true,
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
+        self.getCurrentTime { result in
+            switch result {
+            case .success(let currentTime):
+                self.seek(
+                    to: currentTime + time,
+                    allowSeekAhead: allowSeekAhead,
+                    completion: completion
+                )
+            case .failure(let error):
+                completion?(.failure(error))
+            }
+        }
+    }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Fast forward by the given time.
+    /// - Parameters:
+    ///   - time: The time to fast forward.
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
+    func fastForward(
+        by time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true
+    ) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.fastForward(
+                by: time,
+                allowSeekAhead: allowSeekAhead,
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+    #endif
+    
+    /// Rewind by the given time.
+    /// - Parameters:
+    ///   - time: The time to rewind.
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
+    ///   - completion: The completion closure.
+    func rewind(
+        by time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true,
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
+        self.getCurrentTime { result in
+            switch result {
+            case .success(let currentTime):
+                self.seek(
+                    to: currentTime - time,
+                    allowSeekAhead: allowSeekAhead,
+                    completion: completion
+                )
+            case .failure(let error):
+                completion?(.failure(error))
+            }
+        }
+    }
+    
+    #if compiler(>=5.5) && canImport(_Concurrency)
+    /// Rewind by the given time.
+    /// - Parameters:
+    ///   - time: The time to rewind.
+    ///   - allowSeekAhead: Determines whether the player will make a new request to the server. Default value `true`
+    func rewind(
+        by time: Measurement<UnitDuration>,
+        allowSeekAhead: Bool = true
+    ) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.rewind(
+                by: time,
                 allowSeekAhead: allowSeekAhead,
                 completion: continuation.resume(with:)
             )
