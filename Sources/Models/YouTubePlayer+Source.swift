@@ -88,10 +88,21 @@ public extension YouTubePlayer.Source {
         _ urlString: String
     ) -> Self? {
         // Initialize URL from string and call URL-based convenience method
-        guard let url = URL(string: urlString) else {
+        guard let url: URL = {
+            if #available(iOS 17.0, tvOS 17.0, watchOS 10.0, macOS 14.0, *) {
+                return .init(
+                    string: urlString,
+                    encodingInvalidCharacters: false
+                )
+            } else {
+                return .init(
+                    string: urlString
+                )
+            }
+        }() else {
             return nil
         }
-        return Self.url(url)
+        return self.url(url)
     }
     
     /// Creats `YouTubePlayer.Source` from a given URL, if available
