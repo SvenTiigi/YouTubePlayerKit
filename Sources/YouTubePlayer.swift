@@ -51,7 +51,10 @@ public final class YouTubePlayer: ObservableObject {
     
     /// The YouTubePlayer PlaybackRate CurrentValueSubject
     private(set) lazy var playbackRateSubject = CurrentValueSubject<PlaybackRate?, Never>(nil)
-    
+
+    /// The YouTubePlayer PictureInPicture CurrentValueSubject
+    private(set) lazy var playerPictureInPictureSubject = CurrentValueSubject<PictureInPictureState?, Never>(nil)
+
     /// The YouTubePlayer WebView
     private(set) lazy var webView: YouTubePlayerWebView = {
         // Initialize a YouTubePlayerWebView
