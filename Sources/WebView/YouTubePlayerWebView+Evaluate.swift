@@ -86,7 +86,16 @@ extension YouTubePlayerWebView {
         let evaluateJavaScript = { [weak self] in
             // Evaluate JavaScript
             self?.evaluateJavaScript(
-                javaScript.rawValue
+              // Wrap JavaScript with no-op function to address
+              // JavaScript execution returning an error involving
+              // a result of an unsupported type, based off
+              // solution from the following URL:
+              //   - https://stackoverflow.com/a/75657727
+              """
+              (function() {
+                  \(javaScript.rawValue);
+              })();
+              """
             ) { javaScriptResponse, error in
                 // Initialize Result
                 let result: Result<Response, YouTubePlayer.APIError> = {
