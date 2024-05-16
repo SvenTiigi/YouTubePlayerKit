@@ -18,6 +18,7 @@ public extension YouTubePlayer {
             completion?(.success(()))
             return
         }
+        let reloadWebView = source != self.source
         // Update Source
         self.update(
             source: source,
@@ -31,6 +32,11 @@ public extension YouTubePlayer {
             }(),
             completion: completion
         )
+        // Ensure publishers send events downstream after
+        // updating source
+        if reloadWebView {
+            reload()
+        }
     }
     
     #if compiler(>=5.5) && canImport(_Concurrency)
@@ -62,6 +68,7 @@ public extension YouTubePlayer {
             completion?(.success(()))
             return
         }
+        let reloadWebView = source != self.source
         // Update Source
         self.update(
             source: source,
@@ -75,6 +82,11 @@ public extension YouTubePlayer {
             }(),
             completion: completion
         )
+        // Ensure publishers send events downstream after
+        // updating source
+        if reloadWebView {
+            reload()
+        }
     }
     
     #if compiler(>=5.5) && canImport(_Concurrency)
