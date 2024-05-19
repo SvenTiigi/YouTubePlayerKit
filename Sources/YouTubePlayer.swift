@@ -239,6 +239,8 @@ private extension YouTubePlayer {
                 // Otherwise return out of function
                 return
             }
+            // Send PlayerState
+            self.playerStateSubject.send(.ready)
             // Send PlaybackState
             self.playbackStateSubject.send(playbackState)
         case .onPlaybackQualityChange:
