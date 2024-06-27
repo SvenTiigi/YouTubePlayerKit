@@ -17,6 +17,7 @@ public class YouTubePlayerBaseViewController: UIViewController {}
 // MARK: - YouTubePlayerViewController
 
 /// The YouTubePlayer ViewController
+@MainActor
 public final class YouTubePlayerViewController: YouTubePlayerBaseViewController {
     
     // MARK: Properties
@@ -61,7 +62,9 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
     
     /// Deinit
     deinit {
-        self.player.pause()
+        MainActor.assumeIsolated {
+            self.player.pause()
+        }
     }
     
     // MARK: View-Lifecycle

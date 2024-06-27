@@ -4,6 +4,7 @@ import Foundation
 // MARK: - YouTubePlayer
 
 /// A YouTubePlayer
+@MainActor
 public final class YouTubePlayer: ObservableObject {
     
     // MARK: Properties
