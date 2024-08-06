@@ -161,7 +161,13 @@ public extension YouTubePlayer {
             converter: .typeCast(
                 to: [String: Any].self
             )
-            .decode(),
+            .decode(
+                decoder: {
+                    let jsonDecoder = JSONDecoder()
+                    jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+                    return jsonDecoder
+                }()
+            ),
             completion: completion
         )
     }
