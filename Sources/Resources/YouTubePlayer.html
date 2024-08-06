@@ -84,34 +84,40 @@
             window.location.href = locationHref
         }
 
-        // YouTube Player onReady event callback
-        function onReady(event) {
+        // YouTube Player onReady event handler
+        function onReady() {
             // Send onReady event
             sendYouTubePlayerEvent('onReady');
         }
 
-        // YouTube Player onStateChange event callback
+        // YouTube Player onStateChange event handler
         function onStateChange(event) {
             // Send onStateChange event
             sendYouTubePlayerEvent('onStateChange', event.data);
         }
 
-        // YouTube Player onPlaybackQualityChange event callback
+        // YouTube Player onPlaybackQualityChange event handler
         function onPlaybackQualityChange(event) {
             // Send onPlaybackQualityChange event
             sendYouTubePlayerEvent('onPlaybackQualityChange', event.data);
         }
 
-        // YouTube Player onPlaybackRateChange event callback
+        // YouTube Player onPlaybackRateChange event handler
         function onPlaybackRateChange(event) {
             // Send onPlaybackRateChange event
             sendYouTubePlayerEvent('onPlaybackRateChange', event.data);
         }
 
-        // YouTube Player onError event callback
+        // YouTube Player onError event handler
         function onError(event) {
             // Send onError error
             sendYouTubePlayerEvent('onError', event.data);
+        }
+        
+        // YouTube Player onAutoplayBlocked event handler
+        function onAutoplayBlocked() {
+            // Send onAutoplayBlocked event
+            sendYouTubePlayerEvent('onAutoplayBlocked');
         }
     </script>
 </body>

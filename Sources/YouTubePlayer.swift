@@ -53,6 +53,9 @@ public final class YouTubePlayer: ObservableObject {
     /// The YouTubePlayer PlaybackRate CurrentValueSubject
     private(set) lazy var playbackRateSubject = CurrentValueSubject<PlaybackRate?, Never>(nil)
     
+    /// The YouTubePlayer auto play blocked PassthroughSubject
+    private(set) lazy var autoplayBlockedSubject = PassthroughSubject<Void, Never>()
+    
     /// The YouTubePlayer WebView
     private(set) lazy var webView: YouTubePlayerWebView = {
         // Initialize a YouTubePlayerWebView
@@ -264,6 +267,9 @@ private extension YouTubePlayer {
                 .flatMap(YouTubePlayer.Error.init)
                 .map { .error($0) }
                 .map { self.playerStateSubject.send($0) }
+        case .onAutoplayBlocked:
+            // Send auto play blocked event
+            self.autoplayBlockedSubject.send(())
         }
     }
     

@@ -77,4 +77,10 @@ public extension YouTubePlayer {
             .eraseToAnyPublisher()
     }
     
+    /// A Publisher that emits whenever autoplay or scripted video playback features were blocked.
+    var autoplayBlockedPublisher: AnyPublisher<Void, Never> {
+        self.autoplayBlockedSubject
+            .eraseToAnyPublisher()
+    }
+    
 }

@@ -20,6 +20,8 @@ extension YouTubePlayer.JavaScriptEvent {
         case onPlaybackRateChange
         /// Error
         case onError
+        /// Autoplay blocked
+        case onAutoplayBlocked
     }
     
 }
