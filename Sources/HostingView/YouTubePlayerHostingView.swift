@@ -17,6 +17,7 @@ public class YouTubePlayerHostingBaseView: UIView {}
 // MARK: - YouTubePlayerHostingView
 
 /// The YouTubePlayer HostingView
+@MainActor
 public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     // MARK: Properties
@@ -62,7 +63,9 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     /// Deinit
     deinit {
-        self.player.pause()
+        MainActor.assumeIsolated {
+            self.player.pause()
+        }
     }
     
 }

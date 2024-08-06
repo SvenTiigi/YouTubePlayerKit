@@ -4,6 +4,7 @@ import Foundation
 // MARK: - YouTubePlayer
 
 /// A YouTubePlayer
+@MainActor
 public final class YouTubePlayer: ObservableObject {
     
     // MARK: Properties
@@ -239,6 +240,8 @@ private extension YouTubePlayer {
                 // Otherwise return out of function
                 return
             }
+            // Send PlayerState
+            self.playerStateSubject.send(.ready)
             // Send PlaybackState
             self.playbackStateSubject.send(playbackState)
         case .onPlaybackQualityChange:
