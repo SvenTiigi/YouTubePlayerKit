@@ -8,6 +8,12 @@ public extension YouTubePlayer {
     /// - Read more: https://developers.google.com/youtube/player_parameters
     struct Configuration: Hashable {
         
+        public static var defaultOriginURL: URL? = Bundle
+            .main
+            .bundleIdentifier
+            .flatMap { ["https://", $0.lowercased()].joined() }
+            .flatMap(URL.init)
+
         // MARK: Properties
         
         /// A Boolean value indicating if safe area insets should be added automatically to content insets
@@ -105,6 +111,9 @@ public extension YouTubePlayer {
         /// An optional custom user agent of the underlying web view
         public var customUserAgent: String?
 
+        /// The origin URL
+        public var originURL: URL?
+        
         // MARK: Initializer
         
         /// Creates a new instance of `YouTubePlayer.Configuration`
@@ -131,7 +140,8 @@ public extension YouTubePlayer {
             showRelatedVideos: Bool? = nil,
             startTime: Int? = nil,
             referrer: String? = nil,
-            customUserAgent: String? = nil
+            customUserAgent: String? = nil,
+            originURL: URL? = Configuration.defaultOriginURL
         ) {
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
@@ -156,6 +166,7 @@ public extension YouTubePlayer {
             self.startTime = startTime
             self.referrer = referrer
             self.customUserAgent = customUserAgent
+            self.originURL = originURL
         }
         
     }

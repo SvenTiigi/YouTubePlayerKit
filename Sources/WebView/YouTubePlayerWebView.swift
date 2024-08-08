@@ -12,12 +12,6 @@ final class YouTubePlayerWebView: WKWebView {
     /// The YouTubePlayer
     private(set) weak var player: YouTubePlayer?
     
-    /// The origin URL
-    private(set) lazy var originURL: URL? = Bundle
-        .main
-        .bundleIdentifier
-        .flatMap { ["https://", $0.lowercased()].joined() }
-        .flatMap(URL.init)
     
     /// The YouTubePlayerWebView Event PassthroughSubject
     private(set) lazy var eventSubject = PassthroughSubject<Event, Never>()
@@ -43,6 +37,7 @@ final class YouTubePlayerWebView: WKWebView {
             configuration: {
                 // Initialize WebView Configuration
                 let configuration = WKWebViewConfiguration()
+                
                 #if !os(macOS)
                 // Allows inline media playback
                 configuration.allowsInlineMediaPlayback = true
@@ -175,7 +170,7 @@ extension YouTubePlayerWebView {
                 options: .init(
                     playerSource: player.source,
                     playerConfiguration: player.configuration,
-                    originURL: self.originURL
+                    originURL: player.configuration.originURL
                 )
             )
         } catch {
@@ -217,7 +212,7 @@ extension YouTubePlayerWebView {
         // Load HTML string
         self.loadHTMLString(
             youTubePlayerHTML.contents,
-            baseURL: self.originURL
+            baseURL: player.configuration.originURL
         )
         // Return success
         return true
