@@ -70,7 +70,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.7.0")
+    .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit.git", from: "1.9.0")
 ]
 ```
 
@@ -292,6 +292,9 @@ youTubePlayer.playbackQualityPublisher
 
 // A Publisher that emits the current YouTubePlayer PlaybackRate
 youTubePlayer.playbackRatePublisher
+
+// A Publisher that emits whenever autoplay or scripted video playback features were blocked.
+youTubePlayer.autoplayBlockedPublisher
 ```
 
 #### Playback status
