@@ -17,7 +17,6 @@ public class YouTubePlayerBaseViewController: UIViewController {}
 // MARK: - YouTubePlayerViewController
 
 /// The YouTubePlayer ViewController
-@MainActor
 public final class YouTubePlayerViewController: YouTubePlayerBaseViewController {
     
     // MARK: Properties

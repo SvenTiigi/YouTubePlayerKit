@@ -17,7 +17,6 @@ public class YouTubePlayerHostingBaseView: UIView {}
 // MARK: - YouTubePlayerHostingView
 
 /// The YouTubePlayer HostingView
-@MainActor
 public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     // MARK: Properties

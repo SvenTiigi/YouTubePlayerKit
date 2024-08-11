@@ -5,7 +5,6 @@ import WebKit
 // MARK: - YouTubePlayerWebView
 
 /// The YouTubePlayer WebView
-@MainActor
 final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Properties
