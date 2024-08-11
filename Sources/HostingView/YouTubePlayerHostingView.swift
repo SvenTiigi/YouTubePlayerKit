@@ -62,9 +62,7 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
     
     /// Deinit
     deinit {
-        MainActor.assumeIsolated {
-            self.player.pause()
-        }
+        self.player.pause()
     }
     
 }
