@@ -167,6 +167,13 @@ private extension YouTubePlayer {
             self.webView.evaluate(
                 javaScript: .init("setYouTubePlayerSize(\(parameters));")
             )
+        case .didFailProvisionalNavigation(let error):
+            // Send object will change event
+            self.objectWillChange.send()
+            // Send web content process did terminate error
+            self.playerStateSubject.send(
+                .error(.didFailProvisionalNavigation(error))
+            )
         case .webContentProcessDidTerminate:
             // Send object will change event
             self.objectWillChange.send()

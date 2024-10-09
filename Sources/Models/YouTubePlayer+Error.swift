@@ -8,6 +8,8 @@ public extension YouTubePlayer {
     enum Error: Swift.Error, Sendable {
         /// Player setup failed with Error
         case setupFailed(Swift.Error)
+        /// Did fail provisional navigation
+        case didFailProvisionalNavigation(Swift.Error)
         /// The web views underlying web content process was terminated
         case webContentProcessDidTerminate
         /// The YouTube iFrame API JavaScript failed to load

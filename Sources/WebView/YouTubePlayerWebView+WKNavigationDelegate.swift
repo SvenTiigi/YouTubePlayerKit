@@ -5,6 +5,21 @@ import WebKit
 
 extension YouTubePlayerWebView: WKNavigationDelegate {
     
+    /// WebView did fail provisional navigation
+    /// - Parameters:
+    ///   - webView: The web view.
+    ///   - navigation: The navigation.
+    ///   - error: The error.
+    func webView(
+        _ webView: WKWebView,
+        didFailProvisionalNavigation navigation: WKNavigation!,
+        withError error: Error
+    ) {
+        self.eventSubject.send(
+            .didFailProvisionalNavigation(error)
+        )
+    }
+    
     /// WebView decide policy for NavigationAction
     /// - Parameters:
     ///   - webView: The WKWebView
