@@ -17,6 +17,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
       - name: Build
         run: xcodebuild build -project Example/Example.xcodeproj -scheme Example -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
