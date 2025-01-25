@@ -4,34 +4,34 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// A YouTubePlayer API Error
+    /// A YouTube player API error.
     struct APIError: Swift.Error {
         
         // MARK: Properties
         
-        /// The JavaScript that has been executed and caused the Error
+        /// The JavaScript that has been executed and caused the error.
         public let javaScript: String
         
-        /// The optional JavaScript response object
-        public let javaScriptResponse: Any?
+        /// The optional JavaScript response.
+        public let javaScriptResponse: String?
         
-        /// The optional underlying Error
+        /// The optional underlying error.
         public let underlyingError: Swift.Error?
         
-        /// The optional error reason message
+        /// The optional error reason message.
         public let reason: String?
         
         // MARK: Initializer
         
-        /// Creates a new instance of `YouTubePlayer.APIError`
+        /// Creates a new instance of ``YouTubePlayer.APIError``
         /// - Parameters:
-        ///   - javaScript: The JavaScript that has been executed and caused the Error
-        ///   - javaScriptResponse: The optional JavaScript response object. Default value `nil`
-        ///   - underlyingError: The optional underlying Error. Default value `nil`
+        ///   - javaScript: The JavaScript that has been executed and caused the error.
+        ///   - javaScriptResponse: The optional JavaScript response. Default value `nil`
+        ///   - underlyingError: The optional underlying error. Default value `nil`
         ///   - reason: The optional error reason message. Default value `nil`
         public init(
             javaScript: String,
-            javaScriptResponse: Any? = nil,
+            javaScriptResponse: String? = nil,
             underlyingError: Swift.Error? = nil,
             reason: String? = nil
         ) {

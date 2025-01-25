@@ -4,6 +4,13 @@ labels: ["bug"]
 assignees:
   - SvenTiigi
 body:
+  - type: checkboxes
+    id: youtube-player-iframe-api-check
+    attributes:
+      label: Prerequisites
+      options:
+        - label: I have verified this issue is specific to YouTubePlayerKit and not a limitation or bug of the YouTube Player iFrame API.
+          required: true
   - type: textarea
     id: bug-description
     attributes:

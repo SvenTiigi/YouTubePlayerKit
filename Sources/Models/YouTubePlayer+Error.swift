@@ -4,16 +4,16 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// The YouTubePlayer Error
-    enum Error: Swift.Error, Sendable {
+    /// A YouTube player error.
+    enum Error: Swift.Error {
         /// Player setup failed with Error
         case setupFailed(Swift.Error)
         /// Did fail provisional navigation
         case didFailProvisionalNavigation(Swift.Error)
         /// The web views underlying web content process was terminated
         case webContentProcessDidTerminate
-        /// The YouTube iFrame API JavaScript failed to load
-        case iFrameAPIFailedToLoad
+        /// The YouTube iFrame Api JavaScript failed to load
+        case iFrameApiFailedToLoad
         /// The request contains an invalid parameter value.
         /// For example, this error occurs if you specify a video ID that does not have 11 characters,
         /// or if the video ID contains invalid characters, such as exclamation points or asterisks.
@@ -34,7 +34,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.Error {
     
-    /// The ErrorCodes Dictionary
+    /// The error codes dictionary.
     private static let errorCodes: [Int: Self] = [
         2: .invalidSource,
         5: .html5NotSupported,
@@ -43,9 +43,9 @@ extension YouTubePlayer.Error {
         150: .embeddedVideoPlayingNotAllowed
     ]
     
-    /// Creates a new instance of `YouTubePlayer.Error` from a given error code
+    /// Creates a new instance of ``YouTubePlayer.Error``.
     /// - Parameters:
-    ///   - errorCode: The error code integer value
+    ///   - errorCode: The error code.,
     init?(
         errorCode: Int
     ) {

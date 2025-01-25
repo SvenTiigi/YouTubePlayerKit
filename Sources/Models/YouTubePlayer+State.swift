@@ -4,7 +4,7 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// The YouTubePlayer State
+    /// A YouTube player state.
     enum State: Sendable {
         /// Idle
         case idle
@@ -20,10 +20,10 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.State: Equatable {
     
-    /// Returns a Boolean value indicating whether two `YouTubePlayer.State` are equal
+    /// Returns a Boolean value indicating whether two ``YouTubePlayer.State`` objects  are equal.
     /// - Parameters:
-    ///   - lhs: A `YouTubePlayer.State` to compare.
-    ///   - rhs: Another `YouTubePlayer.State` to compare.
+    ///   - lhs: A ``YouTubePlayer.State`` to compare.
+    ///   - rhs: Another ``YouTubePlayer.State`` to compare.
     public static func == (
         lhs: Self,
         rhs: Self
@@ -33,8 +33,8 @@ extension YouTubePlayer.State: Equatable {
             return true
         case (.ready, .ready):
             return true
-        case (.error, .error):
-            return true
+        case (.error(let lhs), .error(let rhs)):
+            return String(describing: lhs) == String(describing: rhs)
         default:
             return false
         }
@@ -94,7 +94,7 @@ public extension YouTubePlayer.State {
 
 public extension YouTubePlayer.State {
     
-    /// The YouTubePlayer Error, if available
+    /// The YouTube player error, if available.
     var error: YouTubePlayer.Error? {
         switch self {
         case .error(let error):

@@ -4,26 +4,16 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// The YouTubePlayer Source
+    /// A YouTube player source.
     enum Source: Codable, Hashable, Sendable {
-        /// Video
-        case video(
-            id: String,
-            startSeconds: Int? = nil,
-            endSeconds: Int? = nil
-        )
-        /// Playlist
-        case playlist(
-            id: String,
-            index: Int? = nil,
-            startSeconds: Int? = nil
-        )
-        /// Channel
-        case channel(
-            name: String,
-            index: Int? = nil,
-            startSeconds: Int? = nil
-        )
+        /// Video.
+        case video(id: String)
+        /// Videos.
+        case videos(ids: [String])
+        /// Playlist.
+        case playlist(id: String)
+        /// Channel.
+        case channel(name: String)
     }
     
 }
@@ -32,162 +22,232 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.Source: Identifiable {
     
-    /// The stable identity of the entity associated with this instance
+    /// The identifier.
     public var id: String {
         switch self {
-        case .video(let id, _, _),
-             .playlist(let id, _, _),
-             .channel(let id, _, _):
+        case .video(let id):
             return id
+        case .videos(let ids):
+            return ids.joined(separator: ",")
+        case .playlist(let id):
+            return id
+        case .channel(let name):
+            return name
         }
     }
     
 }
 
-// MARK: - Set Seconds
+// MARK: - URL
 
 public extension YouTubePlayer.Source {
     
-    /// Sets the start time.
-    /// - Parameter startTime: The start time.
-    mutating func set(
-        startTime: Measurement<UnitDuration>
-    ) {
-        let startSeconds = Int(startTime.converted(to: .seconds).value)
+    /// The URL representation of the source.
+    var url: URL? {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "www.youtube.com"
         switch self {
-        case .video(let id, _, let endSeconds):
-            self = .video(
-                id: id,
-                startSeconds: startSeconds,
-                endSeconds: endSeconds
-            )
-        case .playlist(let id, let index, _):
-            self = .playlist(
-                id: id,
-                index: index,
-                startSeconds: startSeconds
-            )
-        case .channel(let name, let index, _):
-            self = .channel(
-                name: name,
-                index: index,
-                startSeconds: startSeconds
-            )
+        case .video(let id):
+            guard !id.isEmpty else {
+                return nil
+            }
+            urlComponents.path = "/watch"
+            urlComponents.queryItems = [
+                .init(
+                    name: "v",
+                    value: id
+                )
+            ]
+        case .videos:
+            return nil
+        case .playlist(let id):
+            urlComponents.path = "/playlist"
+            urlComponents.queryItems = [
+                .init(
+                    name: "list",
+                    value: id
+                )
+            ]
+        case .channel(let name):
+            guard !name.isEmpty else {
+                return nil
+            }
+            urlComponents.path = "/@\(name)"
         }
+        return urlComponents.url
     }
     
 }
 
-// MARK: - Source+url
+// MARK: - Video ID
 
 public extension YouTubePlayer.Source {
     
-    /// Creats `YouTubePlayer.Source` from a given URL string, if available
-    /// - Parameter url: The URL string
-    static func url(
-        _ urlString: String
-    ) -> Self? {
-        // Initialize URL from string and call URL-based convenience method
-        guard let url: URL = {
-            if #available(iOS 17.0, tvOS 17.0, watchOS 10.0, macOS 14.0, *) {
-                return .init(
-                    string: urlString,
-                    encodingInvalidCharacters: false
-                )
-            } else {
-                return .init(
-                    string: urlString
-                )
-            }
-        }() else {
+    /// The video identifier, if available.
+    var videoID: String? {
+        if case .video(let id) = self {
+            return id
+        } else {
             return nil
         }
-        return self.url(url)
     }
     
-    /// Creats `YouTubePlayer.Source` from a given URL, if available
-    /// - Parameter url: The URL
-    static func url(
-        _ url: URL
-    ) -> Self? {
-        // Initialize URLComonents from URL
-        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        // Retrieve start seconds from "t" url parameter, if available
-        let startSeconds = urlComponents?.queryItems?["t"].flatMap(Int.init)
-        // Initialize PathComponents and drop first which is the leading "/"
-        let pathComponents = url.pathComponents.dropFirst()
-        // Check if URL host has YouTube share url host
-        if url.host?.lowercased().hasSuffix("youtu.be") == true {
-            // Check if a video id is available
-            if let videoId = pathComponents.first {
-                // Return video source
-                return .video(
-                    id: videoId,
-                    startSeconds: startSeconds
-                )
+}
+
+// MARK: - Video IDs
+
+public extension YouTubePlayer.Source {
+    
+    /// The video identifiers, if available.
+    var videoIDs: [String]? {
+        if case .videos(let ids) = self {
+            return ids
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+// MARK: - Playlist ID
+
+public extension YouTubePlayer.Source {
+    
+    /// The playlist identifier, if available.
+    var playlistID: String? {
+        if case .playlist(let id) = self {
+            return id
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+// MARK: - Channel Name
+
+public extension YouTubePlayer.Source {
+    
+    /// The channel name, if available.
+    var channelName: String? {
+        if case .channel(let name) = self {
+            return name
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+// MARK: - ExpressibleByArrayLiteral
+
+extension YouTubePlayer.Source: ExpressibleByArrayLiteral {
+    
+    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// - Parameter videoIDs: The video identifiers.
+    public init(
+        arrayLiteral videoIDs: String...
+    ) {
+        self = .videos(ids: videoIDs)
+    }
+    
+}
+
+// MARK: - ExpressibleByURL
+
+extension YouTubePlayer.Source: ExpressibleByURL {
+    
+    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// - Parameter url: The URL.
+    public init?(
+        url: URL
+    ) {
+        /// Returns the first match of a regular expression in a given string.
+        /// - Parameters:
+        ///   - regularExpression: The regular expression.
+        ///   - string: The string.
+        func firstMatch(
+            of regularExpression: NSRegularExpression,
+            in string: String
+        ) -> String? {
+            guard let match = regularExpression
+                .firstMatch(
+                    in: string,
+                    range: .init(string.startIndex..., in: string)
+                ),
+                let range = Range(match.range(at: 1), in: string) else {
+                return nil
             }
-        } else if url.host?.lowercased().contains("youtube") == true {
-            // Otherwise switch on first path component
-            switch pathComponents.first {
-            case "watch":
-                // Check if a playlist identifier is available
-                if let playlistId = urlComponents?.queryItems?["list"] {
-                    // Return playlist source
-                    return .playlist(
-                        id: playlistId
-                    )
-                }
-                // Check if video id is available
-                if let videoId = urlComponents?.queryItems?["v"] {
-                    // Return video source
-                    return .video(
-                        id: videoId,
-                        startSeconds: startSeconds
-                    )
-                }
-            case "c", "user":
-                // Check if a channel name is available
-                if let channelName = url.pathComponents[safe: 2] {
-                    // Return channel source
-                    return .channel(
-                        name: channelName
-                    )
-                }
-            default:
-                // Check if a video identifier is available
-                if let videoId = url.pathComponents[safe: 2] {
-                    // Return video source
-                    return .video(
-                        id: videoId,
-                        startSeconds: startSeconds
-                    )
-                }
+            return .init(string[range])
+        }
+        let urlString = url.absoluteString
+        for regularExpression in Self.playlistRegularExpressions {
+            if let playlistID = firstMatch(of: regularExpression, in: urlString) {
+                self = .playlist(id: playlistID)
+                return
             }
         }
-        // Otherwise return nil
+        for regularExpression in Self.videoRegularExpressions {
+            if let videoID = firstMatch(of: regularExpression, in: urlString) {
+                self = .video(id: videoID)
+                return
+            }
+        }
+        for regularExpression in Self.channelRegularExpressions {
+            if let channelName = firstMatch(of: regularExpression, in: urlString) {
+                self = .channel(name: channelName)
+                return
+            }
+        }
         return nil
     }
-}
 
-// MARK: - Sequence<URLQueryItem>+subscribt
-
-private extension Sequence where Element == URLQueryItem {
-    
-    /// Retrieve a URLQueryItem value by a given name, if available
-    subscript(_ name: String) -> String? {
-        self.first { $0.name == name }?.value
+    /// The video regular expressions.
+    private static let videoRegularExpressions: [NSRegularExpression] = [
+        "youtu\\.be/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/watch\\?v=([a-zA-Z0-9_-]+)",
+        "youtube\\.com/v/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/embed/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/shorts/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/live/([a-zA-Z0-9_-]+)",
+        "youtube-nocookie\\.com/embed/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/e/([a-zA-Z0-9_-]+)"
+    ]
+    .compactMap { pattern in
+        try? .init(
+            pattern: pattern,
+            options: .caseInsensitive
+        )
     }
     
-}
-
-// MARK: - Collection+Safe
-
-private extension Collection {
+    /// The playlist regular expressions.
+    private static let playlistRegularExpressions: [NSRegularExpression] = [
+        "youtube\\.com/playlist\\?list=([a-zA-Z0-9_-]+)",
+        "youtube\\.com/watch.*?[?&]list=([a-zA-Z0-9_-]+)",
+        "youtube\\.com/embed/videoseries\\?list=([a-zA-Z0-9_-]+)",
+        "videoseries\\?list=([a-zA-Z0-9_-]+)"
+    ]
+    .compactMap { pattern in
+        try? .init(
+            pattern: pattern,
+            options: .caseInsensitive
+        )
+    }
     
-    /// Retrieve an Element at the specified index if it is withing bounds, otherwise return nil.
-    /// - Parameter index: The Index
-    subscript(safe index: Index) -> Element? {
-        self.indices.contains(index) ? self[index] : nil
+    /// The channel regular expressions.
+    private static let channelRegularExpressions: [NSRegularExpression] = [
+        "youtube\\.com/channel/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/c/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/user/([a-zA-Z0-9_-]+)",
+        "youtube\\.com/@([a-zA-Z0-9_.-]+)",
+        "youtube\\.com/feed/([a-zA-Z0-9_-]+)"
+    ]
+    .compactMap { pattern in
+        try? .init(
+            pattern: pattern,
+            options: .caseInsensitive
+        )
     }
     
 }

@@ -4,7 +4,7 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// The YouTubePlayer Information
+    /// The YouTube player information.
     struct Information: Codable, Hashable, Sendable {
         
         // MARK: Properties
@@ -71,7 +71,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of `YouTubePlayer.Information`
+        /// Creates a new instance of ``YouTubePlayer.Information``
         public init(
             videoBytesLoaded: Double?,
             videoBytesTotal: Double,

@@ -16,19 +16,28 @@ on:
 jobs:
   iOS:
     name: Build and test on iOS
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run: xcodebuild build-for-testing -scheme YouTubePlayerKit -destination 'platform=iOS Simulator,name=iPhone 14'
+        run: xcodebuild build-for-testing -scheme YouTubePlayerKit -destination 'platform=iOS Simulator,name=iPhone 15'
       - name: Test
-        run: xcodebuild test-without-building -scheme YouTubePlayerKit -destination 'platform=iOS Simulator,name=iPhone 14'
+        run: xcodebuild test-without-building -scheme YouTubePlayerKit -destination 'platform=iOS Simulator,name=iPhone 15'
   macOS:
     name: Build and test on macOS
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build
         run: swift build -v
       - name: Test
         run: swift test -v
+  visionOS:
+    name: Build and test on visionOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: xcodebuild build-for-testing -scheme YouTubePlayerKit -destination 'platform=visionOS Simulator'
+      - name: Test
+        run: xcodebuild test-without-building -scheme YouTubePlayerKit -destination 'platform=visionOS Simulator'

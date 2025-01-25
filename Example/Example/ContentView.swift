@@ -5,32 +5,36 @@ import YouTubePlayerKit
 
 /// The ContentView
 struct ContentView {
-
-    /// All  WWDC Keynotes.
-    private let wwdcKeynotes = WWDCKeynote.all.sorted(by: >)
+    
+    // MARK: Properties
+    
+    /// The YouTube Player.
+    private let youTubePlayer: YouTubePlayer
     
     /// The selected WWDC keynote.
     @State
-    private var selectedKeynote: WWDCKeynote? = .wwdc2023
-    
-    /// The YouTube Player.
-    @StateObject
-    private var youTubePlayer = YouTubePlayer(
-        source: .url(WWDCKeynote.wwdc2023.youTubeURL),
-        configuration: .init(
-            fullscreenMode: {
-                #if os(macOS) || os(visionOS)
-                .web
-                #else
-                .system
-                #endif
-            }()
-        )
-    )
+    private var selectedKeynote: WWDCKeynote?
     
     /// The color scheme.
     @Environment(\.colorScheme)
     private var colorScheme
+    
+    // MARK: Initializer
+    
+    /// Creates a new instance of ``ContentView``
+    /// - Parameter wwdcKeynote: The WWDC Keynote.
+    init(
+        wwdcKeynote: WWDCKeynote = .wwdc2024
+    ) {
+        self.youTubePlayer = .init(
+            source: [
+                "w87fOAG8fjk", // 2014
+                "RXeOiIDNNek", // 2024
+                "psL_5RIBqnY" // 2019
+            ]
+        )
+        self._selectedKeynote = .init(initialValue: wwdcKeynote)
+    }
     
 }
 
@@ -49,11 +53,17 @@ extension ContentView: View {
             self.iOSBody
             #endif
         }
-        .onChange(of: self.selectedKeynote) { _, keynote in
-            guard let keynote else {
-                return self.youTubePlayer.stop()
+        .onChange(
+            of: self.selectedKeynote
+        ) { _, selectedKeynote in
+            Task { @MainActor in
+                guard let selectedKeynote = selectedKeynote,
+                      let source = YouTubePlayer.Source(urlString: selectedKeynote.youTubeURL) else {
+                    try? await self.youTubePlayer.stop()
+                    return
+                }
+                try? await self.youTubePlayer.load(source: source)
             }
-            self.youTubePlayer.cue(source: .url(keynote.youTubeURL))
         }
     }
     
@@ -97,15 +107,17 @@ private extension ContentView {
                     pinnedViews: [.sectionHeaders]
                 ) {
                     Section {
-                        ForEach(self.wwdcKeynotes) { keynote in
+                        ForEach(WWDCKeynote.allCases.reversed()) { keynote in
                             Button {
                                 self.selectedKeynote = keynote
                             } label: {
+                                Rectangle()
+                                /*
                                 YouTubePlayerView(
                                     .init(
-                                        source: .url(keynote.youTubeURL)
+                                        urlString: keynote.youTubeURL
                                     )
-                                )
+                                )*/
                                 .disabled(true)
                                 .frame(height: 150)
                                 .background(Color(.systemBackground))
@@ -135,6 +147,19 @@ private extension ContentView {
                 )
             )
             .scrollContentBackground(.hidden)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Reload") {
+                        Task {
+                            print("Start reloading")
+                            defer {
+                                print("Finished reloading")
+                            }
+                            try await self.youTubePlayer.reload()
+                        }
+                    }
+                }
+            }
         }
         .ignoresSafeArea(edges: .bottom)
     }
@@ -150,7 +175,10 @@ private extension ContentView {
     /// The content and behavior of the view for the visionOS platform.
     var visionOSBody: some View {
         NavigationSplitView {
-            List(self.wwdcKeynotes, selection: self.$selectedKeynote) { wwdcKeynote in
+            List(
+                WWDCKeynote.allCases.reversed(),
+                selection: self.$selectedKeynote
+            ) { wwdcKeynote in
                 Text(String(wwdcKeynote.year))
                     .tag(wwdcKeynote)
             }
@@ -180,7 +208,10 @@ private extension ContentView {
     /// The content and behavior of the view for the macOS platform.
     var macOSBody: some View {
         NavigationSplitView {
-            List(self.wwdcKeynotes, selection: self.$selectedKeynote) { wwdcKeynote in
+            List(
+                WWDCKeynote.allCases.reversed(),
+                selection: self.$selectedKeynote
+            ) { wwdcKeynote in
                 Text(String(wwdcKeynote.year))
                     .tag(wwdcKeynote)
             }
@@ -194,3 +225,7 @@ private extension ContentView {
     
 }
 #endif
+
+#Preview {
+    ContentView()
+}

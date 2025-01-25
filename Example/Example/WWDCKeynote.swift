@@ -3,7 +3,7 @@ import Foundation
 // MARK: - WWDCKeynote
 
 /// An  WWDC Keynote
-struct WWDCKeynote: Codable, Hashable {
+struct WWDCKeynote: Codable, Hashable, Sendable {
     
     /// The year
     let year: Int
@@ -42,12 +42,12 @@ extension WWDCKeynote: Comparable {
     
 }
 
-// MARK: - All Keynotes
+// MARK: - CaseIterableCaseIterable
 
-extension WWDCKeynote {
+extension WWDCKeynote: CaseIterable {
     
     /// All  WWDC Keynotes
-    static let all: [Self] = [
+    static let allCases: [WWDCKeynote] = [
         .wwdc2014,
         .wwdc2015,
         .wwdc2016,
@@ -57,14 +57,9 @@ extension WWDCKeynote {
         .wwdc2020,
         .wwdc2021,
         .wwdc2022,
-        .wwdc2023
+        .wwdc2023,
+        .wwdc2024
     ]
-    
-}
-
-// MARK: - Keynotes from 2014 to 2021
-
-extension WWDCKeynote {
     
     static let wwdc2014: Self = .init(
         year: 2014,
@@ -114,6 +109,11 @@ extension WWDCKeynote {
     static let wwdc2023: Self = .init(
         year: 2023,
         youTubeURL: "https://www.youtube.com/watch?v=GYkq9Rgoj8E"
+    )
+    
+    static let wwdc2024: Self = .init(
+        year: 2024,
+        youTubeURL: "https://www.youtube.com/watch?v=RXeOiIDNNek"
     )
     
 }

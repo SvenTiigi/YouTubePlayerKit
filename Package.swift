@@ -1,31 +1,32 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import PackageDescription
 
 let package = Package(
     name: "YouTubePlayerKit",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15),
+        .iOS(.v15),
+        .macOS(.v12),
         .visionOS(.v1)
     ],
     products: [
         .library(
             name: "YouTubePlayerKit",
-            targets: ["YouTubePlayerKit"]
+            targets: [
+                "YouTubePlayerKit"
+            ]
         )
     ],
     targets: [
         .target(
             name: "YouTubePlayerKit",
-            path: "Sources",
-            resources: [
-                .copy("./Resources/YouTubePlayer.html")
-            ]
+            path: "Sources"
         ),
         .testTarget(
             name: "YouTubePlayerKitTests",
-            dependencies: ["YouTubePlayerKit"],
+            dependencies: [
+                "YouTubePlayerKit"
+            ],
             path: "Tests"
         )
     ]
