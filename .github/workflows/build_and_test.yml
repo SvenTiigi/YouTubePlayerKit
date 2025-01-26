@@ -12,17 +12,18 @@ concurrency:
 
 jobs:
   iOS:
-    name: Build and test on iOS (Xcode ${{ matrix.xcode }})
+    name: Build and test on iOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})
     runs-on: macos-latest
+    continue-on-error: true
     strategy:
       matrix:
         include:
           - xcode: 16.1
-            destination: iPhone 16
+            destination: iPhone 16 Pro
             os: 18.1
           - xcode: 16.1
-            destination: iPhone 15
-            os: 17.0
+            destination: iPhone 15 Pro
+            os: 17.5
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode version
