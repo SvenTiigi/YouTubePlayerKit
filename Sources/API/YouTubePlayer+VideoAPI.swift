@@ -213,4 +213,25 @@ public extension YouTubePlayer {
     }
     #endif
     
+#if compiler(>=5.5) && canImport(_Concurrency)
+    /// Stops and cancels loading of the current video
+    func fullScreen() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            self.fullScreen(
+                completion: continuation.resume(with:)
+            )
+        }
+    }
+#endif
+    
+    /// Pauses the currently playing video
+    /// - Parameter completion: The completion closure
+    func fullScreen(
+        completion: ((Result<Void, APIError>) -> Void)? = nil
+    ) {
+        self.webView.evaluate(
+            javaScript: .player(function: "setFullScreen"),
+            completion: completion
+        )
+    }
 }

@@ -74,6 +74,25 @@
                 );
             }
         }
+        
+        // Set YouTubePlayer Full screen
+        function setFullScreen() {
+            // Check if YouTubePlayer is available
+            if (player) {
+                // Set Player full screen
+                if (player.requestFullscreen) {
+                    player.requestFullscreen();
+                    return "fullscreen started";
+                } else if (player.webkitRequestFullscreen) {
+                    player.webkitRequestFullscreen();
+                    return "fullscreen started";
+                } else {
+                    return "fullscreen not supported";
+                }
+            } else {
+                return "player not found";
+            }
+        }
 
         // Send YouTubePlayer Event with optional data
         function sendYouTubePlayerEvent(event, data) {
