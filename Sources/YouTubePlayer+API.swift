@@ -677,7 +677,7 @@ public extension YouTubePlayer {
         await self.webView.closeAllMediaPresentations()
     }
     
-    /// Requests web fullscreen mode.
+    /// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
     /// - Important: This function only executes if the configuration's fullscreen mode is set to `.web`.
     /// - Returns: A boolean value indicating whether the fullscreen request was successful:
     /// `true` if fullscreen mode was successfully requested.
