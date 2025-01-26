@@ -48,20 +48,15 @@ final class YouTubePlayerWebView: WKWebView {
                 #endif
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = .init()
-                // Set preferences
-                configuration.preferences = {
-                    let preferences = WKPreferences()
-                    // Disable text interaction / selection
-                    preferences.isTextInteractionEnabled = false
-                    // Set HTML element fullscreen enabled if fullscreen mode is set to web
-                    let isElementFullscreenEnabled = player.configuration.fullscreenMode == .web
-                    if #available(iOS 15.4, macOS 12.3, visionOS 1.0, *) {
-                        preferences.isElementFullscreenEnabled = isElementFullscreenEnabled
-                    } else {
-                        preferences.setValue(isElementFullscreenEnabled, forKey: "fullScreenEnabled")
-                    }
-                    return preferences
-                }()
+                // Disable text interaction / selection
+                configuration.preferences.isTextInteractionEnabled = false
+                // Set HTML element fullscreen enabled if fullscreen mode is set to web
+                let isElementFullscreenEnabled = player.configuration.fullscreenMode == .web
+                if #available(iOS 15.4, macOS 12.3, visionOS 1.0, *) {
+                    configuration.preferences.isElementFullscreenEnabled = isElementFullscreenEnabled
+                } else {
+                    configuration.preferences.setValue(isElementFullscreenEnabled, forKey: "fullScreenEnabled")
+                }
                 return configuration
             }()
         )
