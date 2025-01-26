@@ -55,11 +55,6 @@ public extension YouTubePlayer {
         /// the player plays the entire playlist and then starts again at the first video.
         public var loopEnabled: Bool?
         
-        /// This parameter specifies a comma-separated list of video IDs to play.
-        /// If you specify a value, the first video that plays will be the video identifier specified in the URL path,
-        /// and the videos specified in the playlist parameter will play thereafter.
-        public var playlist: [Source.ID]?
-        
         /// If the rel parameter is set to false, related videos
         /// will come from the same channel as the video that was just played.
         public var showRelatedVideos: Bool?
@@ -86,7 +81,6 @@ public extension YouTubePlayer {
             language: String? = nil,
             showAnnotations: Bool? = nil,
             loopEnabled: Bool? = nil,
-            playlist: [Source.ID]? = nil,
             showRelatedVideos: Bool? = nil,
             startTime: Measurement<UnitDuration>? = nil,
             referrer: String? = nil
@@ -102,7 +96,6 @@ public extension YouTubePlayer {
             self.language = language
             self.showAnnotations = showAnnotations
             self.loopEnabled = loopEnabled
-            self.playlist = playlist
             self.showRelatedVideos = showRelatedVideos
             self.startTime = startTime
             self.referrer = referrer
@@ -147,7 +140,6 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
             language: queryParameters[CodingKeys.language.rawValue],
             showAnnotations: queryParameters[CodingKeys.showAnnotations.rawValue].flatMap(Int.init).map { $0 != 3 },
             loopEnabled: queryParameters[CodingKeys.loopEnabled.rawValue].flatMap(Int.init).map { $0 == 1 },
-            playlist: queryParameters[CodingKeys.playlist.rawValue]?.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) },
             showRelatedVideos: queryParameters[CodingKeys.showRelatedVideos.rawValue].flatMap(Int.init).map { $0 == 1 },
             startTime: {
                 if let startTime = queryParameters[CodingKeys.startTime.rawValue].flatMap(Int.init) {
@@ -249,15 +241,12 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         try container.encodeIfPresent(self.startTime.flatMap { Int($0.converted(to: .seconds).value) }, forKey: .startTime)
         try container.encodeIfPresent(self.referrer, forKey: .referrer)
         try container.encode(true.bit, forKey: .enableJavaScriptAPI)
-        var isPlaylistEncoded = false
         switch configuration.source {
         case .video(let id):
             if self.loopEnabled == true {
-                isPlaylistEncoded = true
                 try container.encode(id, forKey: .playlist)
             }
         case .videos(let ids):
-            isPlaylistEncoded = true
             try container.encode(ids.joined(separator: ","), forKey: .playlist)
         case .playlist(let id):
             try container.encode(ListType.playlist.rawValue, forKey: .listType)
@@ -277,9 +266,6 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
             try container.encode(name, forKey: .list)
         case nil:
             break
-        }
-        if !isPlaylistEncoded {
-            try container.encodeIfPresent(self.playlist?.joined(separator: ","), forKey: .playlist)
         }
         try container.encodeIfPresent(configuration.originURL, forKey: .origin)
         try container.encodeIfPresent(configuration.allowsInlineMediaPlayback.bit, forKey: .playInline)
