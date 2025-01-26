@@ -271,14 +271,11 @@ extension YouTubePlayerWebView {
                 Evaluate JavaScript: \(javaScript, privacy: .public)
                 """
             )
-        // Check if the JavaScript contains a usage of the player
-        // and the player is in an undefined or idle state
-        if javaScript.containsPlayerUsage,
-            let player = self.player,
-            player.state == .idle {
+        // Check if the player state is currently set to idle
+        if let player = self.player, player.state == .idle {
             // Wait for the player to be non idle
             for await state in player.stateSubject.values where !state.isIdle  {
-                // Break out of for-loop
+                // Break out of for-loop as state is either ready or error
                 break
             }
         }
@@ -288,15 +285,15 @@ extension YouTubePlayerWebView {
             // Try to evaluate the JavaScript
             javaScriptResponse = try await self.evaluateJavaScriptAsync({
                 if Response.self is Void.Type {
-                    return javaScript.ignoreReturnValue().rawValue
+                    return javaScript.ignoreReturnValue().code
                 } else {
-                    return javaScript.rawValue
+                    return javaScript.code
                 }
             }())
         } catch {
             // Initialize API error
             let apiError = YouTubePlayer.APIError(
-                javaScript: javaScript.rawValue,
+                javaScript: javaScript.code,
                 javaScriptResponse: nil,
                 underlyingError: error,
                 reason: (error as NSError)

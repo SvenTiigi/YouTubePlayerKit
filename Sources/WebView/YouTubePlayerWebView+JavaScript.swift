@@ -9,17 +9,17 @@ extension YouTubePlayerWebView {
         
         // MARK: Properties
         
-        /// The raw value of the JavaScript
-        let rawValue: String
+        /// The JavaScript code.
+        let code: String
         
         // MARK: Initializer
         
         /// Creates a new instance of ``YouTubePlayerWebView.JavaScript``
-        /// - Parameter rawValue: The JavaScript
+        /// - Parameter code: The JavaScript code.
         init(
-            _ rawValue: String
+            _ code: String
         ) {
-            self.rawValue = rawValue.last != ";" ? "\(rawValue);" : rawValue
+            self.code = code.last != ";" ? "\(code);" : code
         }
         
     }
@@ -32,29 +32,40 @@ extension YouTubePlayerWebView.JavaScript: CustomStringConvertible {
     
     /// A textual representation of this instance.
     var description: String {
-        self.rawValue
+        self.code
     }
     
 }
 
-// MARK: - YouTubePlayerWebView+JavaScript+player
+// MARK: - Player
 
 extension YouTubePlayerWebView.JavaScript {
-   
-    /// Bool value if the JavaScript contains a YouTube player usage e.g. function call or property access
-    var containsPlayerUsage: Bool {
-        self.rawValue.starts(with: YouTubePlayerWebView.HTML.javaScriptPlayerVariableName)
+    
+    /// Returns a new JavaScript instance by invoking the provided closure with the name of the YouTube player JavaScript variable.
+    /// - Parameter code: A closure providing the JavaScript code by using the provided YouTube player JavaScript variable.
+    static func player(
+        _ code: (String) -> String
+    ) -> Self {
+        .init(
+            code(YouTubePlayerWebView.HTML.javaScriptPlayerVariableName)
+        )
     }
     
-    /// Creates a YouTube player JavaScript
+    /// Returns a new JavaScript by applying the given operator on the YouTube player JavaScript variable.
     /// - Parameter operator: The operator (function, property)
     static func player(
         _ operator: String
     ) -> Self {
-        .init("\(YouTubePlayerWebView.HTML.javaScriptPlayerVariableName).\(`operator`)")
+        .player { playerVariableName in
+            [
+                playerVariableName,
+                `operator`
+            ]
+            .joined(separator: ".")
+        }
     }
     
-    /// Creates a YouTube player JavaScript with function
+    /// Returns a new JavaScript with the provided function and parameters.
     /// - Parameters:
     ///   - function: The function name
     ///   - parameters: The parameters.
@@ -62,10 +73,18 @@ extension YouTubePlayerWebView.JavaScript {
         function: String,
         parameters: [LosslessStringConvertible] = .init()
     ) -> Self {
-        self.player("\(function)(\(parameters.map { String($0) }.joined(separator: ", ")))")
+        self.player(
+            [
+                function,
+                "(",
+                parameters.map { String($0) }.joined(separator: ", "),
+                ")"
+            ]
+            .joined()
+        )
     }
     
-    /// Creates a YouTube player JavaScript with function
+    /// Returns a new JavaScript with the provided function and JSON encoded parameter.
     /// - Parameters:
     ///   - function: The function name
     ///   - parameter: The encodable parameter.
@@ -83,7 +102,7 @@ extension YouTubePlayerWebView.JavaScript {
                 javaScript: YouTubePlayerWebView
                     .JavaScript
                     .player(function: function)
-                    .rawValue,
+                    .code,
                 javaScriptResponse: nil,
                 underlyingError: error,
                 reason: "Failed to encode parameter"
@@ -102,13 +121,30 @@ extension YouTubePlayerWebView.JavaScript {
     
 }
 
-// MARK: - YouTubePlayerWebView+JavaScript+ignoreReturnValue
+// MARK: - Ignore Return Value
 
 extension YouTubePlayerWebView.JavaScript {
     
-    /// Wraps the JavaScript to ignore the return value.
+    /// Wraps the JavaScript code to explicitly return `null` after execution.
     func ignoreReturnValue() -> Self {
-        .init(self.rawValue + " null;")
+        .init(self.code + " null;")
+    }
+    
+}
+
+// MARK: - Immediately Invoked Function Expression (IIFE)
+
+extension YouTubePlayerWebView.JavaScript {
+    
+    /// Wraps the JavaScript code in an immediately invoked function expression (IIFE).
+    func asImmediatelyInvokedFunctionExpression() -> Self {
+        .init(
+            """
+            (function() {
+                \(self.code)
+            })();
+            """
+        )
     }
     
 }

@@ -66,7 +66,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
             guard let output = javaScriptResponse as? NewOutput else {
                 // Otherwise throw error
                 throw .init(
-                    javaScript: javaScript.rawValue,
+                    javaScript: javaScript.code,
                     javaScriptResponse: javaScriptResponse.flatMap(String.init(describing:)),
                     reason: [
                         "Type-Cast failed",
@@ -104,7 +104,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.rawValue,
+                    javaScript: javaScript.code,
                     javaScriptResponse: .init(describing: output),
                     reason: "Failed to transform output \(String(reflecting: Output.self)) to \(String(reflecting: NewOutput.self))"
                 )
@@ -140,7 +140,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.rawValue,
+                    javaScript: javaScript.code,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Malformed JSON"
@@ -157,7 +157,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.rawValue,
+                    javaScript: javaScript.code,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Decoding failed: \(error)"
