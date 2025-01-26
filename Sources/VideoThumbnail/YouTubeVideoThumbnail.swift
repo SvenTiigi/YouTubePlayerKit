@@ -145,8 +145,8 @@ public extension YouTubeVideoThumbnail {
         guard let url = self.url else {
             return nil
         }
-        let (data, _) = try await urlSession.data(from: url)
-        guard !data.isEmpty else {
+        let (data, response) = try await urlSession.data(from: url)
+        guard !data.isEmpty, (response as? HTTPURLResponse)?.statusCode == 200 else {
             return nil
         }
         return .init(data: data)
