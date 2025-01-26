@@ -161,7 +161,16 @@ private extension YouTubePlayerWebView {
         self.allowsBackForwardNavigationGestures = false
         // Clear under page background color
         self.underPageBackgroundColor = .clear
-        #if !os(macOS)
+        #if os(macOS)
+        // Set clear layer background color
+        self.layer?.backgroundColor = .clear
+        // Hide scrollbars
+        self.enclosingScrollView?.hasVerticalScroller = false
+        self.enclosingScrollView?.hasHorizontalScroller = false
+        // Disable magnification
+        self.enclosingScrollView?.allowsMagnification = false
+        self.allowsMagnification = false
+        #else
         // Set clear background color
         self.backgroundColor = .clear
         // Disable opaque
