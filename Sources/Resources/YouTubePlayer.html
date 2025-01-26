@@ -78,13 +78,14 @@
         // Set YouTubePlayer Full screen
         function setFullScreen() {
             // Check if YouTubePlayer is available
-            if (player) {
+            var iframe = document.querySelector('iframe');
+            if (iframe) {
                 // Set Player full screen
-                if (player.requestFullscreen) {
-                    player.requestFullscreen();
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen();
                     return "fullscreen started";
                 } else if (player.webkitRequestFullscreen) {
-                    player.webkitRequestFullscreen();
+                    iframe.webkitRequestFullscreen();
                     return "fullscreen started";
                 } else {
                     return "fullscreen not supported";
