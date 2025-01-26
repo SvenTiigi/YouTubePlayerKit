@@ -52,9 +52,17 @@ public final class YouTubePlayerViewController: YouTubePlayerBaseViewController 
     
     // MARK: View-Lifecycle
     
-    /// Creates the view that the controller manages
-    public override func loadView() {
-        self.view = self.player.webView
+    /// View did load
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.addSubview(self.player.webView)
+        self.player.webView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            self.player.webView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.player.webView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.player.webView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.player.webView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+        ])
     }
     
 }

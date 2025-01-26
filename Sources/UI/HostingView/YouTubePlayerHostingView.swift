@@ -35,6 +35,13 @@ public final class YouTubePlayerHostingView: YouTubePlayerHostingBaseView {
         self.player = player
         super.init(frame: .zero)
         self.addSubview(self.player.webView)
+        self.player.webView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            self.player.webView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            self.player.webView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.player.webView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            self.player.webView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+        ])
     }
     
     /// Initializer with NSCoder is unavailable.

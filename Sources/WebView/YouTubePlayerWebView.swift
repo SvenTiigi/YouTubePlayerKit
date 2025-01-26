@@ -159,14 +159,6 @@ private extension YouTubePlayerWebView {
         self.allowsLinkPreview = false
         // Disable gesture navigation
         self.allowsBackForwardNavigationGestures = false
-        // Set autoresizing masks
-        self.autoresizingMask = {
-            #if os(macOS)
-            return [.width, .height]
-            #else
-            return [.flexibleWidth, .flexibleHeight]
-            #endif
-        }()
         // Clear under page background color
         self.underPageBackgroundColor = .clear
         #if !os(macOS)
