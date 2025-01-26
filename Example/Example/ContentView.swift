@@ -27,11 +27,7 @@ struct ContentView {
         wwdcKeynote: WWDCKeynote = .wwdc2024
     ) {
         self.youTubePlayer = .init(
-            source: [
-                "w87fOAG8fjk", // 2014
-                "RXeOiIDNNek", // 2024
-                "psL_5RIBqnY" // 2019
-            ]
+            urlString: wwdcKeynote.youTubeURL
         )
         self._selectedKeynote = .init(initialValue: wwdcKeynote)
     }
@@ -111,13 +107,11 @@ private extension ContentView {
                             Button {
                                 self.selectedKeynote = keynote
                             } label: {
-                                Rectangle()
-                                /*
                                 YouTubePlayerView(
                                     .init(
                                         urlString: keynote.youTubeURL
                                     )
-                                )*/
+                                )
                                 .disabled(true)
                                 .frame(height: 150)
                                 .background(Color(.systemBackground))
