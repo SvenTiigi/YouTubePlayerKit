@@ -230,7 +230,9 @@ public extension YouTubePlayer {
         completion: ((Result<Void, APIError>) -> Void)? = nil
     ) {
         self.webView.evaluate(
-            javaScript: .player(function: "setFullScreen"),
+            javaScript: .init(
+                "setFullScreen();"
+            ),
             completion: completion
         )
     }
