@@ -141,19 +141,6 @@ private extension ContentView {
                 )
             )
             .scrollContentBackground(.hidden)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Reload") {
-                        Task {
-                            print("Start reloading")
-                            defer {
-                                print("Finished reloading")
-                            }
-                            try await self.youTubePlayer.reload()
-                        }
-                    }
-                }
-            }
         }
         .ignoresSafeArea(edges: .bottom)
     }
