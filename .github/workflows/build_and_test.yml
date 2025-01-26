@@ -1,11 +1,18 @@
 name: Build and Test
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+  push:
+    paths:
+      - "Sources/**"
+      - "Tests/**"
+      - "!Sources/Documentation.docc/**"
   pull_request:
-    branches:
-      - main
-      - develop
+    paths:
+      - "Sources/**"
+      - "Tests/**"
+      - "!Sources/Documentation.docc/**"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
