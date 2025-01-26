@@ -677,6 +677,32 @@ public extension YouTubePlayer {
         await self.webView.closeAllMediaPresentations()
     }
     
+    /// Requests web fullscreen mode.
+    /// - Important: This function only executes if the configuration's fullscreen mode is set to `.web`.
+    /// - Returns: A boolean value indicating whether the fullscreen request was successful:
+    /// `true` if fullscreen mode was successfully requested.
+    /// `false` if either the configuration doesn't allow web fullscreen or if the fullscreen API is not available
+    func requestWebFullscreen() async throws(APIError) -> Bool {
+        guard self.configuration.fullscreenMode == .web else {
+            return false
+        }
+        return try await self.webView.evaluate(
+            javaScript: .init(
+                """
+                var iframe = document.querySelector('iframe');
+                var requestFullScreen = iframe.requestFullScreen || iframe.webkitRequestFullScreen;
+                if (requestFullScreen) {
+                    requestFullScreen.bind(iframe)();
+                    return true;
+                }
+                return false;
+                """
+            )
+            .asImmediatelyInvokedFunctionExpression(),
+            converter: .typeCast()
+        )
+    }
+    
 }
 
 // MARK: - Video Information (https://developers.google.com/youtube/iframe_api_reference#Retrieving_video_information)
