@@ -4,8 +4,8 @@ import Testing
 
 struct YouTubePlayerSourceTests {
     
-    @Test("Video URLs")
-    func testVideoURLs() throws {
+    @Test
+    func videoURLs() throws {
         let videoID = UUID().uuidString
         #expect(
             YouTubePlayer.Source(urlString: "https://www.youtube.com/watch?v=\(videoID)")
@@ -69,8 +69,8 @@ struct YouTubePlayerSourceTests {
         )
     }
     
-    @Test("Playlist URLs")
-    func testPlaylistURLs() throws {
+    @Test
+    func playlistURLs() throws {
         let playlistID = UUID().uuidString
         #expect(
             YouTubePlayer.Source(urlString: "https://www.youtube.com/playlist?list=\(playlistID)")
@@ -99,8 +99,8 @@ struct YouTubePlayerSourceTests {
         )
     }
     
-    @Test("Channel URLs")
-    func testChannelURLs() throws {
+    @Test
+    func channelURLs() throws {
         let channelName = UUID().uuidString
         #expect(
             YouTubePlayer.Source(urlString: "https://www.youtube.com/channel/\(channelName)")
@@ -129,16 +129,20 @@ struct YouTubePlayerSourceTests {
         )
     }
     
-    @Test("Invalid URLs")
-    func testInvalidURLs() throws {
-        #expect(YouTubePlayer.Source(urlString: "https://example.com/watch?v=dQw4w9WgXcQ") == nil)
-        #expect(YouTubePlayer.Source(urlString: "https://www.youtube.com/watch") == nil)
-        #expect(YouTubePlayer.Source(urlString: "") == nil)
-        #expect(YouTubePlayer.Source(urlString: "not a url") == nil)
+    @Test(
+        arguments: [
+            "https://example.com/watch?v=dQw4w9WgXcQ",
+            "https://www.youtube.com/watch",
+            "not a url",
+            ""
+        ]
+    )
+    func invalidURLString(_ urlString: String) throws {
+        #expect(YouTubePlayer.Source(urlString: urlString) == nil)
     }
     
-    @Test("Properties")
-    func testProperties() throws {
+    @Test
+    func properties() throws {
         let id = UUID().uuidString
         let videoSource = YouTubePlayer.Source.video(id: id)
         #expect(videoSource.videoID == id)
