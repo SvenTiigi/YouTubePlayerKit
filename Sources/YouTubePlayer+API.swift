@@ -683,6 +683,16 @@ public extension YouTubePlayer {
 
 public extension YouTubePlayer {
     
+    /// Returns a Boolean indicating whether Stats for Nerds is currently displayed.
+    func isStatsForNerdsVisible() async throws(APIError) -> Bool {
+        try await self.webView.evaluate(
+            javaScript: .player(
+                function: "isVideoInfoVisible"
+            ),
+            converter: .typeCast()
+        )
+    }
+    
     /// Show Stats for Nerds which displays additional video information.
     func showStatsForNerds() async throws(APIError) {
         try await self.webView.evaluate(
