@@ -9,7 +9,7 @@ body:
     attributes:
       label: Prerequisites
       options:
-        - label: I have verified this issue is specific to YouTubePlayerKit and not a limitation or bug of the YouTube Player iFrame API.
+        - label: I have verified this issue is specific to YouTubePlayerKit and not a limitation or bug of the [YouTube Player iFrame API](https://developers.google.com/youtube/iframe_api_reference).
           required: true
   - type: textarea
     id: bug-description
