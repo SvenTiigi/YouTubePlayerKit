@@ -13,7 +13,7 @@ final class YouTubePlayerWebView: WKWebView {
     private(set) weak var player: YouTubePlayer?
     
     /// The origin URL
-    private let originURL = URL(string: "https://youtubeplayerkit")
+    private let originURL = URL(string: "https://youtubeplayer")
     
     /// The YouTubePlayerWebView Event PassthroughSubject
     private(set) lazy var eventSubject = PassthroughSubject<Event, Never>()
