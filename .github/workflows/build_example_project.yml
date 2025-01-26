@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - xcode: 16.1
-            destination: iPhone 15
+            destination: iPhone 16
             os: 18.1
     steps:
       - name: Checkout
