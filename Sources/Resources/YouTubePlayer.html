@@ -88,10 +88,10 @@
                     iframe.webkitRequestFullscreen();
                     return "fullscreen started";
                 } else {
-                    return "fullscreen not supported";
+                    throw new Error("Fullscreen not supported");
                 }
             } else {
-                return "player not found";
+                throw new Error("Player not found");
             }
         }
 
