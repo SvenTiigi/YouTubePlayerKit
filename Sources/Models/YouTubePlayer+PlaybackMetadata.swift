@@ -16,7 +16,7 @@ public extension YouTubePlayer {
         public let author: String?
         
         /// The video identifier.
-        public let videoId: String?
+        public let videoId: Source.ID?
         
         /// Bool value if is playable.
         public let isPlayable: Bool?
@@ -104,7 +104,7 @@ public extension YouTubePlayer {
         public init(
             title: String,
             author: String? = nil,
-            videoId: String? = nil,
+            videoId: Source.ID? = nil,
             isPlayable: Bool? = nil,
             errorCode: Int? = nil,
             videoQuality: String? = nil,
