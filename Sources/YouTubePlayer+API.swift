@@ -437,6 +437,16 @@ public extension YouTubePlayer {
         )
     }
     
+    /// This function returns the identifier of the playlist video that is currently playing.
+    func getPlaylistID() async throws(APIError) -> Source.ID {
+        try await self.webView.evaluate(
+            javaScript: .player(
+                function: "getPlaylistId"
+            ),
+            converter: .typeCast()
+        )
+    }
+    
 }
 
 // MARK: - Queueing
