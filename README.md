@@ -249,6 +249,9 @@ try await youTubePlayer.seek(to: .init(value: 1, unit: .minutes), allowSeekAhead
 
 // Closes any current picture-in-picture video and fullscreen video
 await youTubePlayer.closeAllMediaPresentations()
+
+// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
+await youTubePlayer.requestWebFullscreen()
 ```
 
 #### Events
@@ -340,6 +343,9 @@ try await youTubePlayer.showStatsForNerds()
 // Hide Stats for Nerds
 try await youTubePlayer.hideStatsForNerds()
 
+// Returns a Boolean indicating whether Stats for Nerds is currently displayed.
+try await youTubePlayer.isStatsForNerdsVisible()
+
 // Retrieve the YouTubePlayer Information
 try await youTubePlayer.getInformation()
 
@@ -379,6 +385,9 @@ try await youTubePlayer.getPlaylist()
 
 // This function returns the index of the playlist video that is currently playing
 try await youTubePlayer.getPlaylistIndex()
+
+// This function returns the identifier of the playlist video that is currently playing.
+try await youTubePlayer.getPlaylistID()
 ```
 
 #### Setting the playback rate
@@ -410,7 +419,7 @@ let videoThumbnail = YouTubeVideoThumbnail(
 let url: URL? = videoThumbnail.url
 
 // Retrieve the image, if available.
-let image: YouTubeVideoThumbnail.Image? = videoThumbnail.image()
+let image: YouTubeVideoThumbnail.Image? = try await videoThumbnail.image()
 ```
 
 Additionally, the `YouTubePlayer` allows you to easily retrieve the thumbnail url and image for the currently loaded video.
