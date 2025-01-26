@@ -774,12 +774,23 @@ public extension YouTubePlayer {
     
     /// Returns the embed code for the currently loaded/playing video
     func getVideoEmbedCode() async throws(APIError) -> String {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getVideoEmbedCode"
-            ),
-            converter: .typeCast()
-        )
+        do {
+            return try await self.webView.evaluate(
+                javaScript: .player(
+                    function: "getVideoEmbedCode"
+                ),
+                converter: .typeCast()
+            )
+        } catch {
+            // Perform fallback to retrieve the video embed code via the information
+            // The `getVideoEmbedCode` sometimes fails due to an invalid width or height property
+            guard let videoEmbedCode = try? await self.getInformation().videoEmbedCode else {
+                // Otherwise rethrow error
+                throw error
+            }
+            // Return video embed code
+            return videoEmbedCode
+        }
     }
     
 }
