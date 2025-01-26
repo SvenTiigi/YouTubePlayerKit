@@ -20,17 +20,19 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Pages
-        uses: actions/configure-pages@v2
+        uses: actions/configure-pages@v4
       - name: Set up Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
       - name: Build Documentation
         run: |
+          set -o pipefail &&\
           xcodebuild docbuild\
             -scheme YouTubePlayerKit\
             -destination 'generic/platform=iOS'\
             -derivedDataPath ../DerivedData
+          | xcbeautify --renderer github-actions
       - name: Process Archive
         run: |
           mkdir _site
@@ -64,4 +66,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
