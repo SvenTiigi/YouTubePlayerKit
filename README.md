@@ -168,7 +168,7 @@ let youTubePlayer = YouTubePlayer(
     source: .video(id: "psL_5RIBqnY"),
     parameters: .init(
         autoPlay: true,
-        showControls: false,
+        showControls: true,
         loopEnabled: true,
         startTime: .init(value: 5, unit: .minutes),
         // ...
@@ -185,7 +185,7 @@ let youTubePlayer = YouTubePlayer(
 You can update the `parameters` of a `YouTubePlayer` via:
 
 ```swift
-youTubePlayer.parameters.showControls = true
+youTubePlayer.parameters.showControls = false
 ```
 
 > [!WARNING]
