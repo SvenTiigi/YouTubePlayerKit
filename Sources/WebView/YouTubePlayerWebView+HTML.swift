@@ -99,9 +99,8 @@ extension YouTubePlayerWebView.HTML {
                     func encode(
                         to encoder: Encoder
                     ) throws {
-                        var container = encoder.unkeyedContainer()
-                        try container.encode(
-                            self.options,
+                        try self.options.encode(
+                            to: encoder,
                             configuration: self.encodingConfiguration
                         )
                     }
