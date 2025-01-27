@@ -7,8 +7,11 @@ struct YouTubePlayerTests {
     
     @Test
     func logging() async {
+        let player = YouTubePlayer()
+        #expect(YouTubePlayer.Logger.category(player) == nil)
         #expect(!YouTubePlayer.isLoggingEnabled)
         YouTubePlayer.isLoggingEnabled = true
+        #expect(YouTubePlayer.Logger.category(player) != nil)
         #expect(YouTubePlayer.isLoggingEnabled)
         YouTubePlayer.isLoggingEnabled = false
     }
@@ -18,19 +21,18 @@ struct YouTubePlayerTests {
         let source: YouTubePlayer.Source = .video(id: UUID().uuidString)
         let parameters = YouTubePlayer.Parameters(
             autoPlay: .random(),
+            loopEnabled: .random(),
+            startTime: Bool.random() ? .init(value: .random(in: 1...10), unit: .seconds) : nil,
+            endTime: Bool.random() ? .init(value: .random(in: 40...60), unit: .seconds) : nil,
+            showControls: .random(),
+            showFullscreenButton: .random(),
+            progressBarColor: YouTubePlayer.Parameters.ProgressBarColor.allCases.randomElement(),
+            keyboardControlsDisabled: .random(),
+            language: UUID().uuidString,
             captionLanguage: UUID().uuidString,
             showCaptions: .random(),
-            progressBarColor: YouTubePlayer.Parameters.ProgressBarColor.allCases.randomElement(),
-            showControls: .random(),
-            keyboardControlsDisabled: .random(),
-            endTime: .init(value: .random(in: 40...60), unit: .seconds),
-            showFullscreenButton: .random(),
-            language: UUID().uuidString,
-            showAnnotations: .random(),
-            loopEnabled: .random(),
-            showRelatedVideos: .random(),
-            startTime: .init(value: .random(in: 1...10), unit: .seconds),
-            referrer: UUID().uuidString
+            restrictRelatedVideosToSameChannel: .random(),
+            referrer: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil
         )
         let configuration = YouTubePlayer.Configuration(
             fullscreenMode: YouTubePlayer.FullscreenMode.allCases.randomElement() ?? .system,
