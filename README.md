@@ -4,9 +4,9 @@
     <img src="Assets/logo.png" width="30%" alt="logo">
 </p>
 
-<br/>
-
-<h1 align="center">YouTubePlayerKit</h1>
+<h1 align="center">
+    YouTubePlayerKit
+</h1>
 
 <p align="center">
     A Swift Package to easily play YouTube videos.
