@@ -304,7 +304,7 @@ private extension YouTubePlayerWebView.HTML {
                         .map { javaScriptEventName in
                             """
                             function \(javaScriptEventName)(event) {
-                                sendYouTubePlayerEvent('\(javaScriptEventName)', event)
+                                sendYouTubePlayerEvent('\(javaScriptEventName)', event);
                             }
                             """
                         }
