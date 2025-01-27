@@ -9,69 +9,90 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// The optional video bytes loaded
+        /// The video bytes loaded.
         public let videoBytesLoaded: Double?
         
-        /// The optional video bytes total
+        /// The video bytes total.
         public let videoBytesTotal: Double?
         
-        /// The optional video bytes loaded fraction
+        /// The video bytes loaded fraction.
         public let videoLoadedFraction: Double?
         
-        /// The optional video start bytes
+        /// The video start bytes.
         public let videoStartBytes: Double?
         
-        /// The optional playlist
+        /// The playlist.
         public let playlist: String?
         
-        /// The optional playlist index
+        /// The playlist index.
         public let playlistIndex: Int?
         
-        /// The optional playlist id
+        /// The playlist identifier.
         public let playlistId: String?
         
-        /// Bool value if is muted
+        /// A Boolean indicating whether the player is muted or not.
         public let muted: Bool
         
-        /// The volume
+        /// The volume from 0 to 100.
         public let volume: Int
         
-        /// The YouTubePlayer PlaybackState
+        /// The YouTube player playback state.
         public let playerState: YouTubePlayer.PlaybackState
         
-        /// The YouTubePlayer PlaybackRate
+        /// The YouTube player playback rate.
         public let playbackRate: YouTubePlayer.PlaybackRate
         
-        /// The available YouTubePlayer PlaybackRates
+        /// The available YouTube player playback rates.
         public let availablePlaybackRates: [YouTubePlayer.PlaybackRate]
         
-        /// The YouTubePlayer PlaybackQuality
+        /// The YouTube player playback quality.
         public let playbackQuality: YouTubePlayer.PlaybackQuality
         
-        /// The available YouTubePlayer PlaybackQualities
+        /// The available YouTube player playback qualities.
         public let availableQualityLevels: [YouTubePlayer.PlaybackQuality]
         
-        /// The current elapsed time
+        /// The current elapsed time.
         public let currentTime: Double
         
-        /// The duration
+        /// The duration.
         public let duration: Double
         
-        /// The video embed code
+        /// The video embed code.
         public let videoEmbedCode: String
         
-        /// The video url
+        /// The video url.
         public let videoUrl: String
         
-        /// The media reference time
+        /// The media reference time.
         public let mediaReferenceTime: Double
         
-        /// The YouTubePlayer PlaybackMetadata
+        /// The YouTube player playback metadata.
         public let videoData: YouTubePlayer.PlaybackMetadata
         
         // MARK: Initializer
         
         /// Creates a new instance of ``YouTubePlayer.Information``
+        /// - Parameters:
+        ///   - videoBytesLoaded: The video bytes loaded.
+        ///   - videoBytesTotal: The video bytes total.
+        ///   - videoLoadedFraction: The video bytes loaded fraction.
+        ///   - videoStartBytes: The video start bytes.
+        ///   - playlist: The playlist.
+        ///   - playlistIndex: The playlist index.
+        ///   - playlistId: The playlist identifier.
+        ///   - muted: A Boolean indicating whether the player is muted or not.
+        ///   - volume: The volume from 0 to 100.
+        ///   - playerState: The YouTube player playback state.
+        ///   - playbackRate: The YouTube player playback rate.
+        ///   - availablePlaybackRates: The available YouTube player playback rates.
+        ///   - playbackQuality: The YouTube player playback quality.
+        ///   - availableQualityLevels: The available YouTube player playback qualities.
+        ///   - currentTime: The current elapsed time.
+        ///   - duration: The duration.
+        ///   - videoEmbedCode: The video embed code.
+        ///   - videoUrl: The video url.
+        ///   - mediaReferenceTime: The media reference time.
+        ///   - videoData: The YouTube player playback metadata.
         public init(
             videoBytesLoaded: Double?,
             videoBytesTotal: Double,
