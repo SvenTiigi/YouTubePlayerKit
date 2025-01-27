@@ -1,8 +1,10 @@
 <br/>
 
 <p align="center">
-    <img src="Assets/logo.png" width="40%" alt="logo">
+    <img src="Assets/logo.png" width="30%" alt="logo">
 </p>
+
+<br/>
 
 <h1 align="center">YouTubePlayerKit</h1>
 
