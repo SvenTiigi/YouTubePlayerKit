@@ -105,8 +105,7 @@ struct ContentView: View {
 
     var body: some View {
         YouTubePlayerView(self.youTubePlayer) { state in
-            // Overlay ViewBuilder closure to place an overlay View
-            // for the current `YouTubePlayer.State`
+            // An optional overlay view for the current state of the player
             switch state {
             case .idle:
                 ProgressView()
@@ -116,10 +115,23 @@ struct ContentView: View {
                 Text(verbatim: "YouTube player couldn't be loaded")
             }
         }
+        // Optionally react to specific updates such as the playback state
+        .onReceive(
+            self.youTubePlayer.playbackStatePublisher
+        ) { playbackState in
+            if playbackState == .playing {
+                // ...
+            } else if playbackState == .ended {
+                // ...
+            }
+        }
     }
 
 }
 ```
+
+> [!TIP]
+> You can optionally mark the YouTubePlayer with `@StateObject` or `@ObservedObject` to automatically update your view whenever the source, parameters, or configuration change.
 
 When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController`
 
@@ -193,6 +205,25 @@ youTubePlayer.parameters.showControls = false
 > [!WARNING]
 > Updating the `YouTubePlayer.Parameters` during runtime will cause the `YouTubePlayer` to reload.
 
+If you wish to gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable the logging of a player via the `isLogginEnabled` parameter.
+
+The `YouTubePlayer` utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
+
+```swift
+// Enable or disable logging during initialization
+let youTubePlayer = YouTubePlayer(
+    source: [
+        "w87fOAG8fjk",
+        "RXeOiIDNNek",
+        "psL_5RIBqnY"
+    ],
+    isLoggingEnabled: true
+)
+
+// To update during runtime update the isLoggingEnabled property
+youTubePlayer.isLoggingEnabled = false
+```
+
 ### Source
 
 The `YouTubePlayer.Source` is an enum which allows you to specify which YouTube source should be loaded.
@@ -219,16 +250,6 @@ let source: YouTubePlayer.Source? = .init(urlString: "https://youtube.com/watch?
 
 > [!NOTE]
 > The URL parsing logic is designed to handle most known YouTube URL formats, but there may be some variations that it doesn't cover.
-
-### Logging
-
-To gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable logging by:
-
-```swift
-YouTubePlayer.isLoggingEnabled = true
-```
-
-The YouTubePlayerKit utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
 
 ### API
 
@@ -340,10 +361,7 @@ try await youTubePlayer.getVolume()
 
 ```swift
 // Show Stats for Nerds which displays additional video information
-try await youTubePlayer.showStatsForNerds()
-
-// Hide Stats for Nerds
-try await youTubePlayer.hideStatsForNerds()
+try await youTubePlayer.setStatsForNerds(isVisible: true)
 
 // Returns a Boolean indicating whether Stats for Nerds is currently displayed.
 try await youTubePlayer.isStatsForNerdsVisible()
