@@ -6,7 +6,7 @@ import SwiftUI
 public extension YouTubePlayerView where Overlay == EmptyView {
     
     /// Creates a new instance of ``YouTubePlayerView``
-    /// - Parameter player: The YouTubePlayer
+    /// - Parameter player: The YouTube player
     init(
         _ player: YouTubePlayer
     ) {
