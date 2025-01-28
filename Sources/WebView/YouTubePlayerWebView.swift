@@ -130,21 +130,18 @@ private extension YouTubePlayerWebView {
         .merge(
             with: self.layoutLifecycleSubject
         )
+        .map(\.size)
         .removeDuplicates()
-        .sink { frame in
-            // Verify size is not equal to zero
-            guard frame.size != .zero else {
-                // Otherwise return out of function
-                return
-            }
+        .filter { $0 != .zero }
+        .sink { size in
             // Set player size
             Task(priority: .userInitiated) { [weak self] in
                 try? await self?.evaluate(
                     javaScript: .player(
                         function: "setSize",
                         parameters: [
-                            Double(frame.size.width),
-                            Double(frame.size.height)
+                            Double(size.width),
+                            Double(size.height)
                         ]
                     )
                 )
