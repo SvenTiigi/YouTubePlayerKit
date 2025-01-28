@@ -709,7 +709,7 @@ public extension YouTubePlayer {
 
 public extension YouTubePlayer {
     
-    /// Returns a Boolean indicating whether Stats for Nerds is currently displayed.
+    /// Returns a Boolean indicating if the detailed video statistics and technical information are visible.
     func isStatsForNerdsVisible() async throws(APIError) -> Bool {
         try await self.webView.evaluate(
             javaScript: .player(
@@ -719,20 +719,21 @@ public extension YouTubePlayer {
         )
     }
     
-    /// Show Stats for Nerds which displays additional video information.
-    func showStatsForNerds() async throws(APIError) {
+    /// Toggles the visibility of detailed video statistics and technical information.
+    ///
+    /// This function controls the display of advanced video metrics, similar to YouTube's
+    /// "Stats for Nerds" feature. When enabled, it shows technical details such as:
+    /// - Video codec information
+    /// - Buffer health
+    /// - Connection speed
+    /// - Frame drop statistics
+    /// - Parameter isVisible: Controls the visibility of the statistics overlay.
+    ///   - `true` to display the statistics
+    ///   - `false` to hide them
+    func setStatsForNerds(isVisible: Bool) async throws(APIError) {
         try await self.webView.evaluate(
             javaScript: .player(
-                function: "showVideoInfo"
-            )
-        )
-    }
-    
-    /// Hide Stats for Nerds which hides additional video information.
-    func hideStatsForNerds() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "hideVideoInfo"
+                function: isVisible ? "showVideoInfo" : "hideVideoInfo"
             )
         )
     }
