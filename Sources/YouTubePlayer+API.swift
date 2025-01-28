@@ -574,6 +574,7 @@ public extension YouTubePlayer {
                 }()
             )
         )
+        self.source = source
     }
     
 }
