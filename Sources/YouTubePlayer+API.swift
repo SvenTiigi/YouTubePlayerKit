@@ -1,22 +1,6 @@
 import Combine
 import SwiftUI
 
-// MARK: - Logging
-
-public extension YouTubePlayer {
-    
-    /// A Boolean that controls whether logging is enabled.
-    static var isLoggingEnabled: Bool {
-        get {
-            Logger.isEnabled
-        }
-        set {
-            Logger.isEnabled = newValue
-        }
-    }
-    
-}
-
 // MARK: - Reload
 
 public extension YouTubePlayer {

@@ -218,9 +218,8 @@ extension YouTubePlayerWebView {
             )
             return false
         }
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .debug(
                 """
                 Loading YouTube Player with options:
@@ -261,9 +260,8 @@ extension YouTubePlayerWebView {
         javaScript: JavaScript,
         converter: JavaScriptEvaluationResponseConverter<Response>
     ) async throws(YouTubePlayer.APIError) -> Response {
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .debug(
                 """
                 Evaluate JavaScript: \(javaScript, privacy: .public)
@@ -298,9 +296,8 @@ extension YouTubePlayerWebView {
                     .userInfo["WKJavaScriptExceptionMessage"] as? String
             )
             // Log error
-            YouTubePlayer
-                .Logger
-                .category(self.player)?
+            self.player?
+                .logger()?
                 .error(
                     """
                     Evaluated JavaScript: \(javaScript, privacy: .public)
@@ -310,9 +307,8 @@ extension YouTubePlayerWebView {
             // Throw error
             throw apiError
         }
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .debug(
                 """
                 Evaluated JavaScript: \(javaScript, privacy: .public)
@@ -333,9 +329,8 @@ extension YouTubePlayerWebView {
                 javaScriptResponse: javaScriptResponse
             )
         } catch {
-            YouTubePlayer
-                .Logger
-                .category(self.player)?
+            self.player?
+                .logger()?
                 .error(
                     """
                     JavaScript response conversion failed
@@ -428,9 +423,8 @@ extension YouTubePlayerWebView: WKUIDelegate {
     ) -> WKWebView? {
         // Check if the request url is available
         if let url = navigationAction.request.url {
-            YouTubePlayer
-                .Logger
-                .category(self.player)?
+            self.player?
+                .logger()?
                 .debug("Open URL \(url, privacy: .public)")
             // Open URL
             Task(priority: .userInitiated) { [weak self] in
@@ -460,9 +454,8 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
         self.eventSubject.send(
             .didFailProvisionalNavigation(error)
         )
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .error("WKWebView did fail provisional navigation: \(error, privacy: .public)")
     }
     
@@ -490,9 +483,8 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             return .allow
         }
         // Log url
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .debug("WKWebView navigate to \(url, privacy: .public)")
         // Check if the scheme matches the JavaScript evvent callback url scheme
         // and the host is a known JavaScript event name
@@ -511,9 +503,8 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 .flatMap { $0 == "null" ? nil : $0 }
             )
             // Log received JavaScript event
-            YouTubePlayer
-                .Logger
-                .category(self.player)?
+            self.player?
+                .logger()?
                 .debug("Received YouTubePlayer JavaScript Event\n\(javaScriptEvent, privacy: .public)")
             // Send received JavaScriptEvent
             self.eventSubject.send(
@@ -560,9 +551,8 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
         self.eventSubject.send(
             .webContentProcessDidTerminate
         )
-        YouTubePlayer
-            .Logger
-            .category(self.player)?
+        self.player?
+            .logger()?
             .error("WKWebView web content process did terminate")
     }
     

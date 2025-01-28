@@ -1,28 +1,51 @@
 import Combine
 import Foundation
+import OSLog
 
 // MARK: - YouTubePlayer
 
-#warning("Improve YouTubePlayer Documentation")
-
-/**
- A YouTube player.
- */
+/// A YouTube player that provides a native interface to the [YouTube IFrame Player API](https://developers.google.com/youtube/iframe_api_reference).
+///
+/// Enables embedding and controlling YouTube videos in your app, including playback controls,
+/// playlist management, and video information retrieval.
+///
+/// - Important: The following limitations apply:
+/// Audio background playback is not supported,
+/// Simultaneous playback of multiple YouTube players is not supported,
+/// Controlling playback of 360° videos is not supported.
+/// - SeeAlso: [YouTubePlayerKit on GitHub](https://github.com/SvenTiigi/YouTubePlayerKit?tab=readme-ov-file)
 @MainActor
-public final class YouTubePlayer {
+public final class YouTubePlayer: ObservableObject {
     
     // MARK: Properties
     
     /// The source.
-    public private(set) var source: Source?
+    public internal(set) var source: Source? {
+        didSet {
+            // Verify that the source has changed.
+            guard self.source != oldValue else {
+                // Otherwise return out of function
+                return
+            }
+            // Send object will change
+            self.objectWillChange.send()
+            // Send source.
+            self.sourceSubject.send(self.source)
+        }
+    }
     
     /// The parameters.
     /// - Important: Updating this property will result in a reload of YouTube player.
     public var parameters: Parameters {
         didSet {
-            guard oldValue != self.parameters else {
+            // Verify that the parameters have changed.
+            guard self.parameters != oldValue else {
+                // Otherwise return out of function
                 return
             }
+            // Send object will change
+            self.objectWillChange.send()
+            // Reload the player to apply the new parameters
             Task { [weak self] in
                 try? await self?.reload()
             }
@@ -32,14 +55,31 @@ public final class YouTubePlayer {
     /// The configuration.
     public var configuration: Configuration {
         didSet {
+            // Verify that the configuration has changed.
+            guard self.configuration != oldValue else {
+                // Otherwise return out of function
+                return
+            }
+            // Send object will change
+            self.objectWillChange.send()
+            // Update automatically adjusts content insets, if needed
             if self.configuration.automaticallyAdjustsContentInsets != oldValue.automaticallyAdjustsContentInsets {
                 self.webView.setAutomaticallyAdjustsContentInsets(
                     enabled: self.configuration.automaticallyAdjustsContentInsets
                 )
             }
+            // Update custom user agent, if needed
             if self.configuration.customUserAgent != oldValue.customUserAgent {
                 self.webView.customUserAgent = self.configuration.customUserAgent
             }
+        }
+    }
+    
+    /// A Boolean value that determines whether logging is enabled.
+    public var isLoggingEnabled: Bool {
+        didSet {
+            // Send object will change
+            self.objectWillChange.send()
         }
     }
     
@@ -66,6 +106,7 @@ public final class YouTubePlayer {
         let webView = YouTubePlayerWebView(player: self)
         self.webViewEventSubscription = webView
             .eventSubject
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 self?.handle(
                     webViewEvent: event
@@ -84,14 +125,17 @@ public final class YouTubePlayer {
     ///   - source: The source. Default value `nil`
     ///   - parameters: The parameters. Default value `.init()`
     ///   - configuration: The configuration. Default value `.init()`
+    ///   - isLoggingEnabled: A Boolean value that determines whether logging is enabled. Default value `false`
     nonisolated public init(
         source: Source? = nil,
         parameters: Parameters = .init(),
-        configuration: Configuration = .init()
+        configuration: Configuration = .init(),
+        isLoggingEnabled: Bool = false
     ) {
         self.source = source
         self.parameters = parameters
         self.configuration = configuration
+        self.isLoggingEnabled = isLoggingEnabled
         Task { @MainActor [weak self] in
             self?.sourceSubject.send(source)
         }
@@ -274,6 +318,13 @@ private extension YouTubePlayer {
                 }
                 self?.playbackStateSubject.send(playbackState)
             }
+            // Initially load playback rate
+            Task { [weak self] in
+                guard let playbackRate = try? await self?.getPlaybackRate() else {
+                    return
+                }
+                self?.playbackRateSubject.send(playbackRate)
+            }
         case .onStateChange:
             // Verify YouTubePlayer PlaybackState is available
             guard let playbackState: YouTubePlayer.PlaybackState? = {
@@ -330,12 +381,28 @@ private extension YouTubePlayer {
                     return
                 }
                 self?.source = source
-                self?.sourceSubject.send(source)
             }
         case .onAutoplayBlocked:
             // Send auto play blocked event
             self.autoplayBlockedSubject.send(())
         }
+    }
+    
+}
+
+// MARK: - Logger
+
+extension YouTubePlayer {
+    
+    /// Returns a new logger instance if logging is enabled through `isLoggingEnabled`.
+    func logger() -> os.Logger? {
+        guard self.isLoggingEnabled else {
+            return nil
+        }
+        return .init(
+            subsystem: "YouTubePlayer",
+            category: .init(describing: self.id)
+        )
     }
     
 }

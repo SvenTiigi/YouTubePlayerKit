@@ -6,17 +6,6 @@ import Foundation
 struct YouTubePlayerTests {
     
     @Test
-    func logging() async {
-        let player = YouTubePlayer()
-        #expect(YouTubePlayer.Logger.category(player) == nil)
-        #expect(!YouTubePlayer.isLoggingEnabled)
-        YouTubePlayer.isLoggingEnabled = true
-        #expect(YouTubePlayer.Logger.category(player) != nil)
-        #expect(YouTubePlayer.isLoggingEnabled)
-        YouTubePlayer.isLoggingEnabled = false
-    }
-    
-    @Test
     func customInitialization() async {
         let source: YouTubePlayer.Source = .video(id: UUID().uuidString)
         let parameters = YouTubePlayer.Parameters(
@@ -43,14 +32,17 @@ struct YouTubePlayerTests {
             customUserAgent: UUID().uuidString,
             openURLAction: .default
         )
+        let isLoggingEnabled: Bool = .random()
         let youTubePlayer = YouTubePlayer(
             source: source,
             parameters: parameters,
-            configuration: configuration
+            configuration: configuration,
+            isLoggingEnabled: isLoggingEnabled
         )
         #expect(youTubePlayer.source == source)
         #expect(youTubePlayer.parameters == parameters)
         #expect(youTubePlayer.configuration == configuration)
+        #expect(youTubePlayer.isLoggingEnabled == isLoggingEnabled)
         #expect(youTubePlayer.state == .idle)
         #expect(youTubePlayer.playbackState == nil)
         #expect(!youTubePlayer.isPlaying)
@@ -66,6 +58,9 @@ struct YouTubePlayerTests {
         let videoID = UUID().uuidString
         let youTubePlayer = YouTubePlayer(stringLiteral: "https://youtube.com/watch?v=\(videoID)")
         #expect(youTubePlayer.source == .video(id: videoID))
+        #expect(youTubePlayer.parameters == .init())
+        #expect(youTubePlayer.configuration == .init())
+        #expect(!youTubePlayer.isLoggingEnabled)
     }
     
 }
