@@ -207,6 +207,8 @@ youTubePlayer.parameters.showControls = false
 > [!WARNING]
 > Updating the `YouTubePlayer.Parameters` during runtime will cause the `YouTubePlayer` to reload.
 
+### Logging
+
 If you wish to gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable the logging of a player via the `isLogginEnabled` parameter.
 
 The `YouTubePlayer` utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
