@@ -101,3 +101,29 @@ extension YouTubePlayer.PlaybackState: CaseIterable {
     public static let cued: Self = 5
     
 }
+
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.PlaybackState: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        switch self {
+        case .unstarted:
+            return "Unstarted"
+        case .ended:
+            return "Ended"
+        case .playing:
+            return "Playing"
+        case .paused:
+            return "Paused"
+        case .buffering:
+            return "Buffering"
+        case .cued:
+            return "Cued"
+        default:
+            return "Unknown: \(self.value)"
+        }
+    }
+    
+}

@@ -143,8 +143,8 @@ private extension YouTubePlayerWebView {
                             ),
                             String(
                                 format: "%.1f",
-                                size.height)
-                            ,
+                                size.height
+                            )
                         ]
                     ),
                     converter: .void

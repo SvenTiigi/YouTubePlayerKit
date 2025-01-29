@@ -226,6 +226,9 @@ let youTubePlayer = YouTubePlayer(
 
 // To update during runtime update the isLoggingEnabled property
 youTubePlayer.isLoggingEnabled = false
+
+// Additionally, you can retrieve an instance of the logger if logging is enabled.
+let logger: Logger? = youTubePlayer.logger()
 ```
 
 ### Source
@@ -425,6 +428,28 @@ try await youTubePlayer.set(playbackRate: 1.5)
 
 // This function returns the set of playback rates in which the current video is available
 try await youTubePlayer.getAvailablePlaybackRates()
+```
+
+#### Captions
+
+```swift
+// Sets the font size of the captions displayed in the player.
+try await youTubePlayer.setCaptions(fontSize: .large)
+
+// Sets the language of the captions.
+try await youTubePlayer.setCaptions(languageCode: .german)
+
+// Reloads the captions data for the video that is currently playing.
+try await youTubePlayer.reloadCaptions()
+
+// Returns the current captions track.
+try await youTubePlayer.getCaptionsTrack()
+
+// Returns the captions tracks.
+try await youTubePlayer.getCaptionsTracks()
+
+// Returns the captions translation languges.
+try await youTubePlayer.getCaptionsTranslationLanguages()
 ```
 
 ## Video Thumbnail

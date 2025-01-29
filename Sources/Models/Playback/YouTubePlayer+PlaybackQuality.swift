@@ -109,3 +109,14 @@ extension YouTubePlayer.PlaybackQuality: CaseIterable {
     public static let unknown: Self = "unknown"
     
 }
+
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.PlaybackQuality: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        self.name
+    }
+    
+}

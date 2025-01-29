@@ -237,21 +237,88 @@ extension YouTubePlayer: @preconcurrency Hashable {
     
 }
 
-// MARK: - Reset State
+// MARK: - Evaluate
 
-extension YouTubePlayer {
+public extension YouTubePlayer {
     
-    /// Resets the state of the subjects.
-    func resetState() {
-        self.stateSubject.send(.idle)
-        self.playbackStateSubject.send(nil)
-        self.playbackQualitySubject.send(nil)
-        self.playbackRateSubject.send(nil)
+    /// Evaluates the JavaScript and converts its response.
+    /// - Parameters:
+    ///   - javaScript: The JavaScript to evaluate.
+    ///   - converter: The response converter.
+    func evaluate<Response>(
+        javaScript: JavaScript,
+        converter: JavaScriptEvaluationResponseConverter<Response>
+    ) async throws(APIError) -> Response {
+        try await self.webView.evaluate(
+            javaScript: javaScript,
+            converter: converter
+        )
+    }
+    
+    /// Evaluates the JavaScript.
+    /// - Parameter javaScript: The JavaScript to evaluate.
+    func evaluate(
+        javaScript: JavaScript
+    ) async throws(APIError) {
+        try await self.evaluate(
+            javaScript: javaScript,
+            converter: .void
+        )
     }
     
 }
 
-// MARK: - Handle WebView Event
+// MARK: - Reload
+
+public extension YouTubePlayer {
+    
+    /// Reloads the YouTube player.
+    func reload() async throws(Swift.Error) {
+        // Destroy the player and discard the error
+        try? await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "destroy"
+            )
+        )
+        // Reload
+        try self.webView.load()
+        // Await new ready or error state
+        for await state in self.stateSubject.dropFirst().values {
+            // Swithc on state
+            switch state {
+            case .ready:
+                // Success return out of function
+                return
+            case .error(let error):
+                // Throw error
+                throw error
+            default:
+                // Continue with next state
+                continue
+            }
+        }
+    }
+    
+}
+
+// MARK: - Logger
+
+public extension YouTubePlayer {
+    
+    /// Returns a new logger instance if logging is enabled through `isLoggingEnabled`.
+    func logger() -> Logger? {
+        guard self.isLoggingEnabled else {
+            return nil
+        }
+        return .init(
+            subsystem: "YouTubePlayer",
+            category: .init(describing: self.id)
+        )
+    }
+    
+}
+
+// MARK: - Handle WebView/JavaScript Event
 
 private extension YouTubePlayer {
     
@@ -278,12 +345,6 @@ private extension YouTubePlayer {
             )
         }
     }
-    
-}
-
-// MARK: - Handle JavaScript Event
-
-private extension YouTubePlayer {
     
     /// Handles an incoming ``YouTubePlayer.JavaScriptEvent``
     /// - Parameter javaScriptEvent: The JavaScript event to handle.
@@ -368,41 +429,13 @@ private extension YouTubePlayer {
                 .data
                 .flatMap(Int.init)
                 .flatMap(YouTubePlayer.Error.init)
-                .map { .error($0) }
-                .map { self.stateSubject.send($0) }
+                .map { self.stateSubject.send(.error($0)) }
         case .onApiChange:
-            self.stateSubject.send(.ready)
-            self.playbackStateSubject.send(nil)
-            self.playbackQualitySubject.send(nil)
-            self.playbackRateSubject.send(nil)
-            Task { [weak self] in
-                guard let videoURL = try? await self?.getVideoURL(),
-                      let source = YouTubePlayer.Source(urlString: videoURL) else {
-                    return
-                }
-                self?.source = source
-            }
+            break
         case .onAutoplayBlocked:
             // Send auto play blocked event
             self.autoplayBlockedSubject.send(())
         }
-    }
-    
-}
-
-// MARK: - Logger
-
-extension YouTubePlayer {
-    
-    /// Returns a new logger instance if logging is enabled through `isLoggingEnabled`.
-    func logger() -> os.Logger? {
-        guard self.isLoggingEnabled else {
-            return nil
-        }
-        return .init(
-            subsystem: "YouTubePlayer",
-            category: .init(describing: self.id)
-        )
     }
     
 }

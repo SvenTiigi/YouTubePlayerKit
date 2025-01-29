@@ -131,7 +131,7 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
 
 // MARK: - Decode
 
-public extension YouTubePlayer.JavaScriptEvaluationResponseConverter where Output == [String: Any] {
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     
     /// Convert and Decode JavaScript Response to a Decodable type
     /// - Parameters:
