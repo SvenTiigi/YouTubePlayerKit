@@ -83,7 +83,9 @@ Or navigate to your Xcode project then select `Swift Packages`, click the â€œ+â€
 
 When submitting an app to the App Store which includes the `YouTubePlayerKit`, please ensure to add a link to the [YouTube API Terms of Services](https://developers.google.com/youtube/terms/api-services-terms-of-service) in the review notes.
 
-> https://developers.google.com/youtube/terms/api-services-terms-of-service
+```
+https://developers.google.com/youtube/terms/api-services-terms-of-service
+```
 
 ## Limitations
 
