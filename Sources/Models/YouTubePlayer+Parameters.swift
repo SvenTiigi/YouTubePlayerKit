@@ -99,13 +99,16 @@ public extension YouTubePlayer {
         /// - Default: `false` (related videos from all channels are shown)
         public var restrictRelatedVideosToSameChannel: Bool?
         
+        /// The domain origin URL.
+        public var originURL: URL?
+        
         /// Specifies the URL of the page containing the embedded player.
         ///
         /// Used by YouTube Analytics to track video playback origin. Should match the actual URL
         /// where the player is embedded.
         /// - Important: Must be a valid URL for accurate analytics data collection.
         /// - Note: This parameter provides additional context to YouTube Analytics but is not required.
-        public var referrer: URL?
+        public var referrerURL: URL?
 
         // MARK: Initializer
         
@@ -123,7 +126,8 @@ public extension YouTubePlayer {
         ///   - captionLanguage: ISO 639-1 two-letter language code for closed captions (e.g., "en", "es").
         ///   - showCaptions: Forces closed captions display even if turned off in user preferences.
         ///   - restrictRelatedVideosToSameChannel: Controls whether related videos are restricted to the same channel.
-        ///   - referrer: URL where the player is embedded, used for YouTube Analytics tracking.
+        ///   - originURL: The domain origin URL. Default value `YouTubePlayer.Parameters.defaultOriginURL`
+        ///   - referrerURL: URL where the player is embedded, used for YouTube Analytics tracking.
         public init(
             autoPlay: Bool? = nil,
             loopEnabled: Bool? = nil,
@@ -137,7 +141,8 @@ public extension YouTubePlayer {
             captionLanguage: String? = nil,
             showCaptions: Bool? = nil,
             restrictRelatedVideosToSameChannel: Bool? = nil,
-            referrer: URL? = nil
+            originURL: URL? = Self.defaultOriginURL,
+            referrerURL: URL? = nil
         ) {
             self.autoPlay = autoPlay
             self.loopEnabled = loopEnabled
@@ -153,7 +158,8 @@ public extension YouTubePlayer {
             self.captionLanguage = captionLanguage
             self.showCaptions = showCaptions
             self.restrictRelatedVideosToSameChannel = restrictRelatedVideosToSameChannel
-            self.referrer = referrer
+            self.originURL = originURL
+            self.referrerURL = referrerURL
         }
         
     }
@@ -214,7 +220,8 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
             captionLanguage: queryParameter(for: .captionLanguage),
             showCaptions: queryParameter(for: .showCaptions).flatMap(Int.init).flatMap(Bool.init(bit:)),
             restrictRelatedVideosToSameChannel: queryParameter(for: .restrictRelatedVideosToSameChannel).flatMap(Int.init).flatMap(Bool.init(bit:)),
-            referrer: queryParameter(for: .referrer).flatMap(URL.init)
+            originURL: queryParameter(for: .origin).flatMap(URL.init) ?? Self.defaultOriginURL,
+            referrerURL: queryParameter(for: .referrer).flatMap(URL.init)
         )
     }
     
@@ -232,9 +239,6 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         /// The source.
         public let source: YouTubePlayer.Source?
         
-        /// The origin URL.
-        public let originURL: URL?
-        
         /// A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
         public let allowsInlineMediaPlayback: Bool
         
@@ -243,15 +247,12 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         /// Creates a new instance of ``YouTubePlayer.Options.Parameters.EncodingConfiguration``
         /// - Parameters:
         ///   - source: The source. Default value `nil`
-        ///   - originURL: The origin URL. Default value `nil`
         ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
         public init(
             source: YouTubePlayer.Source? = nil,
-            originURL: URL? = nil,
             allowsInlineMediaPlayback: Bool = true
         ) {
             self.source = source
-            self.originURL = originURL
             self.allowsInlineMediaPlayback = allowsInlineMediaPlayback
         }
         
@@ -301,7 +302,8 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         try container.encodeIfPresent(self.captionLanguage, forKey: .captionLanguage)
         try container.encodeIfPresent(self.showCaptions?.bit, forKey: .showCaptions)
         try container.encodeIfPresent(self.restrictRelatedVideosToSameChannel?.bit, forKey: .restrictRelatedVideosToSameChannel)
-        try container.encodeIfPresent(self.referrer, forKey: .referrer)
+        try container.encodeIfPresent(self.originURL, forKey: .referrer)
+        try container.encodeIfPresent(self.referrerURL, forKey: .referrer)
         try container.encode(true.bit, forKey: .enableJavaScriptAPI)
         switch configuration.source {
         case .video(let id):
@@ -329,7 +331,6 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         case nil:
             break
         }
-        try container.encodeIfPresent(configuration.originURL, forKey: .origin)
         try container.encodeIfPresent(configuration.allowsInlineMediaPlayback.bit, forKey: .playInline)
     }
     
@@ -357,6 +358,15 @@ private extension Bool {
             return nil
         }
     }
+    
+}
+
+// MARK: - Default Origin URL
+
+public extension YouTubePlayer.Parameters {
+    
+    /// The default origin URL.
+    static let defaultOriginURL = URL(string: "https://youtubeplayer")
     
 }
 

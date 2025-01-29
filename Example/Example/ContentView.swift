@@ -43,7 +43,8 @@ struct ContentView {
         wwdcKeynote: WWDCKeynote = .wwdc2024
     ) {
         self.youTubePlayer = .init(
-            urlString: wwdcKeynote.youTubeURL
+            source: .init(urlString: wwdcKeynote.youTubeURL),
+            isLoggingEnabled: true
         )
         self._wwdcKeynote = .init(initialValue: wwdcKeynote)
     }

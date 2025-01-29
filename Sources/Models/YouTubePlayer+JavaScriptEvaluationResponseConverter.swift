@@ -1,72 +1,87 @@
 import Foundation
 
-// MARK: - YouTubePlayerWebView+JavaScriptEvaluationResponseConverter
+// MARK: - YouTubePlayer+JavaScriptEvaluationResponseConverter
 
-extension YouTubePlayerWebView {
+public extension YouTubePlayer {
     
     /// A generic JavaScript evaluation response converter
-    struct JavaScriptEvaluationResponseConverter<Output> {
+    struct JavaScriptEvaluationResponseConverter<Output>: Sendable {
         
         // MARK: Typealias
         
-        /// The JavaScript Response typealias
-        typealias JavaScriptResponse = Any?
+        /// The JavaScript response.
+        public typealias JavaScriptResponse = Any?
         
-        /// The Convert closure typealias
-        typealias Convert = (JavaScript, JavaScriptResponse) throws(YouTubePlayer.APIError) -> Output
+        /// A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
+        public typealias Convert = @Sendable (
+            YouTubePlayer.JavaScript.Code,
+            JavaScriptResponse
+        ) throws(YouTubePlayer.APIError) -> Output
         
         // MARK: Properties
         
-        /// The Convert closure
+        /// A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
         private let convert: Convert
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayerWebView.JavaScriptEvaluationResponseConverter``
-        /// - Parameter convert: The Convert closure
-        init(
+        /// Creates a new instance of ``YouTubePlayer.JavaScriptEvaluationResponseConverter``
+        /// - Parameter convert: A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
+        public init(
             convert: @escaping Convert
         ) {
             self.convert = convert
-        }
-        
-        // MARK: Call-As-Function
-        
-        /// Call `JavaScriptEvaluationResponseConverter` as function
-        /// - Parameters:
-        ///   - javaScript: The JavaScript string
-        ///   - javaScriptResponse: The JavaScriptResponse
-        /// - Returns: A Result containing the Output or a YouTubePlayerAPIError
-        func callAsFunction(
-            javaScript: JavaScript,
-            javaScriptResponse: JavaScriptResponse
-        ) throws(YouTubePlayer.APIError) -> Output {
-            try self.convert(
-                javaScript,
-                javaScriptResponse
-            )
         }
         
     }
     
 }
 
+// MARK: - Call as Function
+
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
+    
+    /// Converts the response of the given Javascript code to the given response type.
+    /// - Parameters:
+    ///   - javaScriptCode: The JavaScript code.
+    ///   - javaScriptResponse: The JavaScript response
+    func callAsFunction(
+        javaScriptCode: YouTubePlayer.JavaScript.Code,
+        javaScriptResponse: JavaScriptResponse
+    ) throws(YouTubePlayer.APIError) -> Output {
+        try self.convert(
+            javaScriptCode,
+            javaScriptResponse
+        )
+    }
+    
+}
+
+// MARK: - Void
+
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter where Output == Void {
+    
+    /// A converter that ignores the JavaScript evaluation response and returns `Void`.
+    static let void = Self { _, _ in }
+    
+}
+
 // MARK: - Type Cast
 
-extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     
     /// Type-Cast the JavaScript Response to a new Output type
     /// - Parameters:
     ///   - newOutputType: The NewOutput Type. Default value `.self`
     static func typeCast<NewOutput>(
         to newOutputType: NewOutput.Type = NewOutput.self
-    ) -> YouTubePlayerWebView.JavaScriptEvaluationResponseConverter<NewOutput> {
-        .init { javaScript, javaScriptResponse throws(YouTubePlayer.APIError) in
+    ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<NewOutput> {
+        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
             // Verify JavaScript response can be casted to NewOutput type
             guard let output = javaScriptResponse as? NewOutput else {
                 // Otherwise throw error
                 throw .init(
-                    javaScript: javaScript.code,
+                    javaScriptCode: javaScriptCode,
                     javaScriptResponse: javaScriptResponse.flatMap(String.init(describing:)),
                     reason: [
                         "Type-Cast failed",
@@ -85,17 +100,17 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
 
 // MARK: - Map
 
-extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     
     /// Transforms the output of the current JavaScript evaluation response converter to a new type using the provided transformation closure.
     /// - Parameter transform: A closure that takes the current converter's output type and returns a new output type.
     func map<NewOutput>(
-        _ transform: @escaping (Output) throws -> NewOutput
-    ) -> YouTubePlayerWebView.JavaScriptEvaluationResponseConverter<NewOutput> {
-        .init { javaScript, javaScriptResponse throws(YouTubePlayer.APIError) in
+        _ transform: @Sendable @escaping (Output) throws -> NewOutput
+    ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<NewOutput> {
+        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
             // Convert current Converter
             let output = try self(
-                javaScript: javaScript,
+                javaScriptCode: javaScriptCode,
                 javaScriptResponse: javaScriptResponse
             )
             do {
@@ -104,7 +119,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.code,
+                    javaScriptCode: javaScriptCode,
                     javaScriptResponse: .init(describing: output),
                     reason: "Failed to transform output \(String(reflecting: Output.self)) to \(String(reflecting: NewOutput.self))"
                 )
@@ -116,7 +131,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter {
 
 // MARK: - Decode
 
-extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Output == [String: Any] {
+public extension YouTubePlayer.JavaScriptEvaluationResponseConverter where Output == [String: Any] {
     
     /// Convert and Decode JavaScript Response to a Decodable type
     /// - Parameters:
@@ -124,12 +139,12 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
     ///   - decoder: The JSONDecoder. Default value `.init()`
     func decode<D: Decodable>(
         as type: D.Type = D.self,
-        decoder: @autoclosure @escaping () -> JSONDecoder = .init()
-    ) -> YouTubePlayerWebView.JavaScriptEvaluationResponseConverter<D> {
-        .init { javaScript, javaScriptResponse throws(YouTubePlayer.APIError) in
+        decoder: @Sendable @escaping @autoclosure () -> JSONDecoder = .init()
+    ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<D> {
+        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
             // Convert current Converter
             let output = try self(
-                javaScript: javaScript,
+                javaScriptCode: javaScriptCode,
                 javaScriptResponse: javaScriptResponse
             )
             // Declare output Data
@@ -140,7 +155,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.code,
+                    javaScriptCode: javaScriptCode,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Malformed JSON"
@@ -157,7 +172,7 @@ extension YouTubePlayerWebView.JavaScriptEvaluationResponseConverter where Outpu
             } catch {
                 // Throw error
                 throw .init(
-                    javaScript: javaScript.code,
+                    javaScriptCode: javaScriptCode,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Decoding failed: \(error)"

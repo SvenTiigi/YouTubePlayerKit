@@ -1,16 +1,51 @@
 import Combine
 import SwiftUI
 
+// MARK: - YouTubePlayer+evaluate
+
+public extension YouTubePlayer {
+    
+    /// Evaluates the JavaScript and converts its response.
+    /// - Parameters:
+    ///   - javaScript: The JavaScript to evaluate.
+    ///   - converter: The response converter.
+    func evaluate<Response>(
+        javaScript: JavaScript,
+        converter: JavaScriptEvaluationResponseConverter<Response>
+    ) async throws(APIError) -> Response {
+        try await self.webView.evaluate(
+            javaScript: javaScript,
+            converter: converter
+        )
+    }
+    
+    /// Evaluates the JavaScript.
+    /// - Parameter javaScript: The JavaScript to evaluate.
+    func evaluate(
+        javaScript: JavaScript
+    ) async throws(APIError) {
+        try await self.evaluate(
+            javaScript: javaScript,
+            converter: .void
+        )
+    }
+    
+}
+
 // MARK: - Reload
 
 public extension YouTubePlayer {
     
     /// Reloads the YouTube player.
-    func reload() async throws(Error) {
+    func reload() async throws(Swift.Error) {
         // Destroy the player and discard the error
-        try? await self.webView.destroyPlayer()
+        try? await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "destroy"
+            )
+        )
         // Reload
-        self.webView.load()
+        try self.webView.load()
         // Await new ready or error state
         for await state in self.stateSubject.dropFirst().values {
             // Swithc on state
@@ -125,9 +160,9 @@ public extension YouTubePlayer {
     
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered.
     func getVideoLoadedFraction() async throws(APIError) -> Double {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getVideoLoadedFraction"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getVideoLoadedFraction"
             ),
             converter: .typeCast()
         )
@@ -174,9 +209,9 @@ public extension YouTubePlayer {
     
     /// Returns the playback state of the player video.
     func getPlaybackState() async throws(APIError) -> PlaybackState {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getPlayerState"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getPlayerState"
             ),
             converter: .typeCast(
                 to: Int.self
@@ -187,9 +222,9 @@ public extension YouTubePlayer {
     
     /// Returns the elapsed time in seconds since the video started playing.
     func getCurrentTime() async throws(APIError) -> Measurement<UnitDuration> {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getCurrentTime"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getCurrentTime"
             ),
             converter: .typeCast(
                 to: Double.self
@@ -243,9 +278,9 @@ public extension YouTubePlayer {
     
     /// Returns the current playback metadata.
     func getPlaybackMetadata() async throws(APIError) -> PlaybackMetadata {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getVideoData"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getVideoData"
             ),
             converter: .typeCast(
                 to: [String: Any].self
@@ -285,9 +320,9 @@ public extension YouTubePlayer {
     
     /// This function retrieves the playback rate of the currently playing video.
     func getPlaybackRate() async throws(APIError) -> PlaybackRate {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getPlaybackRate"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getPlaybackRate"
             ),
             converter: .typeCast(
                 to: Double.self
@@ -302,9 +337,9 @@ public extension YouTubePlayer {
     func set(
         playbackRate: PlaybackRate
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "setPlaybackRate",
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "setPlaybackRate",
                 parameters: [
                     playbackRate.value
                 ]
@@ -314,9 +349,9 @@ public extension YouTubePlayer {
     
     /// This function returns the set of playback rates in which the current video is available.
     func getAvailablePlaybackRates() async throws(APIError) -> [PlaybackRate] {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getAvailablePlaybackRates"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getAvailablePlaybackRates"
             ),
             converter: .typeCast(
                 to: [Double].self
@@ -335,18 +370,18 @@ public extension YouTubePlayer {
     
     /// This function loads and plays the next video in the playlist.
     func nextVideo() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "nextVideo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "nextVideo"
             )
         )
     }
     
     /// This function loads and plays the previous video in the playlist.
     func previousVideo() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "previousVideo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "previousVideo"
             )
         )
     }
@@ -357,9 +392,9 @@ public extension YouTubePlayer {
     func playVideo(
         at index: Int
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "playVideoAt",
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "playVideoAt",
                 parameters: [
                     index
                 ]
@@ -374,9 +409,9 @@ public extension YouTubePlayer {
     func setLoop(
         enabled: Bool
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "setLoop",
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "setLoop",
                 parameters: [
                     enabled
                 ]
@@ -391,9 +426,9 @@ public extension YouTubePlayer {
     func setShuffle(
         enabled: Bool
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "setShuffle",
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "setShuffle",
                 parameters: [
                     enabled
                 ]
@@ -403,9 +438,9 @@ public extension YouTubePlayer {
     
     /// This function returns an array of the video IDs in the playlist as they are currently ordered.
     func getPlaylist() async throws(APIError) -> [Source.ID]? {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getPlaylist"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getPlaylist"
             ),
             converter: .typeCast()
         )
@@ -413,9 +448,9 @@ public extension YouTubePlayer {
     
     /// This function returns the index of the playlist video that is currently playing.
     func getPlaylistIndex() async throws(APIError) -> Int {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getPlaylistIndex"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getPlaylistIndex"
             ),
             converter: .typeCast()
         )
@@ -423,9 +458,9 @@ public extension YouTubePlayer {
     
     /// This function returns the identifier of the playlist video that is currently playing.
     func getPlaylistID() async throws(APIError) -> Source.ID {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getPlaylistId"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getPlaylistId"
             ),
             converter: .typeCast()
         )
@@ -538,9 +573,10 @@ public extension YouTubePlayer {
         endTime: Measurement<UnitDuration>? = nil,
         index: Int? = nil
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: javaScriptFunctionName,
+        let javaScript: JavaScript
+        do {
+            javaScript = try .youTubePlayer(
+                functionName: javaScriptFunctionName,
                 parameter: {
                     switch source {
                     case .video(let id):
@@ -573,7 +609,13 @@ public extension YouTubePlayer {
                     }
                 }()
             )
-        )
+        } catch {
+            throw .init(
+                underlyingError: error,
+                reason: "Failed to encode parameter to update the source"
+            )
+        }
+        try await self.evaluate(javaScript: javaScript)
         self.source = source
     }
     
@@ -585,27 +627,27 @@ public extension YouTubePlayer {
     
     /// Plays the currently cued/loaded video.
     func play() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "playVideo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "playVideo"
             )
         )
     }
     
     /// Pauses the currently playing video.
     func pause() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "pauseVideo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "pauseVideo"
             )
         )
     }
     
     /// Stops and cancels loading of the current video.
     func stop() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "stopVideo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "stopVideo"
             )
         )
     }
@@ -618,9 +660,9 @@ public extension YouTubePlayer {
         to time: Measurement<UnitDuration>,
         allowSeekAhead: Bool = true
     ) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "seekTo",
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "seekTo",
                 parameters: [
                     time.converted(to: .seconds).value,
                     allowSeekAhead
@@ -671,7 +713,7 @@ public extension YouTubePlayer {
         guard self.configuration.fullscreenMode == .web else {
             return false
         }
-        return try await self.webView.evaluate(
+        return try await self.evaluate(
             javaScript: .init(
                 """
                 var iframe = document.querySelector('iframe');
@@ -696,9 +738,9 @@ public extension YouTubePlayer {
     
     /// Returns a Boolean indicating if the detailed video statistics and technical information are visible.
     func isStatsForNerdsVisible() async throws(APIError) -> Bool {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "isVideoInfoVisible"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "isVideoInfoVisible"
             ),
             converter: .typeCast()
         )
@@ -716,17 +758,17 @@ public extension YouTubePlayer {
     ///   - `true` to display the statistics
     ///   - `false` to hide them
     func setStatsForNerds(isVisible: Bool) async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: isVisible ? "showVideoInfo" : "hideVideoInfo"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: isVisible ? "showVideoInfo" : "hideVideoInfo"
             )
         )
     }
     
     /// Retrieve the YouTube player information.
     func getInformation() async throws(APIError) -> Information {
-        try await self.webView.evaluate(
-            javaScript: .player("playerInfo"),
+        try await self.evaluate(
+            javaScript: .youTubePlayer(operator: "playerInfo"),
             converter: .typeCast(
                 to: [String: Any].self
             )
@@ -736,9 +778,9 @@ public extension YouTubePlayer {
     
     /// Returns the duration in seconds of the currently playing video.
     func getDuration() async throws(APIError) -> Measurement<UnitDuration> {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getDuration"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getDuration"
             ),
             converter: .typeCast(
                 to: Double.self
@@ -776,9 +818,9 @@ public extension YouTubePlayer {
     
     /// Returns the YouTube.com URL for the currently loaded/playing video.
     func getVideoURL() async throws(APIError) -> String {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getVideoUrl"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getVideoUrl"
             ),
             converter: .typeCast()
         )
@@ -787,9 +829,9 @@ public extension YouTubePlayer {
     /// Returns the embed code for the currently loaded/playing video
     func getVideoEmbedCode() async throws(APIError) -> String {
         do {
-            return try await self.webView.evaluate(
-                javaScript: .player(
-                    function: "getVideoEmbedCode"
+            return try await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "getVideoEmbedCode"
                 ),
                 converter: .typeCast()
             )
@@ -813,27 +855,27 @@ public extension YouTubePlayer {
     
     /// Mutes the player.
     func mute() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "mute"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "mute"
             )
         )
     }
     
     /// Unmutes the player.
     func unmute() async throws(APIError) {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "unMute"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "unMute"
             )
         )
     }
     
     /// Returns Bool value if the player is muted.
     func isMuted() async throws(APIError) -> Bool {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "isMuted"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "isMuted"
             ),
             converter: .typeCast()
         )
@@ -841,9 +883,9 @@ public extension YouTubePlayer {
     
     /// Returns the player's current volume, an integer between 0 and 100
     func getVolume() async throws(APIError) -> Int {
-        try await self.webView.evaluate(
-            javaScript: .player(
-                function: "getVolume"
+        try await self.evaluate(
+            javaScript: .youTubePlayer(
+                functionName: "getVolume"
             ),
             converter: .typeCast()
         )

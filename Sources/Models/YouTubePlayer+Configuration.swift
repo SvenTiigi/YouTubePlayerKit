@@ -30,6 +30,9 @@ public extension YouTubePlayer {
         /// A custom user agent of the underlying web view.
         public var customUserAgent: String?
         
+        /// The HTML builder.
+        public let htmlBuilder: HTMLBuilder
+        
         /// The action to perform when a url gets opened.
         public var openURLAction: OpenURLAction
         
@@ -43,6 +46,7 @@ public extension YouTubePlayer {
         ///   - useNonPersistentWebsiteDataStore: Boolean value indicating whether a non-persistent website data store should be used. Default value `true`
         ///   - automaticallyAdjustsContentInsets: A Boolean value indicating if safe area insets should be added automatically to content insets. Default value `true`
         ///   - customUserAgent: A custom user agent of the underlying web view. Default value `nil`
+        ///   - htmlBuilder: The HTML builder. Default value `.init()`
         ///   - openURLAction: The action to perform when a url gets opened.. Default value `.default`
         public init(
             fullscreenMode: FullscreenMode = .preferred,
@@ -51,6 +55,7 @@ public extension YouTubePlayer {
             useNonPersistentWebsiteDataStore: Bool = true,
             automaticallyAdjustsContentInsets: Bool = true,
             customUserAgent: String? = nil,
+            htmlBuilder: HTMLBuilder = .init(),
             openURLAction: OpenURLAction = .default
         ) {
             self.fullscreenMode = fullscreenMode
@@ -59,6 +64,7 @@ public extension YouTubePlayer {
             self.useNonPersistentWebsiteDataStore = useNonPersistentWebsiteDataStore
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
             self.customUserAgent = customUserAgent
+            self.htmlBuilder = htmlBuilder
             self.openURLAction = openURLAction
         }
         

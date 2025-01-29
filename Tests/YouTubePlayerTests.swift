@@ -21,7 +21,8 @@ struct YouTubePlayerTests {
             captionLanguage: UUID().uuidString,
             showCaptions: .random(),
             restrictRelatedVideosToSameChannel: .random(),
-            referrer: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil
+            originURL: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil,
+            referrerURL: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil
         )
         let configuration = YouTubePlayer.Configuration(
             fullscreenMode: YouTubePlayer.FullscreenMode.allCases.randomElement() ?? .system,

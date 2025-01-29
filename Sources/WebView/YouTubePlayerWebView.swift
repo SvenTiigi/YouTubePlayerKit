@@ -9,19 +9,16 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Properties
     
-    /// The YouTubePlayer
+    /// The YouTubePlayer.
     private(set) weak var player: YouTubePlayer?
     
-    /// The origin URL
-    private let originURL = URL(string: "https://youtubeplayer")
-    
-    /// The YouTubePlayerWebView Event PassthroughSubject
+    /// The event subject..
     private(set) lazy var eventSubject = PassthroughSubject<Event, Never>()
     
-    /// The Layout Lifecycle Subject
+    /// The layout lifecycle subject.
     private lazy var layoutLifecycleSubject = PassthroughSubject<CGRect, Never>()
     
-    /// The cancellables
+    /// The cancellables.
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: Initializer
@@ -63,7 +60,7 @@ final class YouTubePlayerWebView: WKWebView {
         // Setup
         self.setup(using: player)
         // Load
-        self.load()
+        try? self.load()
     }
     
     /// Initializer with NSCoder is unavailable.
@@ -137,13 +134,20 @@ private extension YouTubePlayerWebView {
             // Set player size
             Task(priority: .userInitiated) { [weak self] in
                 try? await self?.evaluate(
-                    javaScript: .player(
-                        function: "setSize",
+                    javaScript: .youTubePlayer(
+                        functionName: "setSize",
                         parameters: [
-                            Double(size.width),
-                            Double(size.height)
+                            String(
+                                format: "%.1f",
+                                size.width
+                            ),
+                            String(
+                                format: "%.1f",
+                                size.height)
+                            ,
                         ]
-                    )
+                    ),
+                    converter: .void
                 )
             }
         }
@@ -192,23 +196,43 @@ private extension YouTubePlayerWebView {
 extension YouTubePlayerWebView {
     
     /// Loads the YouTube player.
-    @discardableResult
-    func load() -> Bool {
+    func load() throws {
         // Verify player is available
         guard let player = self.player else {
-            // Otherwise return false
-            return false
-        }
-        // Declare HTML
-        let html: HTML
-        do {
-            // Try to initialize HTML
-            html = try .init(
-                source: player.source,
-                parameters: player.parameters,
-                originURL: self.originURL,
-                allowsInlineMediaPlayback: player.configuration.allowsInlineMediaPlayback
+            // Otherwise throw error
+            throw YouTubePlayer.APIError(
+                reason: "YouTubePlayer deallocated"
             )
+        }
+        // Declare HTML string
+        let htmlString: String
+        do {
+            // Initialize JSON encoded JavaScript player options
+            let jsonEncodedJavaScriptPlayerOptions = String(
+                decoding: try YouTubePlayer.JavaScriptPlayerOptions(
+                    source: player.source,
+                    parameters: player.parameters
+                )
+                .jsonEncode(
+                    configuration: .init(
+                        allowsInlineMediaPlayback: player.configuration.allowsInlineMediaPlayback
+                    )
+                ),
+                as: UTF8.self
+            )
+            // Try to build HTML string.
+            htmlString = try player.configuration.htmlBuilder(
+                jsonEncodedYouTubePlayerOptions: jsonEncodedJavaScriptPlayerOptions
+            )
+            // Log player options
+            player
+                .logger()?
+                .debug(
+                    """
+                    Loading YouTube Player with options:
+                    \(jsonEncodedJavaScriptPlayerOptions)
+                    """
+                )
         } catch {
             // Send error state
             player.stateSubject.send(
@@ -216,365 +240,12 @@ extension YouTubePlayerWebView {
                     .setupFailed(error)
                 )
             )
-            return false
-        }
-        self.player?
-            .logger()?
-            .debug(
-                """
-                Loading YouTube Player with options:
-                \(html.playerOptionsJSON)
-                """
-            )
-        // Load HTML contents
-        self.loadHTMLString(
-            html.contents,
-            baseURL: self.originURL
-        )
-        return true
-    }
-    
-}
-
-// MARK: - YouTubePlayerWebView+evaluate
-
-extension YouTubePlayerWebView {
-    
-    /// Evaluates the JavaScript.
-    /// - Parameters:
-    ///   - javaScript: The JavaScript that should be evaluated.
-    func evaluate(
-        javaScript: JavaScript
-    ) async throws(YouTubePlayer.APIError) {
-        try await self.evaluate(
-            javaScript: javaScript,
-            converter: .init { _, _ in }
-        )
-    }
-    
-    /// Evaluates the given JavaScript and converts the result using the supplied converter.
-    /// - Parameters:
-    ///   - javaScript: The JavaScript that should be evaluated.
-    ///   - converter: The JavaScript response converter.
-    func evaluate<Response>(
-        javaScript: JavaScript,
-        converter: JavaScriptEvaluationResponseConverter<Response>
-    ) async throws(YouTubePlayer.APIError) -> Response {
-        self.player?
-            .logger()?
-            .debug(
-                """
-                Evaluate JavaScript: \(javaScript, privacy: .public)
-                """
-            )
-        // Check if the player state is currently set to idle
-        if let player = self.player, player.state == .idle {
-            // Wait for the player to be non idle
-            for await state in player.stateSubject.values where !state.isIdle  {
-                // Break out of for-loop as state is either ready or error
-                break
-            }
-        }
-        // Declare JavaScript response
-        let javaScriptResponse: Any?
-        do {
-            // Try to evaluate the JavaScript
-            javaScriptResponse = try await self.evaluateJavaScriptAsync({
-                if Response.self is Void.Type {
-                    return javaScript.ignoreReturnValue().code
-                } else {
-                    return javaScript.code
-                }
-            }())
-        } catch {
-            // Initialize API error
-            let apiError = YouTubePlayer.APIError(
-                javaScript: javaScript.code,
-                javaScriptResponse: nil,
-                underlyingError: error,
-                reason: (error as NSError)
-                    .userInfo["WKJavaScriptExceptionMessage"] as? String
-            )
-            // Log error
-            self.player?
-                .logger()?
-                .error(
-                    """
-                    Evaluated JavaScript: \(javaScript, privacy: .public)
-                    Error: \(apiError, privacy: .public)
-                    """
-                )
-            // Throw error
-            throw apiError
-        }
-        self.player?
-            .logger()?
-            .debug(
-                """
-                Evaluated JavaScript: \(javaScript, privacy: .public)
-                Result-Type: \(javaScriptResponse.flatMap { String(describing: Mirror(reflecting: $0).subjectType) } ?? "nil", privacy: .public)
-                Result: \(String(describing: javaScriptResponse ?? "nil"), privacy: .public)
-                """
-            )
-        // Check if JavaScript response is nil and the generic Response type is an optional type
-        if javaScriptResponse == nil,
-           let responseNilValue = (Response.self as? ExpressibleByNilLiteral.Type)?.init(nilLiteral: ()) as? Response {
-            // Return nil
-            return responseNilValue
-        }
-        do {
-            // Return converted response
-            return try converter(
-                javaScript: javaScript,
-                javaScriptResponse: javaScriptResponse
-            )
-        } catch {
-            self.player?
-                .logger()?
-                .error(
-                    """
-                    JavaScript response conversion failed
-                    JavaScript: \(javaScript, privacy: .public)
-                    Result: \(String(describing: javaScriptResponse ?? "nil"), privacy: .public)
-                    Error: \(error, privacy: .public)
-                    """
-                )
             throw error
         }
-    }
-    
-    /// Evaluates the specified JavaScript string.
-    /// - Parameter javaScriptString: The JavaScript string to evaluate.
-    /// - Returns: The result of the script evaluation.
-    /// - Note: This function utilizes the completion closure based `evaluateJavaScript` API since the native async version causes under some conditions a runtime crash.
-    private func evaluateJavaScriptAsync(
-        _ javaScriptString: String
-    ) async throws -> Any? {
-        // Unchecked Sendable JavaScript response struct
-        struct JavaScriptResponse: @unchecked Sendable {
-            let value: Any?
-        }
-        // Try to retrieve JavaScript response
-        let javaScriptResponse: JavaScriptResponse = try await withCheckedThrowingContinuation { continuation in
-            // Initialize evaluate JavaScript closure
-            let evaluateJavaScript = { [weak self] in
-                self?.evaluateJavaScript(javaScriptString) { response, error in
-                    continuation.resume(
-                        with: {
-                            if let error {
-                                return .failure(error)
-                            } else {
-                                return .success(
-                                    .init(
-                                        value: response is NSNull ? nil : response
-                                    )
-                                )
-                            }
-                        }()
-                    )
-                }
-            }
-            // Check if is main thread
-            if Thread.isMainThread {
-                evaluateJavaScript()
-            } else {
-                // Dispatch on main queue
-                DispatchQueue.main.async {
-                    evaluateJavaScript()
-                }
-            }
-        }
-        // Return value
-        return javaScriptResponse.value
-    }
-    
-}
-
-// MARK: - Destroy Player
-
-extension YouTubePlayerWebView {
-    
-    /// Destroys the YouTube player.
-    func destroyPlayer() async throws(YouTubePlayer.APIError) {
-        try await self.evaluate(
-            javaScript: .player(
-                function: "destroy"
-            )
-        )
-    }
-    
-}
-
-// MARK: - WKUIDelegate
-
-extension YouTubePlayerWebView: WKUIDelegate {
-    
-    /// WebView create WebView with configuration for navigation action
-    /// - Parameters:
-    ///   - webView: The WKWebView
-    ///   - configuration: The WKWebViewConfiguration
-    ///   - navigationAction: The WKNavigationAction
-    ///   - windowFeatures: The WKWindowFeatures
-    func webView(
-        _ webView: WKWebView,
-        createWebViewWith configuration: WKWebViewConfiguration,
-        for navigationAction: WKNavigationAction,
-        windowFeatures: WKWindowFeatures
-    ) -> WKWebView? {
-        // Check if the request url is available
-        if let url = navigationAction.request.url {
-            self.player?
-                .logger()?
-                .debug("Open URL \(url, privacy: .public)")
-            // Open URL
-            Task(priority: .userInitiated) { [weak self] in
-                await self?.player?.configuration.openURLAction(url)
-            }
-        }
-        // Return nil as the URL has already been handled
-        return nil
-    }
-    
-}
-
-// MARK: - WKNavigationDelegate
-
-extension YouTubePlayerWebView: WKNavigationDelegate {
-    
-    /// WebView did fail provisional navigation
-    /// - Parameters:
-    ///   - webView: The web view.
-    ///   - navigation: The navigation.
-    ///   - error: The error.
-    func webView(
-        _ webView: WKWebView,
-        didFailProvisionalNavigation navigation: WKNavigation!,
-        withError error: Error
-    ) {
-        self.eventSubject.send(
-            .didFailProvisionalNavigation(error)
-        )
-        self.player?
-            .logger()?
-            .error("WKWebView did fail provisional navigation: \(error, privacy: .public)")
-    }
-    
-    /// WebView decide policy for NavigationAction
-    /// - Parameters:
-    ///   - webView: The WKWebView
-    ///   - navigationAction: The WKNavigationAction
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction
-    ) async -> WKNavigationActionPolicy {
-        // Verify URL of request is available
-        guard let url = navigationAction.request.url else {
-            // Otherwise cancel navigation action
-            return .cancel
-        }
-        // Verify url is not about:blank
-        guard url.absoluteString != "about:blank" else {
-            // Otherwise allow navigation
-            return .allow
-        }
-        // Check if Request URL host is equal to origin URL host
-        if url.host?.lowercased() == self.originURL?.host?.lowercased() {
-            // Allow navigation action
-            return .allow
-        }
-        // Log url
-        self.player?
-            .logger()?
-            .debug("WKWebView navigate to \(url, privacy: .public)")
-        // Check if the scheme matches the JavaScript evvent callback url scheme
-        // and the host is a known JavaScript event name
-        if url.scheme == HTML.javaScriptEventCallbackURLScheme,
-           let javaScriptEventName = url.host.flatMap(YouTubePlayer.JavaScriptEvent.Name.init) {
-            // Initialize JavaScript event
-            let javaScriptEvent = YouTubePlayer.JavaScriptEvent(
-                name: javaScriptEventName,
-                data: URLComponents(
-                    url: url,
-                    resolvingAgainstBaseURL: true
-                )?
-                .queryItems?
-                .first { $0.name == HTML.javaScriptEventCallbackDataParameterName }?
-                .value
-                .flatMap { $0 == "null" ? nil : $0 }
-            )
-            // Log received JavaScript event
-            self.player?
-                .logger()?
-                .debug("Received YouTubePlayer JavaScript Event\n\(javaScriptEvent, privacy: .public)")
-            // Send received JavaScriptEvent
-            self.eventSubject.send(
-                .receivedJavaScriptEvent(javaScriptEvent)
-            )
-            // Cancel navigation action
-            return .cancel
-        }
-        // Verify URL scheme is http or https
-        guard url.scheme == "http" || url.scheme == "https" else {
-            // Otherwise allow navigation action
-            return .allow
-        }
-        // For each valid URL RegularExpression
-        for validURLRegularExpression in Self.validURLRegularExpressions {
-            // Find first match in URL
-            let match = validURLRegularExpression.firstMatch(
-                in: url.absoluteString,
-                range: .init(
-                    url.absoluteString.startIndex...,
-                    in: url.absoluteString
-                )
-            )
-            // Check if a match is available
-            if match != nil {
-                // Allow navigation action
-                return .allow
-            }
-        }
-        // Open URL
-        Task(priority: .userInitiated) { [weak self] in
-            await self?.player?.configuration.openURLAction(url)
-        }
-        // Cancel navigation action
-        return .cancel
-    }
-    
-    /// Invoked when the web view's web content process is terminated.
-    /// - Parameter webView: The web view whose underlying web content process was terminated.
-    func webViewWebContentProcessDidTerminate(
-        _ webView: WKWebView
-    ) {
-        // Send web content process did terminate event
-        self.eventSubject.send(
-            .webContentProcessDidTerminate
-        )
-        self.player?
-            .logger()?
-            .error("WKWebView web content process did terminate")
-    }
-    
-}
-
-// MARK: - YouTubePlayerWebView+validURLRegularExpressions
-
-private extension YouTubePlayerWebView {
-    
-    /// The valid URL RegularExpressions
-    /// - SeeAlso: https://github.com/youtube/youtube-ios-player-helper/blob/f57129cd4380ec0a74dd3a59da3270a1d653d59b/Sources/YTPlayerView.m#L59-L63
-    static let validURLRegularExpressions: [NSRegularExpression] = [
-        "^http(s)://(www.)youtube.com/embed/(.*)$",
-        "^http(s)://pubads.g.doubleclick.net/pagead/conversion/",
-        "^http(s)://accounts.google.com/o/oauth2/(.*)$",
-        "^https://content.googleapis.com/static/proxy.html(.*)$",
-        "^https://tpc.googlesyndication.com/sodar/(.*).html$"
-    ]
-    .compactMap { pattern in
-        try? .init(
-            pattern: pattern,
-            options: .caseInsensitive
+        // Load HTML string
+        self.loadHTMLString(
+            htmlString,
+            baseURL: player.parameters.originURL
         )
     }
     
