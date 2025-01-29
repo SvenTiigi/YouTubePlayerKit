@@ -452,6 +452,51 @@ try await youTubePlayer.getVideoThumbnailURL()
 try await youTubePlayer.getVideoThumbnailImage(resolution: .maximum)
 ```
 
+## Advanced
+
+To run custom JavaScript on the YouTube player JavaScript instance:
+
+```swift
+try await youTubePlayer.evaluate(
+    javaScript: "\(.youTubePlayer).play()"
+)
+```
+
+> [!NOTE]
+> The custom string interpolation of `\(.youTubePlayer)` is a placeholder for the YouTube player JavaScript variable.
+
+Alternatively, you can use the following convenience function to directly invoke a function on the YouTube player JavaScript object:
+
+```swift
+try await youTubePlayer.evaluate(
+    javaScript: .youTubePlayer(
+        functionName: "setLoop",
+        parameters: [
+            true
+        ]
+    )
+)
+```
+
+If you wish to further customize the underlying HTML you can configure the `YouTubePlayer.HTMLBuilder` when initializing an instance of `YouTubePlayer`:
+
+```swift
+let youTubePlayer = YouTubePlayer(
+    source: .video(id: "psL_5RIBqnY"),
+    configuration: .init(
+        htmlBuilder: .init(
+            youTubePlayerJavaScriptVariableName: "youtubePlayer",
+            youTubePlayerEventCallbackURLScheme: "youtubeplayer",
+            youTubePlayerEventCallbackDataParameterName: "data",
+            youTubePlayerIframeAPISourceURL: .init(string: "https://www.youtube.com/iframe_api")!,
+            htmlProvider: { htmlBuilder, jsonEncodedYouTubePlayerOptions in
+                // TODO: Return custom HTML string
+            }
+        )
+    )
+)
+```
+
 ## Credits
 
 - [youtube/youtube-ios-player-helper](https://github.com/youtube/youtube-ios-player-helper)
