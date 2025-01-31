@@ -465,36 +465,6 @@ private extension ContentView {
                     try? await self.youTubePlayer.unmute()
                 }
             }
-            Button("Next Video", systemImage: "forward.end") {
-                Task {
-                    try? await self.youTubePlayer.nextVideo()
-                }
-            }
-            Button("Previous Video", systemImage: "backward.end") {
-                Task {
-                    try? await self.youTubePlayer.previousVideo()
-                }
-            }
-            Button("Enable Shuffle", systemImage: "shuffle") {
-                Task {
-                    try? await self.youTubePlayer.setShuffle(enabled: true)
-                }
-            }
-            Button("Disable Shuffle", systemImage: "shuffle") {
-                Task {
-                    try? await self.youTubePlayer.setShuffle(enabled: false)
-                }
-            }
-            Button("Enable Loop", systemImage: "repeat") {
-                Task {
-                    try? await self.youTubePlayer.setLoop(enabled: true)
-                }
-            }
-            Button("Disable Loop", systemImage: "repeat") {
-                Task {
-                    try? await self.youTubePlayer.setLoop(enabled: false)
-                }
-            }
             Button("Show Stats For Nerds", systemImage: "eyeglasses") {
                 Task {
                     try? await self.youTubePlayer.setStatsForNerds(isVisible: true)
