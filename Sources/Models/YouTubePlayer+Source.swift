@@ -59,9 +59,21 @@ public extension YouTubePlayer.Source {
                     value: id
                 )
             ]
-        case .videos:
-            return nil
+        case .videos(let ids):
+            guard !ids.isEmpty else {
+                return nil
+            }
+            urlComponents.path = "/watch_videos"
+            urlComponents.queryItems = [
+                .init(
+                    name: "video_ids",
+                    value: ids.joined(separator: ",")
+                )
+            ]
         case .playlist(let id):
+            guard !id.isEmpty else {
+                return nil
+            }
             urlComponents.path = "/playlist"
             urlComponents.queryItems = [
                 .init(
@@ -163,91 +175,179 @@ extension YouTubePlayer.Source: ExpressibleByURL {
     public init?(
         url: URL
     ) {
-        /// Returns the first match of a regular expression in a given string.
-        /// - Parameters:
-        ///   - regularExpression: The regular expression.
-        ///   - string: The string.
-        func firstMatch(
-            of regularExpression: NSRegularExpression,
-            in string: String
-        ) -> String? {
-            guard let match = regularExpression
-                .firstMatch(
-                    in: string,
-                    range: .init(string.startIndex..., in: string)
-                ),
-                let range = Range(match.range(at: 1), in: string) else {
-                return nil
+        // For each url extraction rule set
+        for urlExtractionRuleSet in [
+            Self.playlistExtractionRuleSet,
+            Self.videoExtractionRuleSet,
+            Self.videosExtractionRuleSet,
+            Self.channelURLExtractionRuleSet
+        ] {
+            // Verify if a source can be extracted from rule set
+            guard let source = url.extract(using: urlExtractionRuleSet) else {
+                // Otherwise continue with next rule set
+                continue
             }
-            return .init(string[range])
+            // Initialize with source
+            self = source
+            // Return out of function
+            return
         }
-        let urlString = url.absoluteString
-        for regularExpression in Self.playlistRegularExpressions {
-            if let playlistID = firstMatch(of: regularExpression, in: urlString) {
-                self = .playlist(id: playlistID)
-                return
-            }
-        }
-        for regularExpression in Self.videoRegularExpressions {
-            if let videoID = firstMatch(of: regularExpression, in: urlString) {
-                self = .video(id: videoID)
-                return
-            }
-        }
-        for regularExpression in Self.channelRegularExpressions {
-            if let channelName = firstMatch(of: regularExpression, in: urlString) {
-                self = .channel(name: channelName)
-                return
-            }
-        }
+        // Return nil as url could not be parsed
         return nil
     }
+    
+    /// The `.video(id:)` case ``URL.ExtractionRuleSet``
+    private static let videoExtractionRuleSet = URL.ExtractionRuleSet(
+        rules: [
+            .firstPathComponent(host: "youtu.be"),
+            .queryItem(
+                name: "v",
+                pathComponents: ["watch"]
+            ),
+            .afterPathComponent("v"),
+            .afterPathComponent("embed"),
+            .afterPathComponent("shorts"),
+            .afterPathComponent("live"),
+            .afterPathComponent("e")
+        ],
+        output: Self.video
+    )
+    
+    /// The `.videos(ids:)` case ``URL.ExtractionRuleSet``
+    private static let videosExtractionRuleSet = URL.ExtractionRuleSet(
+        rules: [
+            .queryItem(
+                name: "video_ids",
+                pathComponents: ["watch_videos"]
+            )
+        ],
+        output: { match -> Self? in
+            guard case let videoIDs = match.components(separatedBy: ","),
+                  !videoIDs.isEmpty else {
+                return nil
+            }
+            return .videos(ids: videoIDs)
+        }
+    )
+    
+    /// The `.playlist(id:)` case ``URL.ExtractionRuleSet``
+    private static let playlistExtractionRuleSet = URL.ExtractionRuleSet(
+        rules: [
+            .queryItem(
+                name: "list",
+                pathComponents: ["playlist"]
+            ),
+            .queryItem(
+                name: "list",
+                pathComponents: ["watch"]
+            ),
+            .queryItem(
+                name: "list",
+                pathComponents: ["embed", "videoseries"]
+            )
+        ],
+        output: Self.playlist
+    )
+    
+    /// The `.channel(name:)` case ``URL.ExtractionRuleSet``
+    private static let channelURLExtractionRuleSet = URL.ExtractionRuleSet(
+        rules: [
+            .afterPathComponent("channel"),
+            .afterPathComponent("c"),
+            .afterPathComponent("user"),
+            .firstPathComponentWithPrefix("@", removePrefix: true),
+            .afterPathComponent("feed")
+        ],
+        output: Self.channel
+    )
+    
+}
 
-    /// The video regular expressions.
-    private static let videoRegularExpressions: [NSRegularExpression] = [
-        "youtu\\.be/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/watch\\?v=([a-zA-Z0-9_-]+)",
-        "youtube\\.com/v/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/embed/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/shorts/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/live/([a-zA-Z0-9_-]+)",
-        "youtube-nocookie\\.com/embed/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/e/([a-zA-Z0-9_-]+)"
-    ]
-    .compactMap { pattern in
-        try? .init(
-            pattern: pattern,
-            options: .caseInsensitive
-        )
+// MARK: - URL+extract(using:)
+
+private extension URL {
+    
+    /// An extraction rule.
+    enum ExtractionRule: Hashable, Sendable {
+        /// Extracts the first path component if the host matches.
+        case firstPathComponent(host: String)
+        /// Extracts the first path component where the prefix matches and optionally removes it.
+        case firstPathComponentWithPrefix(Character, removePrefix: Bool)
+        /// Extracts the path component after the match of the given one.
+        case afterPathComponent(String)
+        /// Extracts the value of the query item where the name matches and the supplied path components.
+        case queryItem(name: String, pathComponents: [String])
     }
     
-    /// The playlist regular expressions.
-    private static let playlistRegularExpressions: [NSRegularExpression] = [
-        "youtube\\.com/playlist\\?list=([a-zA-Z0-9_-]+)",
-        "youtube\\.com/watch.*?[?&]list=([a-zA-Z0-9_-]+)",
-        "youtube\\.com/embed/videoseries\\?list=([a-zA-Z0-9_-]+)",
-        "videoseries\\?list=([a-zA-Z0-9_-]+)"
-    ]
-    .compactMap { pattern in
-        try? .init(
-            pattern: pattern,
-            options: .caseInsensitive
-        )
+    /// Extracts a value from this url using the provided ``URL.ExtractionRule``
+    /// - Parameter rule: The url extraction rule.
+    func extract(
+        using rule: ExtractionRule
+    ) -> String? {
+        lazy var pathComponents = self.pathComponents.dropFirst().filter { !$0.isEmpty }
+        switch rule {
+        case .firstPathComponent(let host):
+            guard self.host == host,
+                  let firstPathComponent = pathComponents.first else {
+                return nil
+            }
+            return firstPathComponent
+        case .firstPathComponentWithPrefix(let prefix, let removePrefix):
+            guard let firstPathComponent = pathComponents.first,
+                  firstPathComponent.first == prefix,
+                  case let prefixRemovedFirstPathComponent = String(firstPathComponent.dropFirst()),
+                  !prefixRemovedFirstPathComponent.isEmpty else {
+                return nil
+            }
+            return removePrefix ? prefixRemovedFirstPathComponent : firstPathComponent
+        case .afterPathComponent(let pathComponent):
+            guard let pathComponentIndex = pathComponents.firstIndex(of: pathComponent),
+                  case let nextPathComponentIndex = pathComponentIndex + 1,
+                  pathComponents.indices.contains(nextPathComponentIndex) else {
+                return nil
+            }
+            return pathComponents[nextPathComponentIndex]
+        case .queryItem(let name, let expectedPathComponents):
+            guard pathComponents == expectedPathComponents,
+                  let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: true),
+                  let queryItem = urlComponents.queryItems?.first(where: { $0.name == name }),
+                  let queryItemValue = queryItem.value,
+                  !queryItemValue.isEmpty else {
+                return nil
+            }
+            return queryItemValue
+        }
     }
     
-    /// The channel regular expressions.
-    private static let channelRegularExpressions: [NSRegularExpression] = [
-        "youtube\\.com/channel/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/c/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/user/([a-zA-Z0-9_-]+)",
-        "youtube\\.com/@([a-zA-Z0-9_.-]+)",
-        "youtube\\.com/feed/([a-zA-Z0-9_-]+)"
-    ]
-    .compactMap { pattern in
-        try? .init(
-            pattern: pattern,
-            options: .caseInsensitive
-        )
+    /// An extraction rule set.
+    struct ExtractionRuleSet<Output>: Sendable {
+        
+        /// The extraction rules.
+        let rules: [ExtractionRule]
+        
+        /// A closure used to convert the match to the output, if possible.
+        let output: @Sendable (String) -> Output?
+        
+    }
+    
+    /// Extracts the `Output` from this url using the provided ``URL.ExtractionRuleSet``.
+    /// - Parameter ruleSet: The url extraction rule set.
+    func extract<Output>(
+        using ruleSet: ExtractionRuleSet<Output>
+    ) -> Output? {
+        // For each rule
+        for rule in ruleSet.rules {
+            // Verify a match is available and can be converted to the output
+            guard let match = self.extract(using: rule),
+                  let output = ruleSet.output(match) else {
+                // Otherwise continue with the next rule
+                continue
+            }
+            // Return output
+            return output
+        }
+        // Return nil as no rule has matched
+        return nil
     }
     
 }
