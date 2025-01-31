@@ -221,9 +221,11 @@ extension YouTubePlayerWebView {
                 as: UTF8.self
             )
             // Try to build HTML string.
-            htmlString = try player.configuration.htmlBuilder(
-                jsonEncodedYouTubePlayerOptions: jsonEncodedJavaScriptPlayerOptions
-            )
+            htmlString = try player
+                .configuration
+                .htmlBuilder(
+                    jsonEncodedYouTubePlayerOptions: jsonEncodedJavaScriptPlayerOptions
+                )
             // Log player options
             player
                 .logger()?

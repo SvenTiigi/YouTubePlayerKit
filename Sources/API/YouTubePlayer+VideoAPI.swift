@@ -1,9 +1,15 @@
 import Combine
 import Foundation
 
-// MARK: - Video (https://developers.google.com/youtube/iframe_api_reference#Playback_controls)
+// MARK: - Video API
 
 public extension YouTubePlayer {
+    
+    /// A Publisher that emits whenever autoplay or scripted video playback features were blocked.
+    var autoplayBlockedPublisher: some Publisher<Void, Never> {
+        self.autoplayBlockedSubject
+            .receive(on: DispatchQueue.main)
+    }
     
     /// Plays the currently cued/loaded video.
     func play() async throws(APIError) {
@@ -158,31 +164,25 @@ public extension YouTubePlayer {
     
     /// Returns the duration in seconds of the currently playing video.
     func getDuration() async throws(APIError) -> Measurement<UnitDuration> {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getDuration"
-            ),
-            converter: .typeCast(
-                to: Double.self
-            )
-            .map { seconds in
-                .init(
-                    value: seconds,
-                    unit: .seconds
+        .init(
+            value: try await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "getDuration"
+                ),
+                converter: .typeCast(
+                    to: Double.self
                 )
-            }
+            ),
+            unit: .seconds
         )
     }
     
     /// A Publisher that emits the duration in seconds of the currently playing video.
     var durationPublisher: some Publisher<Measurement<UnitDuration>, Never> {
-        self.playbackStatePublisher
-            .filter { $0 == .playing }
-            .flatMap { [weak self] _ -> AnyPublisher<Measurement<UnitDuration>, Never> in
-                guard let self else {
-                    return Empty().eraseToAnyPublisher()
-                }
-                return Future { promise in
+        self.javaScriptEventPublisher
+            .filter { $0.name == .onApiChange }
+            .flatMap { _ in
+                Future { promise in
                     Task { [weak self] in
                         guard let duration = try? await self?.getDuration() else {
                             return
@@ -190,9 +190,7 @@ public extension YouTubePlayer {
                         promise(.success(duration))
                     }
                 }
-                .eraseToAnyPublisher()
             }
-            .removeDuplicates()
             .share()
     }
     

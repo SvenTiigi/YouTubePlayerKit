@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Volume (https://developers.google.com/youtube/iframe_api_reference#changing-the-player-volume)
+// MARK: - Volume API
 
 public extension YouTubePlayer {
     

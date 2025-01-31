@@ -15,3 +15,18 @@ extension YouTubePlayerWebView {
     }
     
 }
+
+// MARK: - JavaScript Event
+
+extension YouTubePlayerWebView.Event {
+    
+    /// The received JavaScript event, if available.
+    var javaScriptEvent: YouTubePlayer.JavaScriptEvent? {
+        if case .receivedJavaScriptEvent(let javaScriptEvent) = self {
+            return javaScriptEvent
+        } else {
+            return nil
+        }
+    }
+    
+}

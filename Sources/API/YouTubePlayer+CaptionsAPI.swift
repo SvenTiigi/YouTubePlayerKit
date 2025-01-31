@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Captions
+// MARK: - Captions API
 
 public extension YouTubePlayer {
     
@@ -9,29 +9,19 @@ public extension YouTubePlayer {
     func setCaptions(
         fontSize: CaptionsFontSize
     ) async throws(APIError) {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "setOption",
-                parameters: [
-                    "'captions'",
-                    "'fontSize'",
-                    String(fontSize.value)
-                ]
-            )
+        try await self.setModuleOption(
+            module: .captions,
+            option: .fontSize,
+            value: fontSize.value
         )
     }
     
     /// Reloads the captions data for the video that is currently playing.
     func reloadCaptions() async throws(APIError) {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "setOption",
-                parameters: [
-                    "'captions'",
-                    "'reload'",
-                    true
-                ]
-            )
+        try await self.setModuleOption(
+            module: .captions,
+            option: .reload,
+            value: true
         )
     }
     
@@ -40,48 +30,38 @@ public extension YouTubePlayer {
     func setCaptions(
         languageCode: CaptionsLanguageCode
     ) async throws(APIError) {
-        struct LanguageCodeParameter: Encodable {
-            let languageCode: CaptionsLanguageCode
-        }
-        let encodedLanguageCodeParameter: Data
-        do {
-            encodedLanguageCodeParameter = try JSONEncoder()
-                .encode(
-                    LanguageCodeParameter(
-                        languageCode: languageCode
-                    )
-                )
-        } catch {
-            throw .init(
-                underlyingError: error,
-                reason: "Failed to encode language code parameter"
-            )
-        }
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "setOption",
-                parameters: [
-                    "'captions'",
-                    "'track'",
-                    String(
-                        decoding: encodedLanguageCodeParameter,
-                        as: UTF8.self
-                    )
-                ]
+        try await self.setModuleOption(
+            module: .captions,
+            option: .track,
+            value: String(
+                decoding: try { () throws(APIError) -> Data in
+                    struct LanguageCodeParameter: Encodable {
+                        let languageCode: CaptionsLanguageCode
+                    }
+                    do {
+                        return try JSONEncoder()
+                            .encode(
+                                LanguageCodeParameter(
+                                    languageCode: languageCode
+                                )
+                            )
+                    } catch {
+                        throw .init(
+                            underlyingError: error,
+                            reason: "Failed to encode language code parameter"
+                        )
+                    }
+                }(),
+                as: UTF8.self
             )
         )
     }
     
     /// Returns the current captions track.
     func getCaptionsTrack() async throws(APIError) -> CaptionsTrack {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getOption",
-                parameters: [
-                    "'captions'",
-                    "'track'"
-                ]
-            ),
+        try await self.getModuleOption(
+            module: .captions,
+            option: .track,
             converter: .typeCast(
                 to: [String: Any].self
             )
@@ -91,14 +71,9 @@ public extension YouTubePlayer {
     
     /// Returns the captions tracks.
     func getCaptionsTracks() async throws(APIError) -> [CaptionsTrack] {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getOption",
-                parameters: [
-                    "'captions'",
-                    "'tracklist'"
-                ]
-            ),
+        try await self.getModuleOption(
+            module: .captions,
+            option: .tracklist,
             converter: .typeCast(
                 to: [[String: Any]].self
             )
@@ -108,14 +83,9 @@ public extension YouTubePlayer {
     
     /// Returns the captions translation languges.
     func getCaptionsTranslationLanguages() async throws(APIError) -> [CaptionsTranslationLanguage] {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getOption",
-                parameters: [
-                    "'captions'",
-                    "'translationLanguages'"
-                ]
-            ),
+        try await self.getModuleOption(
+            module: .captions,
+            option: .translationLanguages,
             converter: .typeCast(
                 to: [[String: Any]].self
             )

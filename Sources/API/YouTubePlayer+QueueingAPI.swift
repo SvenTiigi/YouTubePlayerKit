@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Queueing
+// MARK: - Queueing API
 
 public extension YouTubePlayer {
     
@@ -115,7 +115,7 @@ private extension YouTubePlayer {
         do {
             javaScript = try .youTubePlayer(
                 functionName: javaScriptFunctionName,
-                parameter: {
+                jsonParameter: {
                     switch source {
                     case .video(let id):
                         return LoadVideoByIdParamter(

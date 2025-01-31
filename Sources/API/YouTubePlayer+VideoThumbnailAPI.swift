@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Video Thumbnail
+// MARK: - Video Thumbnail API
 
 public extension YouTubePlayer {
     

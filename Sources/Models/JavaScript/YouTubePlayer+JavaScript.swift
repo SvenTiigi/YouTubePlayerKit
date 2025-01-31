@@ -196,12 +196,12 @@ public extension YouTubePlayer.JavaScript {
     /// Returns a JavaScript which invokes the given function with its encodable parameter on the YouTube player JavaScript variable.
     /// - Parameters:
     ///   - functionName: The name of the function to invoke.
-    ///   - parameter: The JSON encodable parameter.
-    ///   - parameterJSONEncoder: The JSONEncoder used to encode the parameter.
+    ///   - jsonParameter: The JSON encodable parameter.
+    ///   - jsonEncoder: The JSONEncoder used to encode the parameter.
     static func youTubePlayer(
         functionName: String,
-        parameter: Encodable,
-        parameterJSONEncoder: JSONEncoder = {
+        jsonParameter: Encodable,
+        jsonEncoder: JSONEncoder = {
             let jsonEncoder = JSONEncoder()
             jsonEncoder.outputFormatting = [
                 .sortedKeys,
@@ -214,7 +214,7 @@ public extension YouTubePlayer.JavaScript {
             functionName: functionName,
             parameters: [
                 String(
-                    decoding: try parameterJSONEncoder.encode(parameter),
+                    decoding: try jsonEncoder.encode(jsonParameter),
                     as: UTF8.self
                 )
             ]

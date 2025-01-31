@@ -141,8 +141,8 @@ struct YouTubePlayerJavaScriptTests {
         )
         let javaScript = try YouTubePlayer.JavaScript.youTubePlayer(
             functionName: functionName,
-            parameter: parameter,
-            parameterJSONEncoder: jsonEncoder
+            jsonParameter: parameter,
+            jsonEncoder: jsonEncoder
         )
         let youTubePlayerVariableName = UUID().uuidString
         #expect(

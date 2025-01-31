@@ -98,37 +98,6 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     
 }
 
-// MARK: - Map
-
-public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
-    
-    /// Transforms the output of the current JavaScript evaluation response converter to a new type using the provided transformation closure.
-    /// - Parameter transform: A closure that takes the current converter's output type and returns a new output type.
-    func map<NewOutput>(
-        _ transform: @Sendable @escaping (Output) throws -> NewOutput
-    ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<NewOutput> {
-        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
-            // Convert current Converter
-            let output = try self(
-                javaScriptCode: javaScriptCode,
-                javaScriptResponse: javaScriptResponse
-            )
-            do {
-                // Return transformed output
-                return try transform(output)
-            } catch {
-                // Throw error
-                throw .init(
-                    javaScriptCode: javaScriptCode,
-                    javaScriptResponse: .init(describing: output),
-                    reason: "Failed to transform output \(String(reflecting: Output.self)) to \(String(reflecting: NewOutput.self))"
-                )
-            }
-        }
-    }
-    
-}
-
 // MARK: - Decode
 
 public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {

@@ -45,10 +45,8 @@ public final class YouTubePlayer: ObservableObject {
             }
             // Send object will change
             self.objectWillChange.send()
-            // Reload the player to apply the new parameters
-            Task { [weak self] in
-                try? await self?.reload()
-            }
+            // Reload the web view to apply the new parameters
+            try? self.webView.load()
         }
     }
     
@@ -97,6 +95,9 @@ public final class YouTubePlayer: ObservableObject {
     
     /// The playback rate subject.
     private(set) lazy var playbackRateSubject = CurrentValueSubject<PlaybackRate?, Never>(nil)
+    
+    /// The modules subject.
+    private(set) lazy var modulesSubject: PassthroughSubject<[Module], Never> = .init()
     
     /// The autplay blocked subject.
     private(set) lazy var autoplayBlockedSubject = PassthroughSubject<Void, Never>()
@@ -366,9 +367,7 @@ private extension YouTubePlayer {
             // Check if autoPlay is enabled
             if self.parameters.autoPlay == true && self.source != nil && !self.isPlaying {
                 // Play Video
-                Task(
-                    priority: .userInitiated
-                ) { [weak self] in
+                Task(priority: .userInitiated) { [weak self] in
                     try? await self?.play()
                 }
             }
@@ -388,18 +387,10 @@ private extension YouTubePlayer {
             }
         case .onStateChange:
             // Verify YouTubePlayer PlaybackState is available
-            guard let playbackState: YouTubePlayer.PlaybackState? = {
-                // Verify JavaScript Event Data is available
-                guard let javaScriptEventData = javaScriptEvent.data else {
-                    // Otherwise return ended state
-                    return .ended
-                }
-                // Return PlaybackState from JavaScript Event Code
-                return Int(
-                    javaScriptEventData
-                )
-                .flatMap(YouTubePlayer.PlaybackState.init(value:))
-            }() else {
+            guard let playbackState = javaScriptEvent
+                .data
+                .flatMap(Int.init)
+                .flatMap(PlaybackState.init(value:)) else {
                 // Otherwise return out of function
                 return
             }
@@ -431,7 +422,13 @@ private extension YouTubePlayer {
                 .flatMap(YouTubePlayer.Error.init)
                 .map { self.stateSubject.send(.error($0)) }
         case .onApiChange:
-            break
+            // Send loaded/unloaded modules
+            Task { [weak self] in
+                guard let modules = try? await self?.getModules() else {
+                    return
+                }
+                self?.modulesSubject.send(modules)
+            }
         case .onAutoplayBlocked:
             // Send auto play blocked event
             self.autoplayBlockedSubject.send(())

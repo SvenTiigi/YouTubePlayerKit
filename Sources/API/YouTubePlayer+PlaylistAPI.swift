@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Playlist (https://developers.google.com/youtube/iframe_api_reference#playing-a-video-in-a-playlist)
+// MARK: - Playlist API
 
 public extension YouTubePlayer {
     

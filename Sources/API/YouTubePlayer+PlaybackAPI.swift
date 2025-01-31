@@ -1,9 +1,60 @@
 import Combine
 import Foundation
 
-// MARK: - Playback (https://developers.google.com/youtube/iframe_api_reference#Playback_status)
+// MARK: - Playback API
 
 public extension YouTubePlayer {
+    
+    /// The current YouTube player playback state, if available.
+    var playbackState: PlaybackState? {
+        self.playbackStateSubject.value
+    }
+    
+    /// A Boolean value that determines if the player is currently playing.
+    var isPlaying: Bool {
+        self.playbackState == .playing
+    }
+    
+    /// A Boolean value that determines if the player is currently paused.
+    var isPaused: Bool {
+        self.playbackState == .paused
+    }
+    
+    /// A Boolean value that determines if the player is currently buffering.
+    var isBuffering: Bool {
+        self.playbackState == .buffering
+    }
+    
+    /// A Boolean value that determines if the player is currently cued.
+    var isCued: Bool {
+        self.playbackState == .cued
+    }
+    
+    /// A Boolean value that determines if the player is ended.
+    var isEnded: Bool {
+        self.playbackState == .ended
+    }
+    
+    /// A Publisher that emits the current YouTube player playback state.
+    var playbackStatePublisher: some Publisher<PlaybackState, Never> {
+        self.playbackStateSubject
+            .compactMap { $0 }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+    }
+    
+    /// The current YouTube player playback quality, if available.
+    var playbackQuality: PlaybackQuality? {
+        self.playbackQualitySubject.value
+    }
+    
+    /// A Publisher that emits the current YouTube player playback quality.
+    var playbackQualityPublisher: some Publisher<PlaybackQuality, Never> {
+        self.playbackQualitySubject
+            .compactMap { $0 }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+    }
     
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered.
     func getVideoLoadedFraction() async throws(APIError) -> Double {
@@ -56,32 +107,30 @@ public extension YouTubePlayer {
     
     /// Returns the playback state of the player video.
     func getPlaybackState() async throws(APIError) -> PlaybackState {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getPlayerState"
-            ),
-            converter: .typeCast(
-                to: Int.self
+        .init(
+            value: try await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "getPlayerState"
+                ),
+                converter: .typeCast(
+                    to: Int.self
+                )
             )
-            .map(PlaybackState.init(value:))
         )
     }
     
     /// Returns the elapsed time in seconds since the video started playing.
     func getCurrentTime() async throws(APIError) -> Measurement<UnitDuration> {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getCurrentTime"
-            ),
-            converter: .typeCast(
-                to: Double.self
-            )
-            .map { seconds in
-                .init(
-                    value: seconds,
-                    unit: .seconds
+        .init(
+            value: try await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "getCurrentTime"
+                ),
+                converter: .typeCast(
+                    to: Double.self
                 )
-            }
+            ),
+            unit: .seconds
         )
     }
     
@@ -144,8 +193,8 @@ public extension YouTubePlayer {
     
     /// A Publisher that emits the current playback metadata.
     var playbackMetadataPublisher: some Publisher<PlaybackMetadata, Never> {
-        self.playbackStatePublisher
-            .filter { $0 == .playing }
+        self.javaScriptEventPublisher
+            .filter { $0.name == .onApiChange }
             .flatMap { _ in
                 Future { promise in
                     Task { [weak self] in
@@ -156,8 +205,7 @@ public extension YouTubePlayer {
                     }
                 }
             }
-            .removeDuplicates()
+            .share()
     }
     
 }
-

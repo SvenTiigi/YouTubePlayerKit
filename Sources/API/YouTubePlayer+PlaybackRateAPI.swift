@@ -1,19 +1,34 @@
+import Combine
 import Foundation
 
-// MARK: - Playback Rate (https://developers.google.com/youtube/iframe_api_reference#Playback_rate)
+// MARK: - Playback Rate API
 
 public extension YouTubePlayer {
     
+    /// The current YouTube player playback rate, if available.
+    var playbackRate: PlaybackRate? {
+        self.playbackRateSubject.value
+    }
+    
+    /// A Publisher that emits the current YouTube player playback rate.
+    var playbackRatePublisher: some Publisher<PlaybackRate, Never> {
+        self.playbackRateSubject
+            .compactMap { $0 }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+    }
+    
     /// This function retrieves the playback rate of the currently playing video.
     func getPlaybackRate() async throws(APIError) -> PlaybackRate {
-        try await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "getPlaybackRate"
-            ),
-            converter: .typeCast(
-                to: Double.self
+        .init(
+            value: try await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "getPlaybackRate"
+                ),
+                converter: .typeCast(
+                    to: Double.self
+                )
             )
-            .map(PlaybackRate.init(value:))
         )
     }
     
@@ -42,10 +57,8 @@ public extension YouTubePlayer {
             converter: .typeCast(
                 to: [Double].self
             )
-            .map { playbackRateValues in
-                playbackRateValues.map(PlaybackRate.init(value:))
-            }
         )
+        .map(PlaybackRate.init(value:))
     }
     
 }
