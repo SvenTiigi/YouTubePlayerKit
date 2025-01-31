@@ -10,6 +10,8 @@ public extension YouTubePlayer {
         case setupFailed(Swift.Error)
         /// Did fail provisional navigation
         case didFailProvisionalNavigation(Swift.Error)
+        /// Did fail navigation
+        case didFailNavigation(Swift.Error)
         /// The web views underlying web content process was terminated
         case webContentProcessDidTerminate
         /// The YouTube iFrame Api JavaScript failed to load

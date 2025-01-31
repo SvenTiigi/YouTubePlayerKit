@@ -335,9 +335,14 @@ private extension YouTubePlayer {
                 javaScriptEvent: javaScriptEvent
             )
         case .didFailProvisionalNavigation(let error):
-            // Send web content process did terminate error
+            // Send did fail provisional navigation error
             self.stateSubject.send(
                 .error(.didFailProvisionalNavigation(error))
+            )
+        case .didFailNavigation(let error):
+            // Send did fail navigation error
+            self.stateSubject.send(
+                .error(.didFailNavigation(error))
             )
         case .webContentProcessDidTerminate:
             // Send web content process did terminate error

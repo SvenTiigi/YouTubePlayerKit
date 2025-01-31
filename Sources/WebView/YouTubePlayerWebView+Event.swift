@@ -10,6 +10,8 @@ extension YouTubePlayerWebView {
         case receivedJavaScriptEvent(YouTubePlayer.JavaScriptEvent)
         /// Did fail provisional navigation
         case didFailProvisionalNavigation(Error)
+        /// Did fail navigation
+        case didFailNavigation(Error)
         /// Web content process did terminate
         case webContentProcessDidTerminate
     }

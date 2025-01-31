@@ -23,6 +23,24 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             .error("WKWebView did fail provisional navigation: \(error, privacy: .public)")
     }
     
+    /// WebView did fail navigation.
+    /// - Parameters:
+    ///   - webView: The web view.
+    ///   - navigation: The navigation.
+    ///   - error: The error.
+    func webView(
+        _ webView: WKWebView,
+        didFail navigation: WKNavigation!,
+        withError error: Error
+    ) {
+        self.eventSubject.send(
+            .didFailNavigation(error)
+        )
+        self.player?
+            .logger()?
+            .error("WKWebView did fail navigation: \(error, privacy: .public)")
+    }
+    
     /// WebView decide policy for NavigationAction
     /// - Parameters:
     ///   - webView: The WKWebView
