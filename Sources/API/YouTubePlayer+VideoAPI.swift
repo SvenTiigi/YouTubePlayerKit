@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import WebKit
 
 // MARK: - Video API
 
@@ -85,13 +86,32 @@ public extension YouTubePlayer {
         )
     }
     
-    /// Closes any current picture-in-picture video and fullscreen video.
-    func closeAllMediaPresentations() async {
+    /// Pauses any current picture-in-picture and fullscreen media playback.
+    func pauseMediaPlayback() async {
+        await self.webView.pauseAllMediaPlayback()
+    }
+    
+    /// Changes whether the underlying ``WKWebView`` instance is suspending playback of all media in the page.
+    /// - Parameter isSuspended: A Boolean whether media playback should be suspended or resumed.
+    /// - Important: Pass true to pause all media the web view is playing. Neither the user nor the webpage can resume playback until you call this method again with false.
+    func setMediaPlaybackSuspended(
+        _ isSuspended: Bool
+    ) async {
+        await self.webView.setAllMediaPlaybackSuspended(isSuspended)
+    }
+    
+    /// Requests the media playback status of the underlying ``WKWebView`` instance.
+    func requestMediaPlaybackState() async -> WebKit.WKMediaPlaybackState {
+        await self.webView.requestMediaPlaybackState()
+    }
+    
+    /// Closes any current picture-in-picture and fullscreen media presentation.
+    func closeMediaPresentation() async {
         await self.webView.closeAllMediaPresentations()
     }
     
     /// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
-    /// - Important: This function only executes if the configuration's fullscreen mode is set to `.web`.
+    /// - Important: This function only executes if the configuration's ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
     /// - Returns: A boolean value indicating whether the fullscreen request was successful:
     /// `true` if fullscreen mode was successfully requested.
     /// `false` if either the configuration doesn't allow web fullscreen or if the fullscreen API is not available
@@ -114,6 +134,26 @@ public extension YouTubePlayer {
             .asImmediatelyInvokedFunctionExpression(),
             converter: .typeCast()
         )
+    }
+    
+    /// The web fullscreen state of the underlying ``WKWebView`` instance.
+    /// - Important: This property only indicates the fullscreen state when the ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
+    /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
+    @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
+    var webFullscreenState: WebKit.WKWebView.FullscreenState {
+        self.webView.fullscreenState
+    }
+    
+    /// A Publisher that emits the web fullscreen state of the underlying ``WKWebView`` instance.
+    /// - Important: The value of this publisher only indicates the fullscreen state when the ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
+    /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
+    @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
+    var webFullScreenStatePublisher: some Publisher<WebKit.WKWebView.FullscreenState, Never> {
+        self.webView
+            .publisher(
+                for: \.fullscreenState,
+                options: [.new]
+            )
     }
     
 }
