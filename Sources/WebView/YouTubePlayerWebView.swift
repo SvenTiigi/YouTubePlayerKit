@@ -182,6 +182,10 @@ private extension YouTubePlayerWebView {
         self.scrollView.showsHorizontalScrollIndicator = false
         // Disable bounces of ScrollView
         self.scrollView.bounces = false
+        // Disable find interaction
+        if #available(iOS 16.0, visionOS 1.0, *) {
+            self.isFindInteractionEnabled = false
+        }
         #endif
         // Initially set if content insets should be automatically adjusted
         self.setAutomaticallyAdjustsContentInsets(enabled: player.configuration.automaticallyAdjustsContentInsets)
