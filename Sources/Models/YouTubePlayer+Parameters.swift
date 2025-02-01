@@ -298,7 +298,7 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
     }
     
     /// The CodingKeys
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case autoPlay = "autoplay"
         case loopEnabled = "loop"
         case startTime = "start"
