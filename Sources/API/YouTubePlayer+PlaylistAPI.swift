@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// This function loads and plays the next video in the playlist.
-    func nextVideo() async throws(APIError) {
+    func nextVideoInPlaylist() async throws(APIError) {
         try await self.evaluate(
             javaScript: .youTubePlayer(
                 functionName: "nextVideo"
@@ -14,7 +14,7 @@ public extension YouTubePlayer {
     }
     
     /// This function loads and plays the previous video in the playlist.
-    func previousVideo() async throws(APIError) {
+    func previousVideoInPlaylist() async throws(APIError) {
         try await self.evaluate(
             javaScript: .youTubePlayer(
                 functionName: "previousVideo"
@@ -25,7 +25,7 @@ public extension YouTubePlayer {
     /// This function loads and plays the specified video in the playlist.
     /// - Parameters:
     ///   - index: The index of the video that you want to play in the playlist.
-    func playVideo(
+    func playVideoInPlaylist(
         at index: Int
     ) async throws(APIError) {
         try await self.evaluate(
@@ -42,7 +42,7 @@ public extension YouTubePlayer {
     /// or if it should stop playing after the last video in the playlist ends.
     /// - Parameters:
     ///   - enabled: Bool value if is enabled.
-    func setLoop(
+    func setLoopPlaylist(
         enabled: Bool
     ) async throws(APIError) {
         try await self.evaluate(
@@ -59,7 +59,7 @@ public extension YouTubePlayer {
     /// so that they play back in an order different from the one that the playlist creator designated.
     /// - Parameters:
     ///   - enabled: Bool value if is enabled.
-    func setShuffle(
+    func setShufflePlaylist(
         enabled: Bool
     ) async throws(APIError) {
         try await self.evaluate(

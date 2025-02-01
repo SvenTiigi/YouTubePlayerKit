@@ -4,7 +4,7 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// Loads a new YouTube player source.
+    /// Loads a YouTube player source.
     /// - Parameters:
     ///   - source: The new YouTube player source to load.
     ///   - startTime: The start time. Default value `nil`
@@ -32,7 +32,7 @@ public extension YouTubePlayer {
         )
     }
     
-    /// Cue a YouTube player source.
+    /// Cues a YouTube player source.
     /// - Parameters:
     ///   - source: The new YouTube player source to cue.
     ///   - startTime: The start time. Default value `nil`

@@ -29,8 +29,6 @@ public final class YouTubePlayer: ObservableObject {
             }
             // Send object will change
             self.objectWillChange.send()
-            // Send source.
-            self.sourceSubject.send(self.source)
         }
     }
     
@@ -80,9 +78,6 @@ public final class YouTubePlayer: ObservableObject {
             self.objectWillChange.send()
         }
     }
-    
-    /// The source subject.
-    private(set) lazy var sourceSubject = CurrentValueSubject<Source?, Never>(nil)
     
     /// The state subject.
     private(set) lazy var stateSubject = CurrentValueSubject<State, Never>(.idle)
@@ -137,9 +132,6 @@ public final class YouTubePlayer: ObservableObject {
         self.parameters = parameters
         self.configuration = configuration
         self.isLoggingEnabled = isLoggingEnabled
-        Task { @MainActor [weak self] in
-            self?.sourceSubject.send(source)
-        }
     }
     
 }
@@ -234,6 +226,20 @@ extension YouTubePlayer: @preconcurrency Hashable {
         hasher.combine(self.source)
         hasher.combine(self.parameters)
         hasher.combine(self.configuration)
+    }
+    
+}
+
+// MARK: - JavaScript Event Publisher
+
+public extension YouTubePlayer {
+    
+    /// A Publisher that emits a received JavaScript event.
+    var javaScriptEventPublisher: some Publisher<JavaScriptEvent, Never> {
+        self.webView
+            .eventSubject
+            .compactMap(\.javaScriptEvent)
+            .receive(on: DispatchQueue.main)
     }
     
 }
