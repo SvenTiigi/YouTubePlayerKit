@@ -15,11 +15,11 @@ final class YouTubePlayerWebView: WKWebView {
     /// The event subject..
     private(set) lazy var eventSubject = PassthroughSubject<Event, Never>()
     
-    /// The layout lifecycle subject.
-    private lazy var layoutLifecycleSubject = PassthroughSubject<CGRect, Never>()
+    /// The frame changes subject.
+    private lazy var frameChangesSubject = PassthroughSubject<CGRect, Never>()
     
-    /// The cancellables.
-    private var cancellables = Set<AnyCancellable>()
+    /// The frame changes cancellable.
+    private var frameChangesCancellable: AnyCancellable?
     
     // MARK: Initializer
     
@@ -76,15 +76,15 @@ final class YouTubePlayerWebView: WKWebView {
     /// Perform layout
     override func layout() {
         super.layout()
-        // Send frame on Layout Subject
-        self.layoutLifecycleSubject.send(self.frame)
+        // Send new frame
+        self.frameChangesSubject.send(self.frame)
     }
     #else
     /// Layout Subviews
     override func layoutSubviews() {
         super.layoutSubviews()
-        // Send frame on Layout Subject
-        self.layoutLifecycleSubject.send(self.frame)
+        // Send new frame
+        self.frameChangesSubject.send(self.frame)
     }
     #endif
     
@@ -119,13 +119,13 @@ private extension YouTubePlayerWebView {
         using player: YouTubePlayer
     ) {
         // Setup frame observation
-        self.publisher(
+        self.frameChangesCancellable = self.publisher(
             for: \.frame,
             options: [.new]
         )
         .dropFirst()
         .merge(
-            with: self.layoutLifecycleSubject
+            with: self.frameChangesSubject
         )
         .map(\.size)
         .removeDuplicates()
@@ -151,7 +151,6 @@ private extension YouTubePlayerWebView {
                 )
             }
         }
-        .store(in: &self.cancellables)
         // Set navigation delegate
         self.navigationDelegate = self
         // Set ui delegate
