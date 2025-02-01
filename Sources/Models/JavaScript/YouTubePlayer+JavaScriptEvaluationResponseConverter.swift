@@ -86,7 +86,7 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
                     reason: [
                         "Type-Cast failed",
                         "Expected type: \(String(describing: NewOutput.self))",
-                        "But found: \(String(describing: javaScriptResponse))"
+                        "Found: \(String(describing: javaScriptResponse))"
                     ]
                     .joined(separator: ". ")
                 )
