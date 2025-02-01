@@ -6,6 +6,8 @@ public extension YouTubePlayer {
     
     /// The YouTube player parameters.
     /// - SeeAlso: [YouTube Player Parameters Documentation](https://developers.google.com/youtube/player_parameters)
+    /// - Note: The parameters `list`, `listType`, `playlist`, `playsinline`, `enablejsapi` are not directly configurable.
+    /// The YouTubePlayerKit automatically sets these paramters based on the provided ``YouTubePlayer.Source`` and ``YouTubePlayer.Configuration``
     struct Parameters: Hashable, Sendable {
         
         /// Controls whether the video automatically begins playing when the player loads.
@@ -227,6 +229,43 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
     
 }
 
+// MARK: - Default Origin URL
+
+public extension YouTubePlayer.Parameters {
+    
+    /// The default origin URL.
+    static let defaultOriginURL = URL(string: "https://youtubeplayer")
+    
+}
+
+// MARK: - ProgressBarColor
+
+public extension YouTubePlayer.Parameters {
+    
+    /// A YouTube player progress bar color.
+    enum ProgressBarColor: String, Codable, Hashable, Sendable, CaseIterable {
+        /// YouTube red color
+        case red
+        /// White color
+        case white
+    }
+    
+}
+
+// MARK: - ListType
+
+public extension YouTubePlayer.Parameters {
+    
+    /// A YouTube player list type.
+    enum ListType: String, Codable, Hashable, Sendable, CaseIterable {
+        /// Playlist
+        case playlist
+        /// Channel / User uploads
+        case channel = "user_uploads"
+    }
+    
+}
+
 // MARK: - Encodable
 
 extension YouTubePlayer.Parameters: EncodableWithConfiguration {
@@ -357,43 +396,6 @@ private extension Bool {
         default:
             return nil
         }
-    }
-    
-}
-
-// MARK: - Default Origin URL
-
-public extension YouTubePlayer.Parameters {
-    
-    /// The default origin URL.
-    static let defaultOriginURL = URL(string: "https://youtubeplayer")
-    
-}
-
-// MARK: - ProgressBarColor
-
-public extension YouTubePlayer.Parameters {
-    
-    /// A YouTube player progress bar color.
-    enum ProgressBarColor: String, Codable, Hashable, Sendable, CaseIterable {
-        /// YouTube red color
-        case red
-        /// White color
-        case white
-    }
-    
-}
-
-// MARK: - ListType
-
-extension YouTubePlayer.Parameters {
-    
-    /// A YouTube player list type.
-    enum ListType: String, Codable, Hashable, Sendable, CaseIterable {
-        /// Playlist
-        case playlist
-        /// Channel / User uploads
-        case channel = "user_uploads"
     }
     
 }
