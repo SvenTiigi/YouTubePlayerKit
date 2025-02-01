@@ -7,7 +7,7 @@ struct YouTubePlayerJavaScriptTests {
     @Test
     func emptyInitializer() {
         let javaScript = YouTubePlayer.JavaScript()
-        #expect(javaScript.code().isEmpty)
+        #expect(javaScript.content().isEmpty)
         #expect(javaScript.description.isEmpty)
     }
     
@@ -15,23 +15,23 @@ struct YouTubePlayerJavaScriptTests {
     func designatedInitializer() {
         let javaScriptCode = "const x = 1;"
         let javaScript = YouTubePlayer.JavaScript(javaScriptCode)
-        #expect(javaScript.code() == javaScriptCode)
+        #expect(javaScript.content() == javaScriptCode)
         #expect(javaScript.description == javaScriptCode)
     }
     
     @Test
     func statementTerminatorNormalization() {
         #expect(
-            YouTubePlayer.JavaScript("const x = 1").code() == "const x = 1;"
+            YouTubePlayer.JavaScript("const x = 1").content() == "const x = 1;"
         )
         #expect(
-            YouTubePlayer.JavaScript("const x = 1;").code() == "const x = 1;"
+            YouTubePlayer.JavaScript("const x = 1;").content() == "const x = 1;"
         )
         #expect(
-            YouTubePlayer.JavaScript("const x = 1;;;").code() == "const x = 1;"
+            YouTubePlayer.JavaScript("const x = 1;;;").content() == "const x = 1;"
         )
         #expect(
-            YouTubePlayer.JavaScript("const x = 1;  \n  ;;  ").code() == "const x = 1;"
+            YouTubePlayer.JavaScript("const x = 1;  \n  ;;  ").content() == "const x = 1;"
         )
     }
     
@@ -41,7 +41,7 @@ struct YouTubePlayerJavaScriptTests {
         let functionName = UUID().uuidString
         let javaScript: YouTubePlayer.JavaScript = "\(.youTubePlayer).\(functionName)()"
         #expect(
-            javaScript.code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+            javaScript.content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             "\(youTubePlayerVariableName).\(functionName)();"
         )
@@ -55,7 +55,7 @@ struct YouTubePlayerJavaScriptTests {
         \(.youTubePlayer).pause();
         """
         #expect(
-            javaScript.code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+            javaScript.content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             """
             \(youTubePlayerVariableName).play();
@@ -72,7 +72,7 @@ struct YouTubePlayerJavaScriptTests {
             YouTubePlayer
                 .JavaScript
                 .youTubePlayer(operator: "\(functionName)()")
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             "\(youTubePlayerVariableName).\(functionName)();"
         )
@@ -86,7 +86,7 @@ struct YouTubePlayerJavaScriptTests {
             YouTubePlayer
                 .JavaScript
                 .youTubePlayer(functionName: functionName)
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             "\(youTubePlayerVariableName).\(functionName)();"
         )
@@ -101,7 +101,7 @@ struct YouTubePlayerJavaScriptTests {
             YouTubePlayer
                 .JavaScript
                 .youTubePlayer(functionName: functionName, parameters: [parameter])
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             "\(youTubePlayerVariableName).\(functionName)(\(parameter));"
         )
@@ -116,7 +116,7 @@ struct YouTubePlayerJavaScriptTests {
             YouTubePlayer
                 .JavaScript
                 .youTubePlayer(functionName: functionName, parameters: parameters)
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             "\(youTubePlayerVariableName).\(functionName)(\(parameters.joined(separator: ", ")));"
         )
@@ -146,7 +146,7 @@ struct YouTubePlayerJavaScriptTests {
         )
         let youTubePlayerVariableName = UUID().uuidString
         #expect(
-            javaScript.code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+            javaScript.content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             """
             \(youTubePlayerVariableName).\(functionName)(\(parameterJSONString));
@@ -163,7 +163,7 @@ struct YouTubePlayerJavaScriptTests {
                 .JavaScript
                 .youTubePlayer(functionName: functionName)
                 .ignoreReturnValue()
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             """
             \(youTubePlayerVariableName).\(functionName)(); null;
@@ -180,7 +180,7 @@ struct YouTubePlayerJavaScriptTests {
                 .JavaScript
                 .youTubePlayer(functionName: functionName)
                 .asImmediatelyInvokedFunctionExpression()
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             """
             (function() {
@@ -201,7 +201,7 @@ struct YouTubePlayerJavaScriptTests {
                 .youTubePlayer(functionName: functionName, parameters: [parameter])
                 .ignoreReturnValue()
                 .asImmediatelyInvokedFunctionExpression()
-                .code(variableNames: [.youTubePlayer: youTubePlayerVariableName])
+                .content(variableNames: [.youTubePlayer: youTubePlayerVariableName])
             ==
             """
             (function() {
@@ -223,7 +223,7 @@ struct YouTubePlayerJavaScriptTests {
             "\(YouTubePlayer.JavaScript.Variable.youTubePlayer.placeholderRawValue).\(functionName)();"
         )
         #expect(
-            javaScript.code()
+            javaScript.content()
             ==
             "\(YouTubePlayer.JavaScript.Variable.youTubePlayer.rawValue).\(functionName)();"
         )

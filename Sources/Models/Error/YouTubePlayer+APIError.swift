@@ -9,8 +9,8 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// The JavaScript code that has been executed and caused the error.
-        public let javaScriptCode: YouTubePlayer.JavaScript.Code?
+        /// The JavaScript that has been executed and caused the error.
+        public let javaScript: YouTubePlayer.JavaScript.Content?
         
         /// The optional JavaScript response.
         public let javaScriptResponse: String?
@@ -25,17 +25,17 @@ public extension YouTubePlayer {
         
         /// Creates a new instance of ``YouTubePlayer.APIError``
         /// - Parameters:
-        ///   - javaScriptCode: The JavaScript code that has been executed and caused the error. Default value `nil`
+        ///   - javaScript: The JavaScript that has been executed and caused the error. Default value `nil`
         ///   - javaScriptResponse: The optional JavaScript response. Default value `nil`
         ///   - underlyingError: The optional underlying error. Default value `nil`
         ///   - reason: The optional error reason message. Default value `nil`
         public init(
-            javaScriptCode: YouTubePlayer.JavaScript.Code? = nil,
+            javaScript: YouTubePlayer.JavaScript.Content? = nil,
             javaScriptResponse: String? = nil,
             underlyingError: Swift.Error? = nil,
             reason: String? = nil
         ) {
-            self.javaScriptCode = javaScriptCode
+            self.javaScript = javaScript
             self.javaScriptResponse = javaScriptResponse
             self.underlyingError = underlyingError
             self.reason = reason

@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         /// A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
         public typealias Convert = @Sendable (
-            YouTubePlayer.JavaScript.Code,
+            YouTubePlayer.JavaScript.Content,
             JavaScriptResponse
         ) throws(YouTubePlayer.APIError) -> Output
         
@@ -41,16 +41,16 @@ public extension YouTubePlayer {
 
 public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     
-    /// Converts the response of the given Javascript code to the given response type.
+    /// Converts the response of the given Javascript to the given response type.
     /// - Parameters:
-    ///   - javaScriptCode: The JavaScript code.
+    ///   - javaScript: The JavaScript content.
     ///   - javaScriptResponse: The JavaScript response
     func callAsFunction(
-        javaScriptCode: YouTubePlayer.JavaScript.Code,
+        javaScript: YouTubePlayer.JavaScript.Content,
         javaScriptResponse: JavaScriptResponse
     ) throws(YouTubePlayer.APIError) -> Output {
         try self.convert(
-            javaScriptCode,
+            javaScript,
             javaScriptResponse
         )
     }
@@ -76,12 +76,12 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     static func typeCast<NewOutput>(
         to newOutputType: NewOutput.Type = NewOutput.self
     ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<NewOutput> {
-        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
+        .init { javaScript, javaScriptResponse throws(YouTubePlayer.APIError) in
             // Verify JavaScript response can be casted to NewOutput type
             guard let output = javaScriptResponse as? NewOutput else {
                 // Otherwise throw error
                 throw .init(
-                    javaScriptCode: javaScriptCode,
+                    javaScript: javaScript,
                     javaScriptResponse: javaScriptResponse.flatMap(String.init(describing:)),
                     reason: [
                         "Type-Cast failed",
@@ -110,10 +110,10 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
         as type: D.Type = D.self,
         decoder: @Sendable @escaping @autoclosure () -> JSONDecoder = .init()
     ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<D> {
-        .init { javaScriptCode, javaScriptResponse throws(YouTubePlayer.APIError) in
+        .init { javaScript, javaScriptResponse throws(YouTubePlayer.APIError) in
             // Convert current Converter
             let output = try self(
-                javaScriptCode: javaScriptCode,
+                javaScript: javaScript,
                 javaScriptResponse: javaScriptResponse
             )
             // Declare output Data
@@ -124,7 +124,7 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
             } catch {
                 // Throw error
                 throw .init(
-                    javaScriptCode: javaScriptCode,
+                    javaScript: javaScript,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Malformed JSON"
@@ -141,7 +141,7 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
             } catch {
                 // Throw error
                 throw .init(
-                    javaScriptCode: javaScriptCode,
+                    javaScript: javaScript,
                     javaScriptResponse: .init(describing: output),
                     underlyingError: error,
                     reason: "Decoding failed: \(error)"

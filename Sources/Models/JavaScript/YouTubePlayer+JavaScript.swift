@@ -9,27 +9,27 @@ public extension YouTubePlayer {
         
         // MARK: Typealias
         
-        /// A YouTube player JavaScript code type.
-        public typealias Code = String
+        /// The content type.
+        public typealias Content = String
         
         // MARK: Properties
         
-        /// The code.
-        private let code: Code
+        /// The content.
+        private let content: Content
         
         // MARK: Initializer
         
         /// Creates a new instance of ``YouTubePlayer.JavaScript``
-        /// - Parameter code: The code.
+        /// - Parameter content: The content.
         public init(
-            _ code: Code = .init()
+            _ content: Content = .init()
         ) {
             let statementTerminator: Character = ";"
-            let code = code
+            let content = content
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: .init(charactersIn: .init(statementTerminator)))
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            self.code = !code.isEmpty && code.last != statementTerminator ? code + .init(statementTerminator) : code
+            self.content = !content.isEmpty && content.last != statementTerminator ? content + .init(statementTerminator) : content
         }
         
     }
@@ -57,19 +57,19 @@ public extension YouTubePlayer.JavaScript {
 
 public extension YouTubePlayer.JavaScript {
     
-    /// Returns the code of this JavaScript by inserting the variable names.
+    /// Returns the content of this JavaScript by inserting the variable names.
     /// - Parameter variableNames: The variable names.
-    func code(
+    func content(
         variableNames: [Variable: String] = .init()
-    ) -> Code {
-        var code = self.code
+    ) -> Content {
+        var content = self.content
         for variable in Variable.allCases {
-            code = code.replacingOccurrences(
+            content = content.replacingOccurrences(
                 of: variable.placeholderRawValue,
                 with: variableNames[variable] ?? variable.rawValue
             )
         }
-        return code
+        return content
     }
     
 }
@@ -79,11 +79,11 @@ public extension YouTubePlayer.JavaScript {
 extension YouTubePlayer.JavaScript: ExpressibleByStringLiteral {
     
     /// Creates a new instance of ``YouTubePlayer.JavaScript``
-    /// - Parameter code: The code.
+    /// - Parameter content: The content.
     public init(
-        stringLiteral code: String
+        stringLiteral content: Content
     ) {
-        self.init(code)
+        self.init(content)
     }
     
 }
@@ -97,8 +97,8 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         
         // MARK: Properties
         
-        /// The code.
-        fileprivate var code: String
+        /// The content.
+        fileprivate var content: Content
         
         // MARK: Initializer
         
@@ -110,7 +110,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
             literalCapacity: Int,
             interpolationCount: Int
         ) {
-            self.code = .init()
+            self.content = .init()
         }
         
         // MARK: StringInterpolationProtocol
@@ -120,7 +120,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         public mutating func appendLiteral(
             _ literal: String
         ) {
-            self.code.append(literal)
+            self.content.append(literal)
         }
         
         /// Append a ``YouTubePlayer.JavaScript.Variable`` to the interpolation.
@@ -128,7 +128,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         public mutating func appendInterpolation(
             _ variable: Variable
         ) {
-            self.code.append(variable.placeholderRawValue)
+            self.content.append(variable.placeholderRawValue)
         }
         
         /// Append a ``LosslessStringConvertible`` component to the interpolation.
@@ -136,7 +136,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         public mutating func appendInterpolation(
             _ component: LosslessStringConvertible
         ) {
-            self.code.append(String(component))
+            self.content.append(String(component))
         }
         
     }
@@ -146,7 +146,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
     public init(
         stringInterpolation: StringInterpolation
     ) {
-        self.init(stringInterpolation.code)
+        self.init(stringInterpolation.content)
     }
     
 }
@@ -157,7 +157,7 @@ extension YouTubePlayer.JavaScript: CustomStringConvertible {
     
     /// A textual representation of this instance.
     public var description: String {
-        self.code
+        self.content
     }
     
 }
@@ -227,9 +227,9 @@ public extension YouTubePlayer.JavaScript {
 
 public extension YouTubePlayer.JavaScript {
     
-    /// Wraps the JavaScript code to explicitly return `null` after execution.
+    /// Wraps the JavaScript content to explicitly return `null` after execution.
     func ignoreReturnValue() -> Self {
-        .init(self.code + " null;")
+        .init(self.content + " null;")
     }
     
 }
@@ -238,12 +238,12 @@ public extension YouTubePlayer.JavaScript {
 
 public extension YouTubePlayer.JavaScript {
     
-    /// Wraps the JavaScript code in an immediately invoked function expression (IIFE).
+    /// Wraps the JavaScript content in an immediately invoked function expression (IIFE).
     func asImmediatelyInvokedFunctionExpression() -> Self {
         .init(
             """
             (function() {
-                \(self.code)
+                \(self.content)
             })();
             """
         )

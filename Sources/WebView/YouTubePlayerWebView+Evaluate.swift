@@ -29,8 +29,8 @@ extension YouTubePlayerWebView {
         }
         // Ignore return value if response is void
         let javaScript = Response.self is Void.Type ? javaScript.ignoreReturnValue() : javaScript
-        // Initialize JavaScript code.
-        let javaScriptCode = javaScript.code(
+        // Initialize the JavaScript content
+        let javaScriptContent = javaScript.content(
             variableNames: [
                 .youTubePlayer: player.configuration.htmlBuilder.youTubePlayerJavaScriptVariableName
             ]
@@ -40,18 +40,18 @@ extension YouTubePlayerWebView {
             .logger()?
             .debug(
                 """
-                Evaluate JavaScript: \(javaScriptCode, privacy: .public)
+                Evaluate JavaScript: \(javaScriptContent, privacy: .public)
                 """
             )
         // Declare JavaScript response
         let javaScriptResponse: Any?
         do {
             // Try to evaluate the JavaScript
-            javaScriptResponse = try await self.evaluateJavaScriptAsync(javaScriptCode)
+            javaScriptResponse = try await self.evaluateJavaScriptAsync(javaScriptContent)
         } catch {
             // Initialize API error
             let apiError = YouTubePlayer.APIError(
-                javaScriptCode: javaScriptCode,
+                javaScript: javaScriptContent,
                 javaScriptResponse: nil,
                 underlyingError: error,
                 reason: (error as NSError)
@@ -62,7 +62,7 @@ extension YouTubePlayerWebView {
                 .logger()?
                 .error(
                     """
-                    Evaluated JavaScript: \(javaScriptCode, privacy: .public)
+                    Evaluated JavaScript: \(javaScriptContent, privacy: .public)
                     Error: \(apiError, privacy: .public)
                     """
                 )
@@ -73,7 +73,7 @@ extension YouTubePlayerWebView {
             .logger()?
             .debug(
                 """
-                Evaluated JavaScript: \(javaScriptCode, privacy: .public)
+                Evaluated JavaScript: \(javaScriptContent, privacy: .public)
                 Result-Type: \(javaScriptResponse.flatMap { String(describing: Mirror(reflecting: $0).subjectType) } ?? "nil", privacy: .public)
                 Result: \(String(describing: javaScriptResponse ?? "nil"), privacy: .public)
                 """
@@ -87,7 +87,7 @@ extension YouTubePlayerWebView {
         do {
             // Return converted response
             return try converter(
-                javaScriptCode: javaScriptCode,
+                javaScript: javaScriptContent,
                 javaScriptResponse: javaScriptResponse
             )
         } catch {
@@ -96,7 +96,7 @@ extension YouTubePlayerWebView {
                 .error(
                     """
                     JavaScript response conversion failed
-                    JavaScript: \(javaScriptCode, privacy: .public)
+                    JavaScript: \(javaScriptContent, privacy: .public)
                     Result: \(String(describing: javaScriptResponse ?? "nil"), privacy: .public)
                     Error: \(error, privacy: .public)
                     """
