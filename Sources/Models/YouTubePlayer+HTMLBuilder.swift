@@ -30,6 +30,7 @@ public extension YouTubePlayer {
         public var youTubePlayerIframeAPISourceURL: URL
         
         /// A closure providing the template
+        /// - Important: Please be cautious when providing a custom `HTMLProvider`. It is recommended to stick with the default implementation. However, if you want full control, you can provide a custom implementation.
         public var htmlProvider: HTMLProvider
         
         // MARK: Initializer
@@ -40,6 +41,8 @@ public extension YouTubePlayer {
         ///   - youTubePlayerEventCallbackURLScheme: The YouTube player event callback url scheme. Default value `youtubeplayer`
         ///   - youTubePlayerEventCallbackDataParameterName: The YouTube player event callback data parameter name. Default value `data`
         ///   - youTubePlayerIframeAPISourceURL: The YouTube player iFrame API source URL. Default value `https://www.youtube.com/iframe_api`
+        ///   - htmlProvider: A closure which provides the HTML for the YouTube player. Default value `Self.defaultHTMLProvider`
+        ///  - Important: Please be cautious when providing a custom `HTMLProvider`. It is recommended to stick with the default implementation. However, if you want full control, you can provide a custom implementation.
         public init(
             youTubePlayerJavaScriptVariableName: String = "youtubePlayer",
             youTubePlayerEventCallbackURLScheme: String = "youtubeplayer",
