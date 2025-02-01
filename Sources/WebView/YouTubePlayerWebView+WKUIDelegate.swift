@@ -31,4 +31,16 @@ extension YouTubePlayerWebView: WKUIDelegate {
         return nil
     }
     
+    /// WebView should preview element.
+    /// - Parameters:
+    ///   - webView: The web view.
+    ///   - elementInfo: The element info.
+    func webView(
+        _ webView: WKWebView,
+        shouldPreviewElement elementInfo: WKPreviewElementInfo
+    ) -> Bool {
+        // Disable long press preview
+        false
+    }
+    
 }
