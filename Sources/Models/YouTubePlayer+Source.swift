@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// A YouTube player source.
-    enum Source: Codable, Hashable, Sendable {
+    enum Source: Hashable, Sendable {
         /// Video.
         case video(id: String)
         /// Videos.
@@ -360,6 +360,64 @@ private extension URL {
         }
         // Return nil as no rule has matched
         return nil
+    }
+    
+}
+
+// MARK: - Codable
+
+extension YouTubePlayer.Source: Codable {
+    
+    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// - Parameter decoder: The decoder.
+    public init(
+        from decoder: Decoder
+    ) throws {
+        lazy var decodingError = DecodingError
+            .dataCorrupted(
+                .init(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Unsupported source representation"
+                )
+            )
+        if let urlString = try? decoder.singleValueContainer().decode(String.self),
+           let source = Self(urlString: urlString) {
+            self = source
+        } else if let videoIDs = try? decoder.singleValueContainer().decode([String].self),
+                  !videoIDs.isEmpty {
+            self = .videos(ids: videoIDs)
+        } else if let container = try? decoder.container(keyedBy: YouTubePlayer.Parameters.CodingKeys.self) {
+            if let listType = try? container.decode(YouTubePlayer.Parameters.ListType.self, forKey: .listType),
+               let list = try? container.decode(String.self, forKey: .list) {
+                switch listType {
+                case .playlist:
+                    self = .playlist(id: list)
+                case .channel:
+                    self = .channel(name: list)
+                }
+            } else if let playlist = try? container.decode(String.self, forKey: .playlist),
+                      case let videoIDs = playlist.components(separatedBy: ","),
+                      !videoIDs.isEmpty {
+                if videoIDs.count == 1, let videoID = videoIDs.first {
+                    self = .video(id: videoID)
+                } else {
+                    self = .videos(ids: videoIDs)
+                }
+            } else {
+                throw decodingError
+            }
+        } else {
+            throw decodingError
+        }
+    }
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    public func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.url)
     }
     
 }
