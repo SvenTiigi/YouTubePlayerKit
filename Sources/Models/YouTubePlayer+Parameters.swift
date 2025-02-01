@@ -210,18 +210,18 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
             }
         }
         self.init(
-            autoPlay: queryParameter(for: .autoPlay).flatMap(Int.init).flatMap(Bool.init(bit:)),
-            loopEnabled: queryParameter(for: .loopEnabled).flatMap(Int.init).flatMap(Bool.init(bit:)),
+            autoPlay: queryParameter(for: .autoPlay).flatMap(Bit.init)?.value,
+            loopEnabled: queryParameter(for: .loopEnabled).flatMap(Bit.init)?.value,
             startTime: queryParameter(for: .startTime).flatMap(Int.init).flatMap { .init(value: .init($0), unit: .seconds) },
             endTime: queryParameter(for: .endTime).flatMap(Int.init).map { .init(value: .init($0), unit: .seconds) },
-            showControls: queryParameter(for: .showControls).flatMap(Int.init).flatMap(Bool.init(bit:)),
-            showFullscreenButton: queryParameter(for: .showFullscreenButton).flatMap(Int.init).flatMap(Bool.init(bit:)),
+            showControls: queryParameter(for: .showControls).flatMap(Bit.init)?.value,
+            showFullscreenButton: queryParameter(for: .showFullscreenButton).flatMap(Bit.init)?.value,
             progressBarColor: queryParameter(for: .progressBarColor).flatMap(ProgressBarColor.init),
-            keyboardControlsDisabled: queryParameter(for: .keyboardControlsDisabled).flatMap(Int.init).flatMap(Bool.init(bit:)),
+            keyboardControlsDisabled: queryParameter(for: .keyboardControlsDisabled).flatMap(Bit.init)?.value,
             language: queryParameter(for: .language),
             captionLanguage: queryParameter(for: .captionLanguage),
-            showCaptions: queryParameter(for: .showCaptions).flatMap(Int.init).flatMap(Bool.init(bit:)),
-            restrictRelatedVideosToSameChannel: queryParameter(for: .restrictRelatedVideosToSameChannel).flatMap(Int.init).flatMap(Bool.init(bit:)),
+            showCaptions: queryParameter(for: .showCaptions).flatMap(Bit.init)?.value,
+            restrictRelatedVideosToSameChannel: queryParameter(for: .restrictRelatedVideosToSameChannel).flatMap(Bit.init)?.value,
             originURL: queryParameter(for: .origin).flatMap(URL.init) ?? Self.defaultOriginURL,
             referrerURL: queryParameter(for: .referrer).flatMap(URL.init)
         )
@@ -266,39 +266,12 @@ public extension YouTubePlayer.Parameters {
     
 }
 
-// MARK: - Encodable
+// MARK: - CodingKeys
 
-extension YouTubePlayer.Parameters: EncodableWithConfiguration {
+public extension YouTubePlayer.Parameters {
     
-    /// The encoding configuration.
-    public struct EncodingConfiguration: Codable, Hashable, Sendable {
-        
-        // MARK: Properties
-        
-        /// The source.
-        public let source: YouTubePlayer.Source?
-        
-        /// A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
-        public let allowsInlineMediaPlayback: Bool
-        
-        // MARK: Initializer
-        
-        /// Creates a new instance of ``YouTubePlayer.Options.Parameters.EncodingConfiguration``
-        /// - Parameters:
-        ///   - source: The source. Default value `nil`
-        ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
-        public init(
-            source: YouTubePlayer.Source? = nil,
-            allowsInlineMediaPlayback: Bool = true
-        ) {
-            self.source = source
-            self.allowsInlineMediaPlayback = allowsInlineMediaPlayback
-        }
-        
-    }
-    
-    /// The CodingKeys
-    public enum CodingKeys: String, CodingKey {
+    /// The coding keys.
+    enum CodingKeys: String, CodingKey {
         case autoPlay = "autoplay"
         case loopEnabled = "loop"
         case startTime = "start"
@@ -320,6 +293,69 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         case enableJavaScriptAPI = "enablejsapi"
     }
     
+}
+
+// MARK: - Decodable
+
+extension YouTubePlayer.Parameters: Decodable {
+    
+    /// Creates a new instance of ``YouTubePlayer.Parameters``
+    /// - Parameter decoder: The decoder.
+    public init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(
+            autoPlay: container.decodeIfPresent(Bit.self, forKey: .autoPlay)?.value,
+            loopEnabled: container.decodeIfPresent(Bit.self, forKey: .loopEnabled)?.value,
+            startTime: container.decodeIfPresent(Double.self, forKey: .startTime).flatMap { .init(value: $0, unit: .seconds) },
+            endTime: container.decodeIfPresent(Double.self, forKey: .endTime).flatMap { .init(value: $0, unit: .seconds) },
+            showControls: container.decodeIfPresent(Bit.self, forKey: .showControls)?.value,
+            showFullscreenButton: container.decodeIfPresent(Bit.self, forKey: .showFullscreenButton)?.value,
+            progressBarColor: container.decodeIfPresent(ProgressBarColor.self, forKey: .progressBarColor),
+            keyboardControlsDisabled: container.decodeIfPresent(Bit.self, forKey: .keyboardControlsDisabled)?.value,
+            language: container.decodeIfPresent(String.self, forKey: .language),
+            captionLanguage: container.decodeIfPresent(String.self, forKey: .captionLanguage),
+            showCaptions: container.decodeIfPresent(Bit.self, forKey: .showCaptions)?.value,
+            restrictRelatedVideosToSameChannel: container.decodeIfPresent(Bit.self, forKey: .restrictRelatedVideosToSameChannel)?.value,
+            originURL: container.decodeIfPresent(URL.self, forKey: .origin),
+            referrerURL: container.decodeIfPresent(URL.self, forKey: .referrer)
+        )
+    }
+    
+}
+
+// MARK: - EncodableWithConfiguration
+
+extension YouTubePlayer.Parameters: EncodableWithConfiguration {
+    
+    /// The encoding configuration.
+    public struct EncodingConfiguration: Codable, Hashable, Sendable {
+        
+        // MARK: Properties
+        
+        /// The source.
+        public let source: YouTubePlayer.Source?
+        
+        /// A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
+        public let allowsInlineMediaPlayback: Bool
+        
+        // MARK: Initializer
+        
+        /// Creates a new instance of ``YouTubePlayer.Parameters.EncodingConfiguration``
+        /// - Parameters:
+        ///   - source: The source. Default value `nil`
+        ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
+        public init(
+            source: YouTubePlayer.Source? = nil,
+            allowsInlineMediaPlayback: Bool = true
+        ) {
+            self.source = source
+            self.allowsInlineMediaPlayback = allowsInlineMediaPlayback
+        }
+        
+    }
+    
     /// Encode.
     /// - Parameters:
     ///   - encoder: The encoder.
@@ -329,21 +365,21 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         configuration: EncodingConfiguration
     ) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(self.autoPlay?.bit, forKey: .autoPlay)
-        try container.encodeIfPresent(self.loopEnabled?.bit, forKey: .loopEnabled)
+        try container.encodeIfPresent(self.autoPlay.flatMap(Bit.init), forKey: .autoPlay)
+        try container.encodeIfPresent(self.loopEnabled.flatMap(Bit.init), forKey: .loopEnabled)
         try container.encodeIfPresent(self.startTime.flatMap { Int($0.converted(to: .seconds).value) }, forKey: .startTime)
         try container.encodeIfPresent(self.endTime.flatMap { Int($0.converted(to: .seconds).value) }, forKey: .endTime)
-        try container.encodeIfPresent(self.showControls?.bit, forKey: .showControls)
-        try container.encodeIfPresent(self.showFullscreenButton?.bit, forKey: .showFullscreenButton)
+        try container.encodeIfPresent(self.showControls.flatMap(Bit.init), forKey: .showControls)
+        try container.encodeIfPresent(self.showFullscreenButton.flatMap(Bit.init), forKey: .showFullscreenButton)
         try container.encodeIfPresent(self.progressBarColor, forKey: .progressBarColor)
-        try container.encodeIfPresent(self.keyboardControlsDisabled?.bit, forKey: .keyboardControlsDisabled)
+        try container.encodeIfPresent(self.keyboardControlsDisabled.flatMap(Bit.init), forKey: .keyboardControlsDisabled)
         try container.encodeIfPresent(self.language, forKey: .language)
         try container.encodeIfPresent(self.captionLanguage, forKey: .captionLanguage)
-        try container.encodeIfPresent(self.showCaptions?.bit, forKey: .showCaptions)
-        try container.encodeIfPresent(self.restrictRelatedVideosToSameChannel?.bit, forKey: .restrictRelatedVideosToSameChannel)
+        try container.encodeIfPresent(self.showCaptions.flatMap(Bit.init), forKey: .showCaptions)
+        try container.encodeIfPresent(self.restrictRelatedVideosToSameChannel.flatMap(Bit.init), forKey: .restrictRelatedVideosToSameChannel)
         try container.encodeIfPresent(self.originURL, forKey: .origin)
         try container.encodeIfPresent(self.referrerURL, forKey: .referrer)
-        try container.encode(true.bit, forKey: .enableJavaScriptAPI)
+        try container.encode(Bit(true), forKey: .enableJavaScriptAPI)
         switch configuration.source {
         case .video(let id):
             if self.loopEnabled == true {
@@ -370,32 +406,95 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         case nil:
             break
         }
-        try container.encodeIfPresent(configuration.allowsInlineMediaPlayback.bit, forKey: .playInline)
+        try container.encodeIfPresent(Bit(configuration.allowsInlineMediaPlayback), forKey: .playInline)
     }
     
 }
 
-// MARK: - Bool+bit
+// MARK: - Bit
 
-private extension Bool {
+/// A Binary Digit (bit).
+private struct Bit: Codable, Hashable, Sendable {
     
-    /// The Binary Digit (bit) representation of this Bool value
-    var bit: Int {
-        self ? 1 : 0
+    // MARK: Properties
+    
+    /// The value.
+    let value: Bool
+    
+    // MARK: Initializer
+    
+    /// Creates a new instance of ``Bit``
+    /// - Parameter value: The value.
+    init(
+        _ value: Bool
+    ) {
+        self.value = value
     }
     
-    /// Creates a Boolean value from a binary digit.
-    /// - Parameter bit: An integer value that should be either 0 or 1
-    /// - Returns: A boolean value where 1 maps to `true` and 0 maps to `false`, or `nil` if the input is not 0 or 1
-    init?(bit: Int) {
-        switch bit {
+    /// Creates a new instance of ``Bit``
+    /// - Parameter int: The integer value.
+    init?(
+        _ int: Int
+    ) {
+        switch int {
         case 0:
-            self = false
+            self.init(false)
         case 1:
-            self = true
+            self.init(true)
         default:
             return nil
         }
+    }
+    
+    /// Creates a new instance of ``Bit``
+    /// - Parameter string: The string value.
+    init?(
+        _ string: String
+    ) {
+        guard !string.isEmpty else {
+            return nil
+        }
+        if let int = Int(string), let bit = Bit(int) {
+            self = bit
+        } else if let bool = Bool(string) {
+            self.init(bool)
+        } else {
+            return nil
+        }
+    }
+    
+    // MARK: Decodable
+    
+    /// Creates a new instance of ``Bit``
+    /// - Parameter decoder: The decoder.
+    init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.singleValueContainer()
+        if let bool = try? container.decode(Bool.self) {
+            self.init(bool)
+        } else if let int = try? container.decode(Int.self), let bit = Bit(int) {
+            self = bit
+        } else if let string = try? container.decode(String.self), let bit = Bit(string) {
+            self = bit
+        } else {
+            throw DecodingError
+                .dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unsupported bit representation"
+                )
+        }
+    }
+    
+    // MARK: Encodable
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.value ? 1 : 0)
     }
     
 }
