@@ -232,7 +232,7 @@ try await youTubePlayer.pause()
 ```
 
 > [!TIP]
-> Please see the [documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/youtubeplayer) for all full overview of the available APIs.
+> Please see the [documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/youtubeplayer) for a full overview of the available APIs.
 
 In case of an error, most functions throw a `YouTubePlayer.APIError`.
 This allows you to easily examine the reason for the error, any underlying error, and the executed JavaScript along with its response.
