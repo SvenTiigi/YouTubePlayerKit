@@ -272,10 +272,10 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         case captionLanguage = "cc_lang_pref"
         case showCaptions = "cc_load_policy"
         case restrictRelatedVideosToSameChannel = "rel"
+        case origin
         case referrer = "widget_referrer"
         case list
         case listType
-        case origin
         case playlist
         case playInline = "playsinline"
         case enableJavaScriptAPI = "enablejsapi"
@@ -302,7 +302,7 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         try container.encodeIfPresent(self.captionLanguage, forKey: .captionLanguage)
         try container.encodeIfPresent(self.showCaptions?.bit, forKey: .showCaptions)
         try container.encodeIfPresent(self.restrictRelatedVideosToSameChannel?.bit, forKey: .restrictRelatedVideosToSameChannel)
-        try container.encodeIfPresent(self.originURL, forKey: .referrer)
+        try container.encodeIfPresent(self.originURL, forKey: .origin)
         try container.encodeIfPresent(self.referrerURL, forKey: .referrer)
         try container.encode(true.bit, forKey: .enableJavaScriptAPI)
         switch configuration.source {
