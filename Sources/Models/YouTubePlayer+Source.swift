@@ -204,11 +204,11 @@ extension YouTubePlayer.Source: ExpressibleByURL {
                 name: "v",
                 pathComponents: ["watch"]
             ),
-            .afterPathComponent("v"),
-            .afterPathComponent("embed"),
-            .afterPathComponent("shorts"),
-            .afterPathComponent("live"),
-            .afterPathComponent("e")
+            .pathComponent(after: "v"),
+            .pathComponent(after: "embed"),
+            .pathComponent(after: "shorts"),
+            .pathComponent(after: "live"),
+            .pathComponent(after: "e")
         ],
         output: Self.video
     )
@@ -252,11 +252,11 @@ extension YouTubePlayer.Source: ExpressibleByURL {
     /// The `.channel(name:)` case ``URL.ExtractionRuleSet``
     private static let channelURLExtractionRuleSet = URL.ExtractionRuleSet(
         rules: [
-            .afterPathComponent("channel"),
-            .afterPathComponent("c"),
-            .afterPathComponent("user"),
+            .pathComponent(after: "channel"),
+            .pathComponent(after: "c"),
+            .pathComponent(after: "user"),
             .firstPathComponentWithPrefix("@", removePrefix: true),
-            .afterPathComponent("feed")
+            .pathComponent(after: "feed")
         ],
         output: Self.channel
     )
@@ -273,8 +273,8 @@ private extension URL {
         case firstPathComponent(host: String)
         /// Extracts the first path component where the prefix matches and optionally removes it.
         case firstPathComponentWithPrefix(Character, removePrefix: Bool)
-        /// Extracts the path component after the match of the given one.
-        case afterPathComponent(String)
+        /// Extracts the path component after the provided one..
+        case pathComponent(after: String)
         /// Extracts the value of the query item where the name matches and the supplied path components.
         case queryItem(name: String, pathComponents: [String])
     }
@@ -284,37 +284,49 @@ private extension URL {
     func extract(
         using rule: ExtractionRule
     ) -> String? {
-        lazy var pathComponents = self.pathComponents.dropFirst().filter { !$0.isEmpty }
+        // Initialize path components by dropping the first path component which is represented as "/"
+        lazy var pathComponents = Array(self.pathComponents.dropFirst())
         switch rule {
         case .firstPathComponent(let host):
-            guard self.host == host,
-                  let firstPathComponent = pathComponents.first else {
+            // Verify host matches and the first path component is available
+            guard self.host == host else {
+                // Otherwise return nil
                 return nil
             }
-            return firstPathComponent
+            // Return the first path component
+            return pathComponents.first
         case .firstPathComponentWithPrefix(let prefix, let removePrefix):
+            // Verify the first path component is available and has the provided prefix
             guard let firstPathComponent = pathComponents.first,
                   firstPathComponent.first == prefix,
                   case let prefixRemovedFirstPathComponent = String(firstPathComponent.dropFirst()),
                   !prefixRemovedFirstPathComponent.isEmpty else {
+                // Otherwise return nil
                 return nil
             }
+            // Return first path component with or without prefix
             return removePrefix ? prefixRemovedFirstPathComponent : firstPathComponent
-        case .afterPathComponent(let pathComponent):
+        case .pathComponent(let pathComponent):
+            // Verify index of path component is available and the next path component is available
             guard let pathComponentIndex = pathComponents.firstIndex(of: pathComponent),
                   case let nextPathComponentIndex = pathComponentIndex + 1,
                   pathComponents.indices.contains(nextPathComponentIndex) else {
+                // Otherwise return nil
                 return nil
             }
+            // Return next path component
             return pathComponents[nextPathComponentIndex]
         case .queryItem(let name, let expectedPathComponents):
+            // Verify that the path components match and that the query item is available
             guard pathComponents == expectedPathComponents,
                   let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: true),
                   let queryItem = urlComponents.queryItems?.first(where: { $0.name == name }),
                   let queryItemValue = queryItem.value,
                   !queryItemValue.isEmpty else {
+                // Otherwise return nil
                 return nil
             }
+            // Return value of query item
             return queryItemValue
         }
     }
