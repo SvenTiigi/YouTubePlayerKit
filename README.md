@@ -95,7 +95,7 @@ https://developers.google.com/youtube/terms/api-services-terms-of-service
 
 ## Usage
 
-A YouTube player can be easily rendered when using `SwiftUI` by declaring a `YouTubePlayerView`.
+A YouTube player can be easily displayed when using `SwiftUI` by declaring a `YouTubePlayerView`.
 
 ```swift
 import SwiftUI
@@ -135,7 +135,7 @@ struct ContentView: View {
 > [!TIP]
 > You can optionally mark the YouTubePlayer with `@StateObject` or `@ObservedObject` to automatically update your view whenever the source, parameters, or configuration change.
 
-When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController`
+When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostingView`
 
 ```swift
 import UIKit
@@ -145,39 +145,25 @@ let youTubePlayerViewController = YouTubePlayerViewController(
     player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
 
-// Example: Access the underlying iFrame API via the `YouTubePlayer` instance
-try await youTubePlayerViewController.player.showStatsForNerds()
-
-self.present(youTubePlayerViewController, animated: true)
-```
-
-Or the `YouTubePlayerHostingView`
-
-```swift
-import UIKit
-import YouTubePlayerKit
-
 let youTubePlayerHostingView = YouTubePlayerHostingView(
     player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
-
-// Example: Access the underlying iFrame API via the `YouTubePlayer` instance
-try await youTubePlayerHostingView.player.showStatsForNerds()
-
-self.addSubview(youTubePlayerHostingView)
 ```
+
+> [!TIP]
+> You can access the `YouTubePlayer` instance via the `player` property on the `YouTubePlayerViewController` and `YouTubePlayerHostingView`
 
 ## YouTubePlayer
 
 A `YouTubePlayer` is the central object which needs to be passed to a `YouTubePlayerView`, `YouTubePlayerViewController` or `YouTubePlayerHostingView` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API.
 
-Therefore, you can easily initialize a `YouTubePlayer` by using a string literal as seen in the previous examples.
+As seen in the previous examples you can initialize a `YouTubePlayer` by using a string literal:
 
 ```swift
 let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 ```
 
-A `YouTubePlayer` can be further initialized with a [`YouTubePlayer.Source`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BSource.swift), [`YouTubePlayer.Parameters`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BParameters.swift) and a [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BConfiguration.swift)
+To take full control you can initialize a `YouTubePlayer` with a [`YouTubePlayer.Source`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BSource.swift), [`YouTubePlayer.Parameters`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BParameters.swift) and a [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BConfiguration.swift)
 
 ```swift
 let youTubePlayer = YouTubePlayer(
@@ -198,7 +184,7 @@ let youTubePlayer = YouTubePlayer(
 )
 ```
 
-You can update the `parameters` of a `YouTubePlayer` via:
+Additionally, you can update the `parameters` of a `YouTubePlayer` via:
 
 ```swift
 youTubePlayer.parameters.showControls = false
@@ -206,30 +192,6 @@ youTubePlayer.parameters.showControls = false
 
 > [!WARNING]
 > Updating the `YouTubePlayer.Parameters` during runtime will cause the `YouTubePlayer` to reload.
-
-### Logging
-
-If you wish to gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable the logging of a player via the `isLogginEnabled` parameter.
-
-The `YouTubePlayer` utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
-
-```swift
-// Enable or disable logging during initialization
-let youTubePlayer = YouTubePlayer(
-    source: [
-        "w87fOAG8fjk",
-        "RXeOiIDNNek",
-        "psL_5RIBqnY"
-    ],
-    isLoggingEnabled: true
-)
-
-// To update during runtime update the isLoggingEnabled property
-youTubePlayer.isLoggingEnabled = false
-
-// Additionally, you can retrieve an instance of the logger if logging is enabled.
-let logger: Logger? = youTubePlayer.logger()
-```
 
 ### Source
 
@@ -260,196 +222,46 @@ let source: YouTubePlayer.Source? = .init(urlString: "https://youtube.com/watch?
 
 ### API
 
-A `YouTubePlayer` allows you to access the underlying YouTube player iFrame API in order to play, pause, seek or retrieve information like the current playback quality or title of the video that is currently playing.
+A `YouTubePlayer` lets you access the underlying [YouTube Player iFrame API](https://developers.google.com/youtube/iframe_api_reference) to play, pause, seek, retrieve video information and much more.
 
-#### Playback controls and player settings
+The majority of the APIs are `async` and `throwable` functions.
 
 ```swift
-// Play video
-try await youTubePlayer.play()
-
-// Pause video
+// Pauses the currently playing video
 try await youTubePlayer.pause()
-
-// Stop video
-try await youTubePlayer.stop()
-
-// Seek to 60 seconds
-try await youTubePlayer.seek(to: .init(value: 1, unit: .minutes), allowSeekAhead: false)
-
-// Closes any current picture-in-picture video and fullscreen video
-await youTubePlayer.closeAllMediaPresentations()
-
-// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
-await youTubePlayer.requestWebFullscreen()
 ```
 
-#### Events
+> [!TIP]
+> Please see the [documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/youtubeplayer) for all full overview of the available APIs.
+
+In case of an error, most functions throw a `YouTubePlayer.APIError`.
+This allows you to easily examine the reason for the error, any underlying error, and the executed JavaScript along with its response.
 
 ```swift
-// A Publisher that emits the current YouTubePlayer Source
-youTubePlayer.sourcePublisher
-
-// A Publisher that emits the current YouTubePlayer State
-youTubePlayer.statePublisher
-
-// A Publisher that emits the current YouTubePlayer PlaybackState
-youTubePlayer.playbackStatePublisher
-
-// A Publisher that emits the current YouTubePlayer PlaybackQuality
-youTubePlayer.playbackQualityPublisher
-
-// A Publisher that emits the current YouTubePlayer PlaybackRate
-youTubePlayer.playbackRatePublisher
-
-// A Publisher that emits whenever autoplay or scripted video playback features were blocked.
-youTubePlayer.autoplayBlockedPublisher
+do {
+    try await youTubePlayer.setCaptions(fontSize: .small)
+} catch {
+    print(
+        "Failed to set captions font size",
+        error.reason,
+        error.underlyingError,
+        error.javaScript,
+        error.javaScriptResponse
+    )
+}
 ```
 
-#### Playback status
+Additionally, several Publishers are available to react to changes of the `YouTubePlayer`:
 
 ```swift
-// Retrieve a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
-try await youTubePlayer.getVideoLoadedFraction()
-
-// A Publisher that emits a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered
-youTubePlayer.videoLoadedFractionPublisher()
-
-// Retrieve the PlaybackState of the player video
-try await youTubePlayer.getPlaybackState()
-
-// Retrieve the elapsed time in seconds since the video started playing
-try await youTubePlayer.getCurrentTime()
-
-/// A Publisher that emits the current elapsed time in seconds since the video started playing
-youTubePlayer.currentTimePublisher()
-
-// Retrieve the current PlaybackMetadata
-try await youTubePlayer.getPlaybackMetadata()
-
-// A Publisher that emits the current PlaybackMetadata
-youTubePlayer.playbackMetadataPublisher
-```
-
-#### Load/Cue video
-
-```swift
-// Load a new video from source
-try await youTubePlayer.load(source: .video(id: "psL_5RIBqnY"))
-
-// Cue a video from source
-try await youTubePlayer.cue(source: .channel(name: "GoogleDevelopers"))
-```
-
-#### Reload
-
-```swift
-// Reloads the player
-try await youTubePlayer.reload()
-```
-
-#### Changing the player volume
-
-```swift
-// Mutes the player
-try await youTubePlayer.mute()
-
-// Unmutes the player
-try await youTubePlayer.unmute()
-
-// Retrieve Bool value if the player is muted
-try await youTubePlayer.isMuted()
-
-// Retrieve the player's current volume, an integer between 0 and 100
-try await youTubePlayer.getVolume()
-```
-
-#### Retrieving video information
-
-```swift
-// Show Stats for Nerds which displays additional video information
-try await youTubePlayer.setStatsForNerds(isVisible: true)
-
-// Returns a Boolean indicating whether Stats for Nerds is currently displayed.
-try await youTubePlayer.isStatsForNerdsVisible()
-
-// Retrieve the YouTubePlayer Information
-try await youTubePlayer.getInformation()
-
-// Retrieve the duration in seconds of the currently playing video
-try await youTubePlayer.getDuration()
-
-// A Publisher that emits the duration in seconds of the currently playing video
-youTubePlayer.durationPublisher
-
-// Retrieve the YouTube.com URL for the currently loaded/playing video
-try await youTubePlayer.getVideoURL()
-
-// Retrieve the embed code for the currently loaded/playing video
-try await youTubePlayer.getVideoEmbedCode()
-```
-
-#### Playing a video in a playlist
-
-```swift
-// This function loads and plays the next video in the playlist
-try await youTubePlayer.nextVideo()
-
-// This function loads and plays the previous video in the playlist
-try await youTubePlayer.previousVideo()
-
-// This function loads and plays the specified video in the playlist
-try await youTubePlayer.playVideo(at: 3)
-
-// This function indicates whether the video player should continuously play a playlist
-try await youTubePlayer.setLoop(enabled: true)
-
-// This function indicates whether a playlist's videos should be shuffled
-try await youTubePlayer.setShuffle(enabled: true)
-
-// This function returns an array of the video IDs in the playlist as they are currently ordered
-try await youTubePlayer.getPlaylist()
-
-// This function returns the index of the playlist video that is currently playing
-try await youTubePlayer.getPlaylistIndex()
-
-// This function returns the identifier of the playlist video that is currently playing.
-try await youTubePlayer.getPlaylistID()
-```
-
-#### Setting the playback rate
-
-```swift
-// This function retrieves the playback rate of the currently playing video
-try await youTubePlayer.getPlaybackRate()
-
-// This function sets the suggested playback rate for the current video
-try await youTubePlayer.set(playbackRate: 1.5)
-
-// This function returns the set of playback rates in which the current video is available
-try await youTubePlayer.getAvailablePlaybackRates()
-```
-
-#### Captions
-
-```swift
-// Sets the font size of the captions displayed in the player.
-try await youTubePlayer.setCaptions(fontSize: .large)
-
-// Sets the language of the captions.
-try await youTubePlayer.setCaptions(languageCode: .german)
-
-// Reloads the captions data for the video that is currently playing.
-try await youTubePlayer.reloadCaptions()
-
-// Returns the current captions track.
-try await youTubePlayer.getCaptionsTrack()
-
-// Returns the captions tracks.
-try await youTubePlayer.getCaptionsTracks()
-
-// Returns the captions translation languges.
-try await youTubePlayer.getCaptionsTranslationLanguages()
+// Observe playback state
+let cancellable = youTubePlayer
+    .playbackStatePublisher
+    .sink { playbackState in
+        if playbackState == .playing {
+            // ...
+        }
+    }
 ```
 
 ## Video Thumbnail
@@ -479,6 +291,30 @@ try await youTubePlayer.getVideoThumbnailURL()
 
 /// Returns the video thumbnail of the currently loaded video
 try await youTubePlayer.getVideoThumbnailImage(resolution: .maximum)
+```
+
+## Logging
+
+If you wish to gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable the logging of a player via the `isLogginEnabled` parameter.
+
+The `YouTubePlayer` utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
+
+```swift
+// Enable or disable logging during initialization
+let youTubePlayer = YouTubePlayer(
+    source: [
+        "w87fOAG8fjk",
+        "RXeOiIDNNek",
+        "psL_5RIBqnY"
+    ],
+    isLoggingEnabled: true
+)
+
+// To update during runtime update the isLoggingEnabled property
+youTubePlayer.isLoggingEnabled = false
+
+// Additionally, you can retrieve an instance of the logger if logging is enabled.
+let logger: Logger? = youTubePlayer.logger()
 ```
 
 ## Advanced
