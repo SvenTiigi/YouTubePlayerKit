@@ -19,12 +19,18 @@ extension YouTubePlayerWebView: WKUIDelegate {
     ) -> WKWebView? {
         // Check if the request url is available
         if let url = navigationAction.request.url {
+            // Log open url
             self.player?
                 .logger()?
                 .debug("Open URL \(url, privacy: .public)")
-            // Open URL
             Task(priority: .userInitiated) { [weak self] in
-                await self?.player?.configuration.openURLAction(url)
+                // Verify player is available
+                guard let player = self?.player else {
+                    // Otherwise return out of function
+                    return
+                }
+                // Open url
+                await player.configuration.openURLAction(player: player, url: url)
             }
         }
         // Return nil as the URL has already been handled

@@ -116,9 +116,14 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 return .allow
             }
         }
-        // Open URL
         Task(priority: .userInitiated) { [weak self] in
-            await self?.player?.configuration.openURLAction(url)
+            // Verify player is available
+            guard let player = self?.player else {
+                // Otherwise return out of function
+                return
+            }
+            // Open url
+            await player.configuration.openURLAction(player: player, url: url)
         }
         // Cancel navigation action
         return .cancel

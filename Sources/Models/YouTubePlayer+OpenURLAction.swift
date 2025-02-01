@@ -15,7 +15,7 @@ public extension YouTubePlayer {
         
         /// An OpenURLAction Handler typealias representing a closure
         /// which takes in a URL which should be opened
-        public typealias Handler = @MainActor (URL) async -> Void
+        public typealias Handler = @MainActor (YouTubePlayer, URL) async -> Void
         
         // MARK: Properties
         
@@ -43,9 +43,10 @@ public extension YouTubePlayer.OpenURLAction {
     /// Call OpenURLAction as function
     /// - Parameter url: The URL which should be opened
     func callAsFunction(
-        _ url: URL
+        player: YouTubePlayer,
+        url: URL
     ) async {
-        await self.handler(url)
+        await self.handler(player, url)
     }
     
 }
@@ -84,7 +85,15 @@ extension YouTubePlayer.OpenURLAction: Hashable {
 public extension YouTubePlayer.OpenURLAction {
     
     /// The default OpenURLAction
-    static let `default` = Self { url in
+    static let `default` = Self { player, url in
+        // Check if YouTube player source can be initialize from url
+        // and it was successfully loaded
+        if let source = YouTubePlayer.Source(url: url),
+           (try? await player.load(source: source)) != nil  {
+            // Return out of function
+            return
+        }
+        // Open url externally
         #if os(macOS)
         _ = try? await NSWorkspace
             .shared
