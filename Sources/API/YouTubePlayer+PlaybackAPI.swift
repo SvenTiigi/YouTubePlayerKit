@@ -156,7 +156,7 @@ public extension YouTubePlayer {
         Just(())
             .merge(
                 with: self.eventPublisher
-                    .filter { $0.name == .apiChange }
+                    .filter { $0.name == .videoDataChange }
                     .map { _ in }
             )
             .flatMap { _ in
