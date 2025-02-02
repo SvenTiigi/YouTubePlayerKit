@@ -143,7 +143,7 @@ public final class YouTubePlayer: ObservableObject {
 
 public extension YouTubePlayer {
     
-    /// Creates a new instance of ``YouTubePlayer``
+    /// Creates a new instance of ``YouTubePlayer`` from a URL
     /// - Parameters:
     ///   - url: The URL.
     nonisolated convenience init(
@@ -156,7 +156,7 @@ public extension YouTubePlayer {
         )
     }
     
-    /// Creates a new instance of ``YouTubePlayer``
+    /// Creates a new instance of ``YouTubePlayer`` from a URL string.
     /// - Parameters:
     ///   - urlString: The URL string.
     nonisolated convenience init(
