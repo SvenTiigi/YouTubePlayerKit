@@ -40,7 +40,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.Configuration``
+        /// Creates a new instance of ``YouTubePlayer/Configuration``
         /// - Parameters:
         ///   - fullscreenMode: The fullscreen mode. Default value `.preferred`
         ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
@@ -78,7 +78,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.Configuration: ExpressibleByURL {
     
-    /// Creates a new instance of ``YouTubePlayer.Configuration``
+    /// Creates a new instance of ``YouTubePlayer/Configuration``
     /// - Parameter url: The URL.
     public init?(
         url: URL
@@ -111,7 +111,7 @@ extension YouTubePlayer.Configuration: Codable {
         case htmlBuilder
     }
     
-    /// Creates a new instance of ``YouTubePlayer.Configuration``
+    /// Creates a new instance of ``YouTubePlayer/Configuration``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder

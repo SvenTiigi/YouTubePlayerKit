@@ -17,7 +17,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.CaptionsTranslationLanguage``
+        /// Creates a new instance of ``YouTubePlayer/CaptionsTranslationLanguage``
         /// - Parameters:
         ///   - languageCode: The language code.
         ///   - languageName: The language name.

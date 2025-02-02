@@ -24,7 +24,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.APIError``
+        /// Creates a new instance of ``YouTubePlayer/APIError``
         /// - Parameters:
         ///   - javaScript: The JavaScript that has been executed and caused the error. Default value `nil`
         ///   - javaScriptResponse: The optional JavaScript response. Default value `nil`

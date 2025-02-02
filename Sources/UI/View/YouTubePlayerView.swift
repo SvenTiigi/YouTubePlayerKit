@@ -10,7 +10,7 @@ public struct YouTubePlayerView<Overlay: View> {
     /// The ``YouTubePlayer``.
     public let player: YouTubePlayer
     
-    /// The The transaction to use when the ``YouTubePlayer.State`` changes.
+    /// The The transaction to use when the ``YouTubePlayer/State`` changes.
     public let transaction: Transaction
     
     /// A closure which constructs the `Overlay` for a given state.

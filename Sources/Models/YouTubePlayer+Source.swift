@@ -156,7 +156,7 @@ public extension YouTubePlayer.Source {
 
 extension YouTubePlayer.Source: ExpressibleByArrayLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// Creates a new instance of ``YouTubePlayer/Source``
     /// - Parameter videoIDs: The video identifiers.
     public init(
         arrayLiteral videoIDs: String...
@@ -170,7 +170,7 @@ extension YouTubePlayer.Source: ExpressibleByArrayLiteral {
 
 extension YouTubePlayer.Source: ExpressibleByURL {
     
-    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// Creates a new instance of ``YouTubePlayer/Source``
     /// - Parameter url: The URL.
     public init?(
         url: URL
@@ -368,7 +368,7 @@ private extension URL {
 
 extension YouTubePlayer.Source: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.Source``
+    /// Creates a new instance of ``YouTubePlayer/Source``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder

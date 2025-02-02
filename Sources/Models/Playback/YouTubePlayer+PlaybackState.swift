@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.PlaybackState``
+        /// Creates a new instance of ``YouTubePlayer/PlaybackState``
         /// - Parameter value: The value.
         public init(
             value: Int
@@ -30,7 +30,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.PlaybackState: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackState``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackState``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.PlaybackState: Codable {
 
 extension YouTubePlayer.PlaybackState: ExpressibleByIntegerLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackState``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackState``
     /// - Parameter value: The value.
     public init(
         integerLiteral value: Int

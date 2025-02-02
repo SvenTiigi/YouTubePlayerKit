@@ -7,7 +7,7 @@ public extension YouTubePlayer {
     /// The YouTube player parameters.
     /// - SeeAlso: [YouTube Player Parameters Documentation](https://developers.google.com/youtube/player_parameters)
     /// - Note: The parameters `list`, `listType`, `playlist`, `playsinline`, `enablejsapi` are not directly configurable.
-    /// The YouTubePlayerKit automatically sets these paramters based on the provided ``YouTubePlayer.Source`` and ``YouTubePlayer.Configuration``
+    /// The YouTubePlayerKit automatically sets these paramters based on the provided ``YouTubePlayer/Source`` and ``YouTubePlayer/Configuration``
     struct Parameters: Hashable, Sendable {
         
         /// Controls whether the video automatically begins playing when the player loads.
@@ -113,7 +113,7 @@ public extension YouTubePlayer {
 
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.Parameters``
+        /// Creates a new instance of ``YouTubePlayer/Parameters``
         /// - Parameters:
         ///   - autoPlay: Controls automatic playback when the player loads. Might be restricted by browser policies if the player is not muted.
         ///   - loopEnabled: Enables continuous playback of video or playlist.
@@ -171,7 +171,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.Parameters: ExpressibleByURL {
     
-    /// Creates a new instance of ``YouTubePlayer.Parameters``
+    /// Creates a new instance of ``YouTubePlayer/Parameters``
     /// - Parameter url: The URL.
     public init?(
         url: URL
@@ -298,7 +298,7 @@ public extension YouTubePlayer.Parameters {
 
 extension YouTubePlayer.Parameters: Decodable {
     
-    /// Creates a new instance of ``YouTubePlayer.Parameters``
+    /// Creates a new instance of ``YouTubePlayer/Parameters``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -341,7 +341,7 @@ extension YouTubePlayer.Parameters: EncodableWithConfiguration {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.Parameters.EncodingConfiguration``
+        /// Creates a new instance of ``YouTubePlayer/Parameters/EncodingConfiguration``
         /// - Parameters:
         ///   - source: The source. Default value `nil`
         ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`

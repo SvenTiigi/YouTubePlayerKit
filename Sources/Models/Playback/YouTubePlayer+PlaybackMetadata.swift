@@ -77,7 +77,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.PlaybackMetadata``
+        /// Creates a new instance of ``YouTubePlayer/PlaybackMetadata``
         /// - Parameters:
         ///   - title: The title.
         ///   - author: The author.

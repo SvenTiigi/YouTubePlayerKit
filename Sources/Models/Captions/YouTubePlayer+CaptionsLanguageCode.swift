@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.CaptionsLanguageCode``
+        /// Creates a new instance of ``YouTubePlayer/CaptionsLanguageCode``
         /// - Parameter id: The identifier / language code.
         public init(
             id: String
@@ -30,7 +30,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.CaptionsLanguageCode: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.CaptionsLanguageCode``
+    /// Creates a new instance of ``YouTubePlayer/CaptionsLanguageCode``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.CaptionsLanguageCode: Codable {
 
 extension YouTubePlayer.CaptionsLanguageCode: ExpressibleByStringLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.CaptionsLanguageCode``
+    /// Creates a new instance of ``YouTubePlayer/CaptionsLanguageCode``
     /// - Parameter id: The identifier / language code.
     public init(
         stringLiteral id: String
@@ -84,7 +84,7 @@ extension YouTubePlayer.CaptionsLanguageCode: CustomStringConvertible {
 public extension YouTubePlayer.CaptionsLanguageCode {
     
     /// Returns a localized string, if available.
-    /// - Parameter locale: The ``Locale``. Default value `.current`
+    /// - Parameter locale: The `Locale`. Default value `.current`
     func localizedString(
         locale: Locale = .current
     ) -> String? {

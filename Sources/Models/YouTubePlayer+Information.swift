@@ -71,7 +71,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.Information``
+        /// Creates a new instance of ``YouTubePlayer/Information``
         /// - Parameters:
         ///   - videoBytesLoaded: The video bytes loaded.
         ///   - videoBytesTotal: The video bytes total.

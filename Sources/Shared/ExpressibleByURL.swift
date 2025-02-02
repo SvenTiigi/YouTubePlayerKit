@@ -16,7 +16,7 @@ public protocol ExpressibleByURL {
 public extension ExpressibleByURL {
     
     /// Creates a new instance from the given URL string.
-    /// - Parameter url: The URL string.
+    /// - Parameter urlString: The URL string.
     init?(urlString: String) {
         guard let url: URL = {
             if #available(iOS 17.0, macOS 14.0, visionOS 1.0, *) {

@@ -279,7 +279,7 @@ public extension YouTubePlayer {
         await self.webView.pauseAllMediaPlayback()
     }
     
-    /// Changes whether the underlying ``WKWebView`` instance is suspending playback of all media in the page.
+    /// Changes whether the underlying `WKWebView` instance is suspending playback of all media in the page.
     /// - Parameter isSuspended: A Boolean whether media playback should be suspended or resumed.
     /// - Important: Pass true to pause all media the web view is playing. Neither the user nor the webpage can resume playback until you call this method again with false.
     func setMediaPlaybackSuspended(
@@ -288,7 +288,7 @@ public extension YouTubePlayer {
         await self.webView.setAllMediaPlaybackSuspended(isSuspended)
     }
     
-    /// Requests the media playback status of the underlying ``WKWebView`` instance.
+    /// Requests the media playback status of the underlying `WKWebView` instance.
     func requestMediaPlaybackState() async -> WebKit.WKMediaPlaybackState {
         await self.webView.requestMediaPlaybackState()
     }
@@ -337,7 +337,7 @@ public extension YouTubePlayer {
         )
     }
     
-    /// The web fullscreen state of the underlying ``WKWebView`` instance.
+    /// The web fullscreen state of the underlying `WKWebView` instance.
     /// - Important: This property only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
     /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``
@@ -346,7 +346,7 @@ public extension YouTubePlayer {
         self.webView.fullscreenState
     }
     
-    /// A Publisher that emits the web fullscreen state of the underlying ``WKWebView`` instance.
+    /// A Publisher that emits the web fullscreen state of the underlying `WKWebView` instance.
     /// - Important: The value of this publisher only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
     /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``

@@ -12,7 +12,7 @@ public extension YouTubePlayer {
         /// The JavaScript response.
         public typealias JavaScriptResponse = Any?
         
-        /// A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
+        /// A closure to convert the response of a JavaScript evaluation to the declared `Response` type.
         public typealias Convert = @Sendable (
             YouTubePlayer.JavaScript.Content,
             JavaScriptResponse
@@ -20,13 +20,13 @@ public extension YouTubePlayer {
         
         // MARK: Properties
         
-        /// A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
+        /// A closure to convert the response of a JavaScript evaluation to the declared `Response` type.
         private let convert: Convert
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScriptEvaluationResponseConverter``
-        /// - Parameter convert: A closure to convert the response of a JavaScript evaluation to the declared ``Response`` type.
+        /// Creates a new instance of ``YouTubePlayer/JavaScriptEvaluationResponseConverter``
+        /// - Parameter convert: A closure to convert the response of a JavaScript evaluation to the declared `Response` type.
         public init(
             convert: @escaping Convert
         ) {

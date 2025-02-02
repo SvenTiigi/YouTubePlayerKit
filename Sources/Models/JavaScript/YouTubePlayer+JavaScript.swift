@@ -19,7 +19,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScript``
+        /// Creates a new instance of ``YouTubePlayer/JavaScript``
         /// - Parameter content: The content.
         public init(
             _ content: Content = .init()
@@ -78,7 +78,7 @@ public extension YouTubePlayer.JavaScript {
 
 extension YouTubePlayer.JavaScript: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.JavaScript``
+    /// Creates a new instance of ``YouTubePlayer/JavaScript``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -104,7 +104,7 @@ extension YouTubePlayer.JavaScript: Codable {
 
 extension YouTubePlayer.JavaScript: ExpressibleByStringLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.JavaScript``
+    /// Creates a new instance of ``YouTubePlayer/JavaScript``
     /// - Parameter content: The content.
     public init(
         stringLiteral content: Content
@@ -128,7 +128,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScript.StringInterpolation``
+        /// Creates a new instance of ``YouTubePlayer/JavaScript/StringInterpolation``
         /// - Parameters:
         ///   - literalCapacity: The literal capacity.
         ///   - interpolationCount: The interpolation count.
@@ -149,7 +149,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
             self.content.append(literal)
         }
         
-        /// Append a ``YouTubePlayer.JavaScript.Variable`` to the interpolation.
+        /// Append a ``YouTubePlayer/JavaScript/Variable`` to the interpolation.
         /// - Parameter variable: The variable.
         public mutating func appendInterpolation(
             _ variable: Variable
@@ -157,7 +157,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
             self.content.append(variable.placeholderRawValue)
         }
         
-        /// Append a ``LosslessStringConvertible`` component to the interpolation.
+        /// Append a `LosslessStringConvertible` component to the interpolation.
         /// - Parameter component: The component.
         public mutating func appendInterpolation(
             _ component: LosslessStringConvertible
@@ -167,7 +167,7 @@ extension YouTubePlayer.JavaScript: ExpressibleByStringInterpolation {
         
     }
     
-    /// Creates a new instance of ``YouTubePlayer.JavaScript``
+    /// Creates a new instance of ``YouTubePlayer/JavaScript``
     /// - Parameter stringInterpolation: The string interpolation.
     public init(
         stringInterpolation: StringInterpolation

@@ -41,7 +41,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.CaptionsTrack``
+        /// Creates a new instance of ``YouTubePlayer/CaptionsTrack``
         /// - Parameters:
         ///   - id: The identifier. Default value `nil`
         ///   - videoSubtitlesSystemID: The video subtitles system internal identifier. Default value `nil`

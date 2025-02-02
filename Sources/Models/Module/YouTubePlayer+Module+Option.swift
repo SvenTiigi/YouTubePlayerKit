@@ -14,7 +14,7 @@ public extension YouTubePlayer.Module {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.Module.Option``
+        /// Creates a new instance of ``YouTubePlayer/Module/Option``
         /// - Parameter name: The name.
         public init(
             name: String
@@ -30,7 +30,7 @@ public extension YouTubePlayer.Module {
 
 extension YouTubePlayer.Module.Option: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.Module.Option``
+    /// Creates a new instance of ``YouTubePlayer/Module/Option``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.Module.Option: Codable {
 
 extension YouTubePlayer.Module.Option: ExpressibleByStringLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.Module.Option``
+    /// Creates a new instance of ``YouTubePlayer/Module/Option``
     /// - Parameter name: The name.
     public init(
         stringLiteral name: String

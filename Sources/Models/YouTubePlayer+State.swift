@@ -20,10 +20,10 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.State: Equatable {
     
-    /// Returns a Boolean value indicating whether two ``YouTubePlayer.State`` objects  are equal.
+    /// Returns a Boolean value indicating whether two ``YouTubePlayer/State`` objects  are equal.
     /// - Parameters:
-    ///   - lhs: A ``YouTubePlayer.State`` to compare.
-    ///   - rhs: Another ``YouTubePlayer.State`` to compare.
+    ///   - lhs: A ``YouTubePlayer/State`` to compare.
+    ///   - rhs: Another ``YouTubePlayer/State`` to compare.
     public static func == (
         lhs: Self,
         rhs: Self

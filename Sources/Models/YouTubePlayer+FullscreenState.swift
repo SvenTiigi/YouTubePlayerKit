@@ -20,7 +20,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.FullscreenState``
+        /// Creates a new instance of ``YouTubePlayer/FullscreenState``
         /// - Parameters:
         ///   - isFullscreen: A Boolean indicating whether it is in fullscreen or not.
         ///   - videoID: The video identifier. Default value `nil`
@@ -50,7 +50,7 @@ extension YouTubePlayer.FullscreenState: Codable {
         case time
     }
     
-    /// Creates a new instance of ``YouTubePlayer.FullscreenState``
+    /// Creates a new instance of ``YouTubePlayer/FullscreenState``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -80,7 +80,7 @@ extension YouTubePlayer.FullscreenState: Codable {
 
 extension YouTubePlayer.FullscreenState: ExpressibleByBooleanLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.FullscreenState``
+    /// Creates a new instance of ``YouTubePlayer/FullscreenState``
     /// - Parameter isFullscreen: A Boolean indicating whether it is in fullscreen or not.
     public init(
         booleanLiteral isFullscreen: Bool

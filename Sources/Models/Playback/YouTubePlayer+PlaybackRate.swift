@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.PlaybackRate``
+        /// Creates a new instance of ``YouTubePlayer/PlaybackRate``
         /// - Parameter value: The value.
         public init(
             value: Double
@@ -30,7 +30,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.PlaybackRate: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackRate``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackRate``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.PlaybackRate: Codable {
 
 extension YouTubePlayer.PlaybackRate: ExpressibleByFloatLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackRate``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackRate``
     /// - Parameter value: The value.
     public init(
         floatLiteral value: Double

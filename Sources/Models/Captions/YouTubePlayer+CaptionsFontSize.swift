@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.CaptionsFontSize``
+        /// Creates a new instance of ``YouTubePlayer/CaptionsFontSize``
         /// - Parameter value: The value.
         public init(
             value: Int
@@ -30,7 +30,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.CaptionsFontSize: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.CaptionsFontSize``
+    /// Creates a new instance of ``YouTubePlayer/CaptionsFontSize``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.CaptionsFontSize: Codable {
 
 extension YouTubePlayer.CaptionsFontSize: ExpressibleByIntegerLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.CaptionsFontSize``
+    /// Creates a new instance of ``YouTubePlayer/CaptionsFontSize``
     /// - Parameter value: The value.
     public init(
         integerLiteral value: Int

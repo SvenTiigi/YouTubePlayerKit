@@ -14,7 +14,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.PlaybackQuality``
+        /// Creates a new instance of ``YouTubePlayer/PlaybackQuality``
         /// - Parameter name: The name.
         public init(
             name: String
@@ -30,7 +30,7 @@ public extension YouTubePlayer {
 
 extension YouTubePlayer.PlaybackQuality: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackQuality``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackQuality``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder
@@ -56,7 +56,7 @@ extension YouTubePlayer.PlaybackQuality: Codable {
 
 extension YouTubePlayer.PlaybackQuality: ExpressibleByStringLiteral {
     
-    /// Creates a new instance of ``YouTubePlayer.PlaybackQuality``
+    /// Creates a new instance of ``YouTubePlayer/PlaybackQuality``
     /// - Parameter name: The name.
     public init(
         stringLiteral name: String

@@ -35,7 +35,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.HTMLBuilder``
+        /// Creates a new instance of ``YouTubePlayer/HTMLBuilder``
         /// - Parameters:
         ///   - youTubePlayerJavaScriptVariableName: The YouTube player JavaScrpt variable name. Default value `youtubePlayer`
         ///   - youTubePlayerEventCallbackURLScheme: The YouTube player event callback url scheme. Default value `youtubeplayer`
@@ -125,7 +125,7 @@ extension YouTubePlayer.HTMLBuilder: Codable {
         case youTubePlayerIframeAPISourceURL
     }
     
-    /// Creates a new instance of ``YouTubePlayer.HTMLBuilder``
+    /// Creates a new instance of ``YouTubePlayer/HTMLBuilder``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder

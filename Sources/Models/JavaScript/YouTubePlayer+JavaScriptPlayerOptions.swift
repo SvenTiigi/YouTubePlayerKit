@@ -17,7 +17,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScriptPlayerOptions``
+        /// Creates a new instance of ``YouTubePlayer/JavaScriptPlayerOptions``
         /// - Parameters:
         ///   - source: The source. Default value `nil`
         ///   - parameters: The parameters.
@@ -47,7 +47,7 @@ extension YouTubePlayer.JavaScriptPlayerOptions: EncodableWithConfiguration {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScriptPlayerOptions.EncodingConfiguration``
+        /// Creates a new instance of ``YouTubePlayer/JavaScriptPlayerOptions/EncodingConfiguration``
         /// - Parameter allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
         public init(
             allowsInlineMediaPlayback: Bool

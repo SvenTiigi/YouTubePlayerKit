@@ -14,7 +14,7 @@ public extension YouTubePlayer.JavaScriptEvent {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScriptEvent.Data``
+        /// Creates a new instance of ``YouTubePlayer/JavaScriptEvent/Data``
         /// - Parameter value: The value
         public init(
             value: String
@@ -30,8 +30,8 @@ public extension YouTubePlayer.JavaScriptEvent {
 
 public extension YouTubePlayer.JavaScriptEvent.Data {
     
-    /// Creates a new instance of ``YouTubePlayer.JavaScriptEvent.Data``
-    /// - Parameter value: The value
+    /// Creates a new instance of ``YouTubePlayer/JavaScriptEvent/Data``
+    /// - Parameter urlQueryItem: The url query item.
     init?(
         urlQueryItem: URLQueryItem
     ) {
@@ -52,7 +52,7 @@ public extension YouTubePlayer.JavaScriptEvent.Data {
 
 extension YouTubePlayer.JavaScriptEvent.Data: Codable {
     
-    /// Creates a new instance of ``YouTubePlayer.JavaScriptEvent.Data``
+    /// Creates a new instance of ``YouTubePlayer/JavaScriptEvent/Data``
     /// - Parameter decoder: The decoder.
     public init(
         from decoder: Decoder

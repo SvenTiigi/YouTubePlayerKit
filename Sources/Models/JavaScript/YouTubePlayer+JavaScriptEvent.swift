@@ -17,7 +17,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.JavaScriptEvent``
+        /// Creates a new instance of ``YouTubePlayer/JavaScriptEvent``
         /// - Parameters:
         ///   - name: The name.
         ///   - data: The data. Default value `nil`
