@@ -1,8 +1,21 @@
+import Combine
 import Foundation
 
 // MARK: - Volume API
 
 public extension YouTubePlayer {
+    
+    /// A Publisher that emits the current ``YouTubePlayer/VolumeState``.
+    /// - Warning: This Publisher relies on the unoffical `.volumeChange` event and its behavior and availability may change.
+    var volumeStatePublisher: some Publisher<VolumeState, Never> {
+        self.eventPublisher
+            .compactMap { event in
+                guard event.name == .volumeChange else {
+                    return nil
+                }
+                return try? event.data?.jsonValue(as: VolumeState.self)
+            }
+    }
     
     /// Mutes the player.
     func mute() async throws(APIError) {

@@ -1,11 +1,11 @@
 import Foundation
 
-// MARK: - YouTubePlayer+JavaScriptEvent
+// MARK: - YouTubePlayer+Event
 
 public extension YouTubePlayer {
     
-    /// A YouTubePlayer JavaScriptEvent
-    struct JavaScriptEvent: Codable, Hashable, Sendable {
+    /// A YouTubePlayer event.
+    struct Event: Codable, Hashable, Sendable {
         
         // MARK: Properties
         
@@ -17,7 +17,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer/JavaScriptEvent``
+        /// Creates a new instance of ``YouTubePlayer/Event``
         /// - Parameters:
         ///   - name: The name.
         ///   - data: The data. Default value `nil`
@@ -35,7 +35,7 @@ public extension YouTubePlayer {
 
 // MARK: - CustomStringConvertible
 
-extension YouTubePlayer.JavaScriptEvent: CustomStringConvertible {
+extension YouTubePlayer.Event: CustomStringConvertible {
     
     /// A textual representation of this instance.
     public var description: String {

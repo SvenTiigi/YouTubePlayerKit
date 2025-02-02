@@ -41,14 +41,14 @@ public extension YouTubePlayer {
         ///   - youTubePlayerEventCallbackURLScheme: The YouTube player event callback url scheme. Default value `youtubeplayer`
         ///   - youTubePlayerEventCallbackDataParameterName: The YouTube player event callback data parameter name. Default value `data`
         ///   - youTubePlayerIframeAPISourceURL: The YouTube player iFrame API source URL. Default value `https://www.youtube.com/iframe_api`
-        ///   - htmlProvider: A closure which provides the HTML for the YouTube player. Default value `Self.defaultHTMLProvider`
+        ///   - htmlProvider: A closure which provides the HTML for the YouTube player. Default value `Self.defaultHTMLProvider()`
         ///  - Important: Please be cautious when providing a custom `HTMLProvider`. It is recommended to stick with the default implementation. However, if you want full control, you can provide a custom implementation.
         public init(
             youTubePlayerJavaScriptVariableName: String = "youtubePlayer",
             youTubePlayerEventCallbackURLScheme: String = "youtubeplayer",
             youTubePlayerEventCallbackDataParameterName: String = "data",
             youTubePlayerIframeAPISourceURL: URL = .init(string: "https://www.youtube.com/iframe_api")!,
-            htmlProvider: @escaping HTMLProvider = Self.defaultHTMLProvider
+            htmlProvider: @escaping HTMLProvider = Self.defaultHTMLProvider()
         ) {
             self.youTubePlayerJavaScriptVariableName = youTubePlayerJavaScriptVariableName
             self.youTubePlayerEventCallbackURLScheme = youTubePlayerEventCallbackURLScheme
@@ -158,90 +158,97 @@ extension YouTubePlayer.HTMLBuilder: Codable {
 public extension YouTubePlayer.HTMLBuilder {
     
     /// The default HTML provider.
-    static let defaultHTMLProvider: HTMLProvider = { htmlBuilder, jsonEncodedYouTubePlayerOptions in
-        """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <style>
-                body {
-                    margin: 0;
-                    width: 100%;
-                    height: 100%;
-                }
-                html {
-                    width: 100%;
-                    height: 100%;
-                }
-                .player-container iframe,
-                .player-container object,
-                .player-container embed {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100% !important;
-                    height: 100% !important;
-                }
-                ::-webkit-scrollbar {
-                    display: none !important;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="player-container">
-                <div id="\(htmlBuilder.youTubePlayerJavaScriptVariableName)"></div>
-            </div>
-        
-            <script src="\(htmlBuilder.youTubePlayerIframeAPISourceURL)"
-                onerror="window.location.href='\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://\(YouTubePlayer.JavaScriptEvent.Name.onIframeApiFailedToLoad.rawValue)'">
-            </script>
-        
-            <script>
-                var \(htmlBuilder.youTubePlayerJavaScriptVariableName);
-
-                function onYouTubeIframeAPIReady() {
-                    \(htmlBuilder.youTubePlayerJavaScriptVariableName) = new YT.Player(
-                        '\(htmlBuilder.youTubePlayerJavaScriptVariableName)',
-                        \(jsonEncodedYouTubePlayerOptions)
-                    );
-                    \(htmlBuilder.youTubePlayerJavaScriptVariableName).setSize(
-                        window.innerWidth,
-                        window.innerHeight
-                    );
-                    sendYouTubePlayerEvent('\(YouTubePlayer.JavaScriptEvent.Name.onIframeApiReady.rawValue)');
-                }
-        
-                function sendYouTubePlayerEvent(eventName, event) {
-                    const url = new URL(`\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://${eventName}`);
-                    if (event && event.data !== null) {
-                        url.searchParams.set(
-                            '\(htmlBuilder.youTubePlayerEventCallbackDataParameterName)',
-                            typeof event.data === 'object' ? JSON.stringify(event.data) : event.data
-                        );
+    /// - Parameter excludedEventNames: The event names which should be excluded. Default value `.init()`
+    static func defaultHTMLProvider(
+        excludedEventNames: Set<YouTubePlayer.Event.Name> = .init()
+    ) -> HTMLProvider {
+        { htmlBuilder, jsonEncodedYouTubePlayerOptions in
+            """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+                <style>
+                    body {
+                        margin: 0;
+                        width: 100%;
+                        height: 100%;
                     }
-                    window.location.href = url.toString();
-                }
+                    html {
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .player-container iframe,
+                    .player-container object,
+                    .player-container embed {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                    ::-webkit-scrollbar {
+                        display: none !important;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="player-container">
+                    <div id="\(htmlBuilder.youTubePlayerJavaScriptVariableName)"></div>
+                </div>
+            
+                <script src="\(htmlBuilder.youTubePlayerIframeAPISourceURL)"
+                    onerror="window.location.href='\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://\(YouTubePlayer.Event.Name.iFrameApiFailedToLoad.rawValue)'">
+                </script>
+            
+                <script>
+                    var \(htmlBuilder.youTubePlayerJavaScriptVariableName);
 
-                \(
-                    YouTubePlayer
-                        .JavaScriptEvent
-                        .Name
-                        .allCases
-                        .filter { $0 != .onIframeApiReady && $0 != .onIframeApiFailedToLoad }
-                        .map { javaScriptEventName in
-                            """
-                            function \(javaScriptEventName)(event) {
-                                sendYouTubePlayerEvent('\(javaScriptEventName)', event);
-                            }
-                            """
+                    function onYouTubeIframeAPIReady() {
+                        \(htmlBuilder.youTubePlayerJavaScriptVariableName) = new YT.Player(
+                            '\(htmlBuilder.youTubePlayerJavaScriptVariableName)',
+                            \(jsonEncodedYouTubePlayerOptions)
+                        );
+                        \(htmlBuilder.youTubePlayerJavaScriptVariableName).setSize(
+                            window.innerWidth,
+                            window.innerHeight
+                        );
+                        sendYouTubePlayerEvent('\(YouTubePlayer.Event.Name.iFrameApiReady.rawValue)');
+                    }
+            
+                    function sendYouTubePlayerEvent(eventName, event) {
+                        const url = new URL(`\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://${eventName}`);
+                        if (event && event.data !== null) {
+                            url.searchParams.set(
+                                '\(htmlBuilder.youTubePlayerEventCallbackDataParameterName)',
+                                typeof event.data === 'object' ? JSON.stringify(event.data) : event.data
+                            );
                         }
-                        .joined(separator: "\n\n")
-                )
-            </script>
-        </body>
-        </html>
-        """
+                        window.location.href = url.toString();
+                    }
+
+                    \(
+                        YouTubePlayer
+                            .Event
+                            .Name
+                            .allCases
+                            .filter { $0 != .iFrameApiReady && $0 != .iFrameApiFailedToLoad }
+                            .filter { !excludedEventNames.contains($0) }
+                            .map(\.rawValue)
+                            .map { javaScriptEventName in
+                                """
+                                function \(javaScriptEventName)(event) {
+                                    sendYouTubePlayerEvent('\(javaScriptEventName)', event);
+                                }
+                                """
+                            }
+                            .joined(separator: "\n\n")
+                    )
+                </script>
+            </body>
+            </html>
+            """
+        }
     }
     
 }

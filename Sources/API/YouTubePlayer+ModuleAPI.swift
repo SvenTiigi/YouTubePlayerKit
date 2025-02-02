@@ -5,12 +5,6 @@ import Foundation
 
 public extension YouTubePlayer {
     
-    /// A Publisher that emits the loaded/unloaded modules.
-    var modulesPublisher: some Publisher<[Module], Never> {
-        self.modulesSubject
-            .receive(on: DispatchQueue.main)
-    }
-    
     /// Returns the loaded modules of the player.
     func getModules() async throws(APIError) -> [Module] {
         try await self.evaluate(

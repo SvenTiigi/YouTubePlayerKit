@@ -6,8 +6,8 @@ extension YouTubePlayerWebView {
     
     /// A YouTubePlayerWebView Event
     enum Event: Sendable {
-        /// Received JavaScriptEvent from YouTubePlayer
-        case receivedJavaScriptEvent(YouTubePlayer.JavaScriptEvent)
+        /// Received ``YouTubePlayer/Event``
+        case receivedEvent(YouTubePlayer.Event)
         /// Did fail provisional navigation
         case didFailProvisionalNavigation(Error)
         /// Did fail navigation
@@ -18,14 +18,14 @@ extension YouTubePlayerWebView {
     
 }
 
-// MARK: - JavaScript Event
+// MARK: - Event
 
 extension YouTubePlayerWebView.Event {
     
-    /// The received JavaScript event, if available.
-    var javaScriptEvent: YouTubePlayer.JavaScriptEvent? {
-        if case .receivedJavaScriptEvent(let javaScriptEvent) = self {
-            return javaScriptEvent
+    /// The received ``YouTubePlayer/Event``, if available.
+    var event: YouTubePlayer.Event? {
+        if case .receivedEvent(let event) = self {
+            return event
         } else {
             return nil
         }

@@ -10,7 +10,7 @@ public extension YouTubePlayer {
         // MARK: Properties
         
         /// The title.
-        public let title: String
+        public let title: String?
         
         /// The author.
         public let author: String?
@@ -102,7 +102,7 @@ public extension YouTubePlayer {
         ///   - progressBarEndPositionUtcTimeMillis: The progress bar end position in utc milliseconds.
         ///   - paidContentOverlayDurationMs: The paid content overlay duration in milliseconds.
         public init(
-            title: String,
+            title: String? = nil,
             author: String? = nil,
             videoId: Source.ID? = nil,
             isPlayable: Bool? = nil,

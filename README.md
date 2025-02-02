@@ -136,7 +136,7 @@ struct ContentView: View {
 ```
 
 > [!TIP]
-> You can optionally mark the YouTubePlayer with `@StateObject` or `@ObservedObject` to automatically update your view whenever the source, parameters, or configuration change.
+> You can optionally mark the YouTubePlayer with `@StateObject` or `@ObservedObject` to automatically update your view whenever the source, parameters, or isLoggingEnabled change.
 
 When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostingView`
 

@@ -62,17 +62,18 @@ public extension YouTubePlayer {
             .receive(on: DispatchQueue.main)
     }
     
-    /// The current YouTube player playback quality, if available.
-    var playbackQuality: PlaybackQuality? {
-        self.playbackQualitySubject.value
-    }
-    
     /// A Publisher that emits the current YouTube player playback quality.
     var playbackQualityPublisher: some Publisher<PlaybackQuality, Never> {
-        self.playbackQualitySubject
-            .compactMap { $0 }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
+        self.eventPublisher
+            .compactMap { event in
+                guard event.name == .playbackQualityChange,
+                      let playbackQualityName = event.data?.value else {
+                    return nil
+                }
+                return .init(
+                    name: playbackQualityName
+                )
+            }
     }
     
     /// Returns a number between 0 and 1 that specifies the percentage of the video that the player shows as buffered.
@@ -115,41 +116,19 @@ public extension YouTubePlayer {
     }
     
     /// A Publisher that emits the current elapsed time in seconds since the video started playing.
-    /// - Parameter updateInterval: The update TimeInterval in seconds to retrieve the current elapsed time. Default value `0.5`
-    func currentTimePublisher(
-        updateInterval: TimeInterval = 0.5
-    ) -> some Publisher<Measurement<UnitDuration>, Never> {
-        Just(
-            .init()
-        )
-        .append(
-            Timer.publish(
-                every: updateInterval,
-                on: .main,
-                in: .common
-            )
-            .autoconnect()
-        )
-        .flatMap { [weak self] _ -> AnyPublisher<Measurement<UnitDuration>, Never> in
-            guard let self else {
-                return Empty().eraseToAnyPublisher()
-            }
-            return self.playbackStatePublisher
-                .filter { $0 == .playing }
-                .flatMap { _ in
-                    Future { promise in
-                        Task { [weak self] in
-                            guard let currentTime = try? await self?.getCurrentTime() else {
-                                return
-                            }
-                            promise(.success(currentTime))
-                        }
-                    }
+    /// - Warning: This Publisher relies on the unoffical `.videoProgress` event and its behavior and availability may change.
+    var currentTimePublisher: some Publisher<Measurement<UnitDuration>, Never> {
+        self.eventPublisher
+            .compactMap { event in
+                guard event.name == .videoProgress,
+                      let videoProgressInSeconds = event.data?.value(as: Double.self) else {
+                    return nil
                 }
-                .eraseToAnyPublisher()
-        }
-        .removeDuplicates()
-        .share()
+                return .init(
+                    value: videoProgressInSeconds,
+                    unit: .seconds
+                )
+            }
     }
     
     /// Returns the current playback metadata.
@@ -172,9 +151,10 @@ public extension YouTubePlayer {
     }
     
     /// A Publisher that emits the current playback metadata.
+    /// - Warning: This Publisher relies on the unoffical `.videoDataChange` event and its behavior and availability may change.
     var playbackMetadataPublisher: some Publisher<PlaybackMetadata, Never> {
-        self.javaScriptEventPublisher
-            .filter { $0.name == .onApiChange }
+        self.eventPublisher
+            .filter { $0.name == .videoDataChange }
             .flatMap { _ in
                 Future { promise in
                     Task { [weak self] in
@@ -195,9 +175,11 @@ public extension YouTubePlayer {
 public extension YouTubePlayer {
     
     /// A Publisher that emits whenever autoplay or scripted video playback features were blocked.
+    /// - Warning: This Publisher relies on the unoffical `.onAutoplayBlocked` event and its behavior and availability may change.
     var autoplayBlockedPublisher: some Publisher<Void, Never> {
-        self.autoplayBlockedSubject
-            .receive(on: DispatchQueue.main)
+        self.eventPublisher
+            .filter { $0.name == .autoplayBlocked }
+            .map { _ in }
     }
     
     /// Plays the currently cued/loaded video.
@@ -298,17 +280,16 @@ public extension YouTubePlayer {
         await self.webView.closeAllMediaPresentations()
     }
     
-    /// The current fullscreen state.
-    var fullscreenState: FullscreenState? {
-        self.fullscreenStateSubject.value
-    }
-    
     /// A Publisher that emits the fullscreen state.
+    /// - Warning: This Publisher relies on the unoffical `.fullscreenChange` event and its behavior and availability may change.
     var fullscreenStatePublisher: some Publisher<FullscreenState, Never> {
-        self.fullscreenStateSubject
-            .compactMap { $0 }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
+        self.eventPublisher
+            .compactMap { event in
+                guard event.name == .fullscreenChange else {
+                    return nil
+                }
+                return try? event.data?.jsonValue(as: FullscreenState.self)
+            }
     }
     
     /// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
@@ -340,7 +321,7 @@ public extension YouTubePlayer {
     /// The web fullscreen state of the underlying `WKWebView` instance.
     /// - Important: This property only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
-    /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``
+    /// - SeeAlso: ``YouTubePlayer/fullscreenStatePublisher``
     @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
     var webFullscreenState: WebKit.WKWebView.FullscreenState {
         self.webView.fullscreenState
@@ -349,7 +330,7 @@ public extension YouTubePlayer {
     /// A Publisher that emits the web fullscreen state of the underlying `WKWebView` instance.
     /// - Important: The value of this publisher only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
-    /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``
+    /// - SeeAlso: ``YouTubePlayer/fullscreenStatePublisher``
     @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
     var webFullScreenStatePublisher: some Publisher<WebKit.WKWebView.FullscreenState, Never> {
         self.webView
@@ -365,17 +346,18 @@ public extension YouTubePlayer {
 
 public extension YouTubePlayer {
     
-    /// The current YouTube player playback rate, if available.
-    var playbackRate: PlaybackRate? {
-        self.playbackRateSubject.value
-    }
-    
     /// A Publisher that emits the current YouTube player playback rate.
     var playbackRatePublisher: some Publisher<PlaybackRate, Never> {
-        self.playbackRateSubject
-            .compactMap { $0 }
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
+        self.eventPublisher
+            .compactMap { event in
+                guard event.name == .playbackRateChange else {
+                    return nil
+                }
+                return event
+                    .data?
+                    .value(as: Double.self)
+                    .flatMap(PlaybackRate.init(value:))
+            }
     }
     
     /// This function retrieves the playback rate of the currently playing video.
@@ -484,8 +466,8 @@ public extension YouTubePlayer {
     
     /// A Publisher that emits the duration in seconds of the currently playing video.
     var durationPublisher: some Publisher<Measurement<UnitDuration>, Never> {
-        self.javaScriptEventPublisher
-            .filter { $0.name == .onApiChange }
+        self.eventPublisher
+            .filter { $0.name == .apiChange }
             .flatMap { _ in
                 Future { promise in
                     Task { [weak self] in

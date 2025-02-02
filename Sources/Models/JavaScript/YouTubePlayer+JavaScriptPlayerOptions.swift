@@ -90,12 +90,12 @@ extension YouTubePlayer.JavaScriptPlayerOptions: EncodableWithConfiguration {
         )
         try container.encode(
             YouTubePlayer
-                .JavaScriptEvent
+                .Event
                 .Name
                 .allCases
                 .filter { event in
-                    // Exclude onIframe related events
-                    event != .onIframeApiReady && event != .onIframeApiFailedToLoad
+                    // Exclude iFrame related events
+                    event != .iFrameApiReady && event != .iFrameApiFailedToLoad
                 }
                 .reduce(
                     into: [String: String]()

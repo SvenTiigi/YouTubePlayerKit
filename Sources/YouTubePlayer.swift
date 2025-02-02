@@ -49,27 +49,7 @@ public final class YouTubePlayer: ObservableObject {
     }
     
     /// The configuration.
-    public var configuration: Configuration {
-        didSet {
-            // Verify that the configuration has changed.
-            guard self.configuration != oldValue else {
-                // Otherwise return out of function
-                return
-            }
-            // Send object will change
-            self.objectWillChange.send()
-            // Update automatically adjusts content insets, if needed
-            if self.configuration.automaticallyAdjustsContentInsets != oldValue.automaticallyAdjustsContentInsets {
-                self.webView.setAutomaticallyAdjustsContentInsets(
-                    enabled: self.configuration.automaticallyAdjustsContentInsets
-                )
-            }
-            // Update custom user agent, if needed
-            if self.configuration.customUserAgent != oldValue.customUserAgent {
-                self.webView.customUserAgent = self.configuration.customUserAgent
-            }
-        }
-    }
+    public let configuration: Configuration
     
     /// A Boolean value that determines whether logging is enabled.
     public var isLoggingEnabled: Bool {
@@ -82,23 +62,8 @@ public final class YouTubePlayer: ObservableObject {
     /// The state subject.
     private(set) lazy var stateSubject = CurrentValueSubject<State, Never>(.idle)
     
-    /// The modules subject.
-    private(set) lazy var modulesSubject: PassthroughSubject<[Module], Never> = .init()
-    
-    /// The autplay blocked subject.
-    private(set) lazy var autoplayBlockedSubject = PassthroughSubject<Void, Never>()
-    
     /// The playback state subject.
     private(set) lazy var playbackStateSubject = CurrentValueSubject<PlaybackState?, Never>(nil)
-    
-    /// The playback quality subject.
-    private(set) lazy var playbackQualitySubject = CurrentValueSubject<PlaybackQuality?, Never>(nil)
-    
-    /// The playback rate subject.
-    private(set) lazy var playbackRateSubject = CurrentValueSubject<PlaybackRate?, Never>(nil)
-    
-    /// The fullscree state subject.
-    private(set) lazy var fullscreenStateSubject = CurrentValueSubject<FullscreenState?, Never>(nil)
     
     /// The YouTube player web view.
     private(set) lazy var webView: YouTubePlayerWebView = {
@@ -261,15 +226,15 @@ extension YouTubePlayer: @preconcurrency Hashable {
     
 }
 
-// MARK: - JavaScript Event Publisher
+// MARK: - Event Publisher
 
 public extension YouTubePlayer {
     
-    /// A Publisher that emits a received JavaScript event.
-    var javaScriptEventPublisher: some Publisher<JavaScriptEvent, Never> {
+    /// A Publisher that emits a received ``YouTubePlayer/Event``
+    var eventPublisher: some Publisher<Event, Never> {
         self.webView
             .eventSubject
-            .compactMap(\.javaScriptEvent)
+            .compactMap(\.event)
             .receive(on: DispatchQueue.main)
     }
     
@@ -366,10 +331,10 @@ private extension YouTubePlayer {
         webViewEvent: YouTubePlayerWebView.Event
     ) {
         switch webViewEvent {
-        case .receivedJavaScriptEvent(let javaScriptEvent):
-            // Handle JavaScriptEvent
+        case .receivedEvent(let event):
+            // Handle event
             self.handle(
-                javaScriptEvent: javaScriptEvent
+                event: event
             )
         case .didFailProvisionalNavigation(let error):
             // Send did fail provisional navigation error
@@ -389,28 +354,29 @@ private extension YouTubePlayer {
         }
     }
     
-    /// Handles an incoming ``YouTubePlayer.JavaScriptEvent``
-    /// - Parameter javaScriptEvent: The JavaScript event to handle.
+    /// Handles an incoming ``YouTubePlayer/Event``
+    /// - Parameter event: The event to handle.
     func handle(
-        javaScriptEvent: YouTubePlayer.JavaScriptEvent
+        event: Event
     ) {
-        // Switch on Resolved JavaScriptEvent Name
-        switch javaScriptEvent.name {
-        case .onIframeApiReady:
-            // Simply do nothing as we only
-            // perform action on an `onReady` event
-            break
-        case .onIframeApiFailedToLoad:
+        // Switch on event name
+        switch event.name {
+        case .iFrameApiFailedToLoad:
             // Send error state
             self.stateSubject.send(.error(.iFrameApiFailedToLoad))
-        case .onError:
+        case .error:
             // Send error state
-            javaScriptEvent
+            event
                 .data?
                 .value(as: Int.self)
                 .flatMap(YouTubePlayer.Error.init)
                 .map { self.stateSubject.send(.error($0)) }
-        case .onReady:
+        case .connectionIssue:
+            // Send error state
+            self.stateSubject.send(
+                .error(.iFrameApiFailedToLoad)
+            )
+        case .ready:
             // Send ready state
             self.stateSubject.send(.ready)
             // Check if autoPlay is enabled
@@ -427,27 +393,9 @@ private extension YouTubePlayer {
                 }
                 self?.playbackStateSubject.send(playbackState)
             }
-            // Initially load playback rate
-            Task { [weak self] in
-                guard let playbackRate = try? await self?.getPlaybackRate() else {
-                    return
-                }
-                self?.playbackRateSubject.send(playbackRate)
-            }
-        case .onApiChange:
-            // Send loaded/unloaded modules
-            Task { [weak self] in
-                guard let modules = try? await self?.getModules() else {
-                    return
-                }
-                self?.modulesSubject.send(modules)
-            }
-        case .onAutoplayBlocked:
-            // Send auto play blocked event
-            self.autoplayBlockedSubject.send(())
-        case .onStateChange:
+        case .stateChange:
             // Verify YouTubePlayer PlaybackState is available
-            guard let playbackState = javaScriptEvent
+            guard let playbackState = event
                 .data?
                 .value(as: Int.self)
                 .flatMap(PlaybackState.init(value:)) else {
@@ -457,29 +405,17 @@ private extension YouTubePlayer {
             // Check if state is set to error
             if playbackState != .unstarted, case .error = self.state {
                 // Handle onReady state
-                self.handle(javaScriptEvent: .init(name: .onReady))
+                self.handle(event: .init(name: .ready))
             }
             // Send PlaybackState
             self.playbackStateSubject.send(playbackState)
-        case .onPlaybackQualityChange:
-            // Send PlaybackQuality
-            javaScriptEvent
-                .data
-                .flatMap(\.value)
-                .flatMap(YouTubePlayer.PlaybackQuality.init(name:))
-                .map { self.playbackQualitySubject.send($0) }
-        case .onPlaybackRateChange:
-            // Send PlaybackRate
-            javaScriptEvent
-                .data?
-                .value(as: Double.self)
-                .flatMap(YouTubePlayer.PlaybackRate.init(value:))
-                .map { self.playbackRateSubject.send($0) }
-        case .onFullscreenChange:
-            guard let fullscreenState = try? javaScriptEvent.data?.jsonValue(as: FullscreenState.self) else {
-                return
+        case .reloadRequired:
+            // Reload player
+            Task { [weak self] in
+                try? await self?.reload()
             }
-            self.fullscreenStateSubject.send(fullscreenState)
+        default:
+            break
         }
     }
     

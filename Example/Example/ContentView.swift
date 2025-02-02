@@ -286,10 +286,12 @@ private extension ContentView {
     var metadataSection: some View {
         if let playbackMetadata = self.playbackMetadata {
             Section("Metadata") {
-                LabeledContent(
-                    "Title",
-                    value: playbackMetadata.title
-                )
+                if let title = playbackMetadata.title {
+                    LabeledContent(
+                        "Title",
+                        value: title
+                    )
+                }
                 if let author = playbackMetadata.author {
                     LabeledContent(
                         "Author",

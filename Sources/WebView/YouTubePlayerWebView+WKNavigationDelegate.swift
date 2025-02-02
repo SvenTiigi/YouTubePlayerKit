@@ -64,36 +64,39 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Allow navigation action
             return .allow
         }
-        // Log url
-        self.player?
-            .logger()?
-            .debug("WKWebView navigate to \(url, privacy: .public)")
         // Check if the scheme matches the JavaScript evvent callback url scheme
         // and the host is a known JavaScript event name
         if url.scheme == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackURLScheme,
-           let javaScriptEventName = url.host.flatMap(YouTubePlayer.JavaScriptEvent.Name.init) {
-            // Initialize JavaScript event
-            let javaScriptEvent = YouTubePlayer.JavaScriptEvent(
-                name: javaScriptEventName,
+           let eventName = url.host.flatMap(YouTubePlayer.Event.Name.init) {
+            // Initialize event
+            let event = YouTubePlayer.Event(
+                name: eventName,
                 data: URLComponents(
                     url: url,
                     resolvingAgainstBaseURL: true
                 )?
                 .queryItems?
                 .first { $0.name == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackDataParameterName }
-                .flatMap(YouTubePlayer.JavaScriptEvent.Data.init)
+                    .flatMap(YouTubePlayer.Event.Data.init)
             )
-            // Log received JavaScript event
-            self.player?
-                .logger()?
-                .debug("Received YouTubePlayer JavaScript Event\n\(javaScriptEvent, privacy: .public)")
+            // Check if a logger is available and ensure the event is not `.video`.
+            // The `.videoProgress` event fires every second and is therefore explicitly excluded from logging.
+            if let logger = self.player?.logger(),
+               event.name != .videoProgress && event.name != .loadProgress {
+                // Log received JavaScript event
+                logger.debug("Received YouTube Player Event\n\(event, privacy: .public)")
+            }
             // Send received JavaScriptEvent
             self.eventSubject.send(
-                .receivedJavaScriptEvent(javaScriptEvent)
+                .receivedEvent(event)
             )
             // Cancel navigation action
             return .cancel
         }
+        // Log url
+        self.player?
+            .logger()?
+            .debug("WKWebView navigate to \(url, privacy: .public)")
         // Verify URL scheme is http or https
         guard url.scheme == "http" || url.scheme == "https" else {
             // Otherwise allow navigation action

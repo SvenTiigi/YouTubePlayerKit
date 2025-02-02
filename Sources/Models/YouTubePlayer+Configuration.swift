@@ -27,16 +27,16 @@ public extension YouTubePlayer {
         public let useNonPersistentWebsiteDataStore: Bool
         
         /// A Boolean value indicating if safe area insets should be added automatically to content insets.
-        public var automaticallyAdjustsContentInsets: Bool
+        public let automaticallyAdjustsContentInsets: Bool
         
         /// A custom user agent of the underlying web view.
-        public var customUserAgent: String?
+        public let customUserAgent: String?
         
         /// The HTML builder.
         public let htmlBuilder: HTMLBuilder
         
         /// The action to perform when a url gets opened.
-        public var openURLAction: OpenURLAction
+        public let openURLAction: OpenURLAction
         
         // MARK: Initializer
         

@@ -46,12 +46,6 @@ struct YouTubePlayerTests {
         #expect(youTubePlayer.isLoggingEnabled == isLoggingEnabled)
         #expect(youTubePlayer.state == .idle)
         #expect(youTubePlayer.playbackState == nil)
-        #expect(!youTubePlayer.isPlaying)
-        #expect(!youTubePlayer.isPaused)
-        #expect(!youTubePlayer.isBuffering)
-        #expect(!youTubePlayer.isEnded)
-        #expect(youTubePlayer.playbackQuality == nil)
-        #expect(youTubePlayer.playbackRate == nil)
     }
     
     @Test

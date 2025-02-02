@@ -4,7 +4,7 @@ A Swift Package to easily play YouTube videos.
 
 ## Overview
 
-The framework is [available on GitHub](https://github.com/SvenTiigi/YouTubePlayerKit).
+YouTubePlayerKit is [available on GitHub](https://github.com/SvenTiigi/YouTubePlayerKit).
 
 ```swift
 import SwiftUI
