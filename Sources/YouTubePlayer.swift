@@ -278,20 +278,6 @@ private extension YouTubePlayer {
         case .ready:
             // Send ready state
             self.stateSubject.send(.ready)
-            // Check if autoPlay is enabled
-            if self.parameters.autoPlay == true && self.source != nil && !self.isPlaying {
-                // Play Video
-                Task(priority: .userInitiated) { [weak self] in
-                    try? await self?.play()
-                }
-            }
-            // Initially load playback state
-            Task { [weak self] in
-                guard let playbackState = try? await self?.getPlaybackState() else {
-                    return
-                }
-                self?.playbackStateSubject.send(playbackState)
-            }
         case .stateChange:
             // Verify YouTubePlayer PlaybackState is available
             guard let playbackState = playerEvent
@@ -301,10 +287,11 @@ private extension YouTubePlayer {
                 // Otherwise return out of function
                 return
             }
-            // Check if state is set to error
+            // Check if playback state is not equal to unstarted which mostly is an error
+            // and the state is currently set to error
             if playbackState != .unstarted, case .error = self.state {
-                // Handle onReady state
-                self.handle(playerEvent: .init(name: .ready))
+                // Send ready state as the player has recovered from an error
+                self.stateSubject.send(.ready)
             }
             // Send PlaybackState
             self.playbackStateSubject.send(playbackState)
