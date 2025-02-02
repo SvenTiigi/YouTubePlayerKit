@@ -98,7 +98,7 @@ https://developers.google.com/youtube/terms/api-services-terms-of-service
 > [!TIP]
 > Please refer to the [YouTubePlayerKit documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/) for a complete overview.
 
-A YouTube player can be easily displayed when using `SwiftUI` by declaring a `YouTubePlayerView`.
+A [`YouTubePlayer`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/YouTubePlayer.swift) can be easily displayed when using `SwiftUI` by declaring a [`YouTubePlayerView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/UI/View/YouTubePlayerView.swift).
 
 ```swift
 import SwiftUI
@@ -138,7 +138,7 @@ struct ContentView: View {
 > [!TIP]
 > You can optionally mark the YouTubePlayer with `@StateObject` or `@ObservedObject` to automatically update your view whenever the source, parameters, or isLoggingEnabled change.
 
-When using `UIKit` or `AppKit` you can make use of the `YouTubePlayerViewController` or `YouTubePlayerHostingView`
+When using `UIKit` or `AppKit` you can make use of the [`YouTubePlayerViewController`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/UI/ViewController/YouTubePlayerViewController.swift) or [`YouTubePlayerHostingView`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/UI/HostingView/YouTubePlayerHostingView.swift).
 
 ```swift
 import UIKit
@@ -151,19 +151,22 @@ let youTubePlayerViewController = YouTubePlayerViewController(
 let youTubePlayerHostingView = YouTubePlayerHostingView(
     player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
+
+// Access the player on both instances via the `.player` property
+// Example: youTubePlayerViewController.player
 ```
 
 ## YouTubePlayer
 
-A `YouTubePlayer` is the central object which needs to be passed to a `YouTubePlayerView`, `YouTubePlayerViewController` or `YouTubePlayerHostingView` in order to play a certain YouTube video and interact with the underlying YouTube iFrame API.
+A [`YouTubePlayer`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/YouTubePlayer.swift) is the central object in order to play a certain YouTube video and interact with the underlying YouTube iFrame API.
 
-As seen in the previous examples you can initialize a `YouTubePlayer` by using a string literal:
+As seen in the previous examples you can initialize a player by using a string literal:
 
 ```swift
 let youTubePlayer: YouTubePlayer = "https://youtube.com/watch?v=psL_5RIBqnY"
 ```
 
-To take full control you can initialize a `YouTubePlayer` with a [`YouTubePlayer.Source`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BSource.swift), [`YouTubePlayer.Parameters`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BParameters.swift) and a [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BConfiguration.swift)
+To take full control you can initialize a [`YouTubePlayer`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/YouTubePlayer.swift) with a [`YouTubePlayer.Source`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BSource.swift), [`YouTubePlayer.Parameters`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BParameters.swift) and a [`YouTubePlayer.Configuration`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BConfiguration.swift)
 
 ```swift
 let youTubePlayer = YouTubePlayer(
@@ -184,18 +187,19 @@ let youTubePlayer = YouTubePlayer(
 )
 ```
 
-Additionally, you can update the `parameters` of a `YouTubePlayer` via:
+To differentiate between parameters and configuration, understand that parameters control the behavior and style of the YouTube player, while the configuration is linked to the underlying web view.
+You cannot modify the configuration after instantiation; however, it is possible to update the parameters, as shown below:
 
 ```swift
 youTubePlayer.parameters.showControls = false
 ```
 
 > [!WARNING]
-> Updating the `YouTubePlayer.Parameters` during runtime will cause the `YouTubePlayer` to reload.
+> Updating the [`YouTubePlayer.Parameters`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BParameters.swift) during runtime will cause the player to reload.
 
 ### Source
 
-The `YouTubePlayer.Source` is an enum which allows you to specify which YouTube source should be loaded.
+The [`YouTubePlayer.Source`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BSource.swift) is an enum which allows you to specify which YouTube source should be loaded/cued.
 
 ```swift
 // A single video
@@ -211,7 +215,7 @@ let playlist: YouTubePlayer.Source = .playlist(id: "PLHFlHpPjgk72Si7r1kLGt1_aD3a
 let channel: YouTubePlayer.Source = .channel(name: "GoogleDevelopers")
 ```
 
-You can also use a URL to initialize a `YouTubePlayer.Source`
+You can also use a URL to initialize a source.
 
 ```swift
 let source: YouTubePlayer.Source? = .init(urlString: "https://youtube.com/watch?v=psL_5RIBqnY")
@@ -222,7 +226,7 @@ let source: YouTubePlayer.Source? = .init(urlString: "https://youtube.com/watch?
 
 ### API
 
-A `YouTubePlayer` lets you access the underlying [YouTube Player iFrame API](https://developers.google.com/youtube/iframe_api_reference) to play, pause, seek, retrieve video information and much more.
+A [`YouTubePlayer`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/YouTubePlayer.swift) lets you access the underlying [YouTube Player iFrame API](https://developers.google.com/youtube/iframe_api_reference) to play, pause, seek, retrieve video information and much more.
 
 The majority of the APIs are `async` and `throwable` functions.
 
@@ -234,7 +238,7 @@ try await youTubePlayer.pause()
 > [!TIP]
 > Please see the [documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/youtubeplayer) for a full overview of the available APIs.
 
-In case of an error, most functions throw a `YouTubePlayer.APIError`.
+In case of an error, most functions throw a [`YouTubePlayer.APIError`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/Error/YouTubePlayer%2BAPIError.swift).
 This allows you to easily examine the reason for the error, any underlying error, and the executed JavaScript along with its response.
 
 ```swift
@@ -251,14 +255,14 @@ do {
 }
 ```
 
-Additionally, several Publishers are available to react to changes of the `YouTubePlayer`:
+Additionally, several Publishers are available to react to changes of the player:
 
 ```swift
-// Observe playback state
+// Observe fullscreen state
 let cancellable = youTubePlayer
-    .playbackStatePublisher
-    .sink { playbackState in
-        if playbackState == .playing {
+    .fullscreenStatePublisher
+    .sink { fullscreenState in
+        if fullscreenState.isFullscreen {
             // ...
         }
     }
@@ -266,7 +270,7 @@ let cancellable = youTubePlayer
 
 ## Video Thumbnail
 
-You can load a YouTube video thumbnail via the `YouTubeVideoThumbnail` object.
+You can load a YouTube video thumbnail via the [`YouTubeVideoThumbnail`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/VideoThumbnail/YouTubeVideoThumbnail.swift) object.
 
 ```swift
 // Initialize an instance of YouTubeVideoThumbnail
@@ -283,7 +287,7 @@ let url: URL? = videoThumbnail.url
 let image: YouTubeVideoThumbnail.Image? = try await videoThumbnail.image()
 ```
 
-Additionally, the `YouTubePlayer` allows you to easily retrieve the thumbnail url and image for the currently loaded video.
+Additionally, the player allows you to easily retrieve the thumbnail url and image for the currently loaded video.
 
 ```swift
 // Returns the video thumbnail URL of the currently loaded video
@@ -297,7 +301,7 @@ try await youTubePlayer.getVideoThumbnailImage(resolution: .maximum)
 
 If you wish to gain more insights into the underlying communication of the YouTube Player iFrame JavaScript API, you can enable the logging of a player via the `isLogginEnabled` parameter.
 
-The `YouTubePlayer` utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
+The [`YouTubePlayer`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/YouTubePlayer.swift) utilizes the [unified logging system (OSLog)](https://developer.apple.com/documentation/os/logging) to log information about the player options, JavaScript events and evaluations.
 
 ```swift
 // Enable or disable logging during initialization
@@ -319,7 +323,7 @@ let logger: Logger? = youTubePlayer.logger()
 
 ## Advanced
 
-To run custom JavaScript on the YouTube player JavaScript instance:
+To run [custom JavaScript](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/JavaScript/YouTubePlayer%2BJavaScript.swift) on the YouTube player JavaScript instance:
 
 ```swift
 try await youTubePlayer.evaluate(
@@ -328,7 +332,7 @@ try await youTubePlayer.evaluate(
 ```
 
 > [!NOTE]
-> The custom string interpolation of `\(.youTubePlayer)` is a placeholder for the YouTube player JavaScript variable.
+> The custom string interpolation of [`\(.youTubePlayer)`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/JavaScript/YouTubePlayer%2BJavaScript.swift) is a placeholder for the YouTube player JavaScript variable.
 
 Alternatively, you can use the following convenience function to directly invoke a function on the YouTube player JavaScript object:
 
@@ -343,7 +347,7 @@ try await youTubePlayer.evaluate(
 )
 ```
 
-If you wish to further customize the underlying HTML you can configure the `YouTubePlayer.HTMLBuilder` when initializing an instance of `YouTubePlayer`:
+If you wish to further customize the underlying HTML you can configure the [`YouTubePlayer.HTMLBuilder`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/YouTubePlayer%2BHTMLBuilder.swift) when initializing an instance of the player:
 
 ```swift
 let youTubePlayer = YouTubePlayer(
