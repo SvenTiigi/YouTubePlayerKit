@@ -64,8 +64,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Allow navigation action
             return .allow
         }
-        // Check if the scheme matches the JavaScript evvent callback url scheme
-        // and the host is a known JavaScript event name
+        // Check if the scheme matches the JavaScript event callback URL scheme and if the host is a known event name
         if url.scheme == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackURLScheme,
            let eventName = url.host.flatMap(YouTubePlayer.Event.Name.init) {
             // Initialize event
@@ -86,7 +85,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 // Log received JavaScript event
                 logger.debug("Received YouTube Player Event\n\(event, privacy: .public)")
             }
-            // Send received JavaScriptEvent
+            // Send received event
             self.eventSubject.send(
                 .receivedEvent(event)
             )
