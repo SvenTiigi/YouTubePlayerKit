@@ -95,6 +95,9 @@ https://developers.google.com/youtube/terms/api-services-terms-of-service
 
 ## Usage
 
+> [!TIP]
+> Please refer to the [YouTubePlayerKit documentation](https://sventiigi.github.io/YouTubePlayerKit/documentation/youtubeplayerkit/) for a complete overview.
+
 A YouTube player can be easily displayed when using `SwiftUI` by declaring a `YouTubePlayerView`.
 
 ```swift
@@ -149,9 +152,6 @@ let youTubePlayerHostingView = YouTubePlayerHostingView(
     player: "https://youtube.com/watch?v=psL_5RIBqnY"
 )
 ```
-
-> [!TIP]
-> You can access the `YouTubePlayer` instance via the `player` property on the `YouTubePlayerViewController` and `YouTubePlayerHostingView`
 
 ## YouTubePlayer
 
