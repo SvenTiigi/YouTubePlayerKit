@@ -326,6 +326,26 @@ let logger: Logger? = youTubePlayer.logger()
 
 ## Advanced
 
+You can observe the incoming stream of [`YouTubePlayer.Event`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/Event/YouTubePlayer%2BEvent.swift) from the underlying YouTube Player iFrame API through the following publisher.
+
+```swift
+let cancellable = youTubePlayer
+    .eventPublisher
+    .sink { event in
+        switch event.name {
+        case .playbackQualityChange:
+            break
+        case .autoplayBlocked:
+            break
+        default:
+            break
+        }
+    }
+```
+
+> [!IMPORTANT]
+> The YouTubePlayerKit supports both official as well as unofficial/undocumented events. Please see the [`YouTubePlayer.Event.Name`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/Event/YouTubePlayer%2BEvent%2BName.swift) enumeration for more details.
+
 To run [custom JavaScript](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/JavaScript/YouTubePlayer%2BJavaScript.swift) on the YouTube player JavaScript instance:
 
 ```swift
