@@ -6,10 +6,12 @@ on:
     paths:
       - "Example/**"
       - "Sources/**"
+      - "!Sources/Documentation.docc/**"
   pull_request:
     paths:
       - "Example/**"
       - "Sources/**"
+      - "!Sources/Documentation.docc/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
