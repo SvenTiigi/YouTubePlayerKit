@@ -361,7 +361,7 @@ private extension YouTubePlayer {
     ) {
         // Switch on event name
         switch event.name {
-        case .iFrameApiFailedToLoad:
+        case .iFrameApiFailedToLoad, .connectionIssue:
             // Send error state
             self.stateSubject.send(.error(.iFrameApiFailedToLoad))
         case .error:
@@ -371,11 +371,6 @@ private extension YouTubePlayer {
                 .value(as: Int.self)
                 .flatMap(YouTubePlayer.Error.init)
                 .map { self.stateSubject.send(.error($0)) }
-        case .connectionIssue:
-            // Send error state
-            self.stateSubject.send(
-                .error(.iFrameApiFailedToLoad)
-            )
         case .ready:
             // Send ready state
             self.stateSubject.send(.ready)
