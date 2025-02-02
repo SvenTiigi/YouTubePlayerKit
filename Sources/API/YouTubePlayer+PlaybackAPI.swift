@@ -153,8 +153,12 @@ public extension YouTubePlayer {
     /// A Publisher that emits the current playback metadata.
     /// - Warning: This Publisher relies on the unoffical `.videoDataChange` event and its behavior and availability may change.
     var playbackMetadataPublisher: some Publisher<PlaybackMetadata, Never> {
-        self.eventPublisher
-            .filter { $0.name == .videoDataChange }
+        Just(())
+            .merge(
+                with: self.eventPublisher
+                    .filter { $0.name == .apiChange }
+                    .map { _ in }
+            )
             .flatMap { _ in
                 Future { promise in
                     Task { [weak self] in
@@ -348,16 +352,27 @@ public extension YouTubePlayer {
     
     /// A Publisher that emits the current YouTube player playback rate.
     var playbackRatePublisher: some Publisher<PlaybackRate, Never> {
-        self.eventPublisher
-            .compactMap { event in
-                guard event.name == .playbackRateChange else {
-                    return nil
+        Future { promise in
+            Task { [weak self] in
+                guard let playbackRate = try? await self?.getPlaybackRate() else {
+                    return
                 }
-                return event
-                    .data?
-                    .value(as: Double.self)
-                    .flatMap(PlaybackRate.init(value:))
+                promise(.success(playbackRate))
             }
+        }
+        .merge(
+            with: self.eventPublisher
+                .compactMap { event in
+                    guard event.name == .playbackRateChange else {
+                        return nil
+                    }
+                    return event
+                        .data?
+                        .value(as: Double.self)
+                        .flatMap(PlaybackRate.init(value:))
+                }
+        )
+        .share()
     }
     
     /// This function retrieves the playback rate of the currently playing video.
@@ -466,8 +481,12 @@ public extension YouTubePlayer {
     
     /// A Publisher that emits the duration in seconds of the currently playing video.
     var durationPublisher: some Publisher<Measurement<UnitDuration>, Never> {
-        self.eventPublisher
-            .filter { $0.name == .apiChange }
+        Just(())
+            .merge(
+                with: self.eventPublisher
+                    .filter { $0.name == .apiChange }
+                    .map { _ in }
+            )
             .flatMap { _ in
                 Future { promise in
                     Task { [weak self] in
