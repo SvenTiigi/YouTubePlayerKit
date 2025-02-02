@@ -7,7 +7,7 @@ extension YouTubePlayerWebView {
     /// A YouTubePlayerWebView Event
     enum Event: Sendable {
         /// Received ``YouTubePlayer/Event``
-        case receivedEvent(YouTubePlayer.Event)
+        case receivedPlayerEvent(YouTubePlayer.Event)
         /// Did fail provisional navigation
         case didFailProvisionalNavigation(Error)
         /// Did fail navigation
@@ -18,14 +18,14 @@ extension YouTubePlayerWebView {
     
 }
 
-// MARK: - Event
+// MARK: - Player Event
 
 extension YouTubePlayerWebView.Event {
     
     /// The received ``YouTubePlayer/Event``, if available.
-    var event: YouTubePlayer.Event? {
-        if case .receivedEvent(let event) = self {
-            return event
+    var playerEvent: YouTubePlayer.Event? {
+        if case .receivedPlayerEvent(let playerEvent) = self {
+            return playerEvent
         } else {
             return nil
         }

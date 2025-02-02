@@ -64,12 +64,12 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Allow navigation action
             return .allow
         }
-        // Check if the scheme matches the JavaScript event callback URL scheme and if the host is a known event name
+        // Check if the scheme matches the JavaScript event callback URL scheme and if the host is a known player event name
         if url.scheme == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackURLScheme,
-           let eventName = url.host.flatMap(YouTubePlayer.Event.Name.init) {
-            // Initialize event
-            let event = YouTubePlayer.Event(
-                name: eventName,
+           let playerEventName = url.host.flatMap(YouTubePlayer.Event.Name.init) {
+            // Initialize player event
+            let playerEvent = YouTubePlayer.Event(
+                name: playerEventName,
                 data: URLComponents(
                     url: url,
                     resolvingAgainstBaseURL: true
@@ -78,16 +78,16 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 .first { $0.name == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackDataParameterName }
                     .flatMap(YouTubePlayer.Event.Data.init)
             )
-            // Check if a logger is available and ensure the event is not `.video`.
-            // The `.videoProgress` event fires every second and is therefore explicitly excluded from logging.
+            // Check if a logger is available and ensure event name is not equal to `videoProgress` and `loadProgress`
+            // Those two events are explicitly excluded because they occur in a high frequency.
             if let logger = self.player?.logger(),
-               event.name != .videoProgress && event.name != .loadProgress {
+               playerEventName != .videoProgress && playerEventName != .loadProgress {
                 // Log received JavaScript event
-                logger.debug("Received YouTube Player Event\n\(event, privacy: .public)")
+                logger.debug("Received YouTube Player Event\n\(playerEvent, privacy: .public)")
             }
-            // Send received event
+            // Send received player event
             self.eventSubject.send(
-                .receivedEvent(event)
+                .receivedPlayerEvent(playerEvent)
             )
             // Cancel navigation action
             return .cancel

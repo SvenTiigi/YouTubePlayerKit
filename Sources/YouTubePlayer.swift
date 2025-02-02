@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import OSLog
 
 // MARK: - YouTubePlayer
 
@@ -226,115 +225,20 @@ extension YouTubePlayer: @preconcurrency Hashable {
     
 }
 
-// MARK: - Event Publisher
-
-public extension YouTubePlayer {
-    
-    /// A Publisher that emits a received ``YouTubePlayer/Event``
-    var eventPublisher: some Publisher<Event, Never> {
-        self.webView
-            .eventSubject
-            .compactMap(\.event)
-            .receive(on: DispatchQueue.main)
-    }
-    
-}
-
-// MARK: - Evaluate
-
-public extension YouTubePlayer {
-    
-    /// Evaluates the JavaScript and converts its response.
-    /// - Parameters:
-    ///   - javaScript: The JavaScript to evaluate.
-    ///   - converter: The response converter.
-    func evaluate<Response>(
-        javaScript: JavaScript,
-        converter: JavaScriptEvaluationResponseConverter<Response>
-    ) async throws(APIError) -> Response {
-        try await self.webView.evaluate(
-            javaScript: javaScript,
-            converter: converter
-        )
-    }
-    
-    /// Evaluates the JavaScript.
-    /// - Parameter javaScript: The JavaScript to evaluate.
-    func evaluate(
-        javaScript: JavaScript
-    ) async throws(APIError) {
-        try await self.evaluate(
-            javaScript: javaScript,
-            converter: .void
-        )
-    }
-    
-}
-
-// MARK: - Reload
-
-public extension YouTubePlayer {
-    
-    /// Reloads the YouTube player.
-    func reload() async throws(Swift.Error) {
-        // Destroy the player and discard the error
-        try? await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "destroy"
-            )
-        )
-        // Reload
-        try self.webView.load()
-        // Await new ready or error state
-        for await state in self.stateSubject.dropFirst().values {
-            // Swithc on state
-            switch state {
-            case .ready:
-                // Success return out of function
-                return
-            case .error(let error):
-                // Throw error
-                throw error
-            default:
-                // Continue with next state
-                continue
-            }
-        }
-    }
-    
-}
-
-// MARK: - Logger
-
-public extension YouTubePlayer {
-    
-    /// Returns a new logger instance if logging is enabled through `isLoggingEnabled`.
-    func logger() -> Logger? {
-        guard self.isLoggingEnabled else {
-            return nil
-        }
-        return .init(
-            subsystem: "YouTubePlayer",
-            category: .init(describing: self.id)
-        )
-    }
-    
-}
-
-// MARK: - Handle WebView/JavaScript Event
+// MARK: - Handle Event
 
 private extension YouTubePlayer {
     
-    /// Handles a ``YouTubePlayerWebView.Event``
+    /// Handles a `YoutubePlayerWebView.Event`
     /// - Parameter webViewEvent: The web view event to handle.
     func handle(
         webViewEvent: YouTubePlayerWebView.Event
     ) {
         switch webViewEvent {
-        case .receivedEvent(let event):
-            // Handle event
+        case .receivedPlayerEvent(let playerEvent):
+            // Handle player event
             self.handle(
-                event: event
+                playerEvent: playerEvent
             )
         case .didFailProvisionalNavigation(let error):
             // Send did fail provisional navigation error
@@ -357,16 +261,16 @@ private extension YouTubePlayer {
     /// Handles an incoming ``YouTubePlayer/Event``
     /// - Parameter event: The event to handle.
     func handle(
-        event: Event
+        playerEvent: Event
     ) {
         // Switch on event name
-        switch event.name {
+        switch playerEvent.name {
         case .iFrameApiFailedToLoad, .connectionIssue:
             // Send error state
             self.stateSubject.send(.error(.iFrameApiFailedToLoad))
         case .error:
             // Send error state
-            event
+            playerEvent
                 .data?
                 .value(as: Int.self)
                 .flatMap(YouTubePlayer.Error.init)
@@ -390,7 +294,7 @@ private extension YouTubePlayer {
             }
         case .stateChange:
             // Verify YouTubePlayer PlaybackState is available
-            guard let playbackState = event
+            guard let playbackState = playerEvent
                 .data?
                 .value(as: Int.self)
                 .flatMap(PlaybackState.init(value:)) else {
@@ -400,7 +304,7 @@ private extension YouTubePlayer {
             // Check if state is set to error
             if playbackState != .unstarted, case .error = self.state {
                 // Handle onReady state
-                self.handle(event: .init(name: .ready))
+                self.handle(playerEvent: .init(name: .ready))
             }
             // Send PlaybackState
             self.playbackStateSubject.send(playbackState)
