@@ -59,6 +59,8 @@ public extension YouTubePlayer {
                 functionName: "destroy"
             )
         )
+        // Send idle state
+        self.stateSubject.send(.idle)
         // Reload
         try self.webView.load()
         // Await new ready or error state
