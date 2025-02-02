@@ -117,16 +117,18 @@ struct ContentView: View {
             case .ready:
                 EmptyView()
             case .error(let error):
-                Text(verbatim: "YouTube player couldn't be loaded")
+                ContentUnavailableView(
+                    "Error",
+                    systemImage: "exclamationmark.triangle.fill",
+                    description: Text("YouTube player couldn't be loaded: \(error)")
+                )
             }
         }
-        // Optionally react to specific updates such as the playback state
+        // Optionally react to specific updates such as the fullscreen state
         .onReceive(
-            self.youTubePlayer.playbackStatePublisher
-        ) { playbackState in
-            if playbackState == .playing {
-                // ...
-            } else if playbackState == .ended {
+            self.youTubePlayer.fullscreenStatePublisher
+        ) { fullscreenState in
+            if fullscreenState.isFullscreen {
                 // ...
             }
         }
@@ -170,7 +172,9 @@ To take full control you can initialize a [`YouTubePlayer`](https://github.com/S
 
 ```swift
 let youTubePlayer = YouTubePlayer(
+    // Possible values: .video, .videos, .playlist, .channel
     source: .video(id: "psL_5RIBqnY"),
+    // The parameters of the player
     parameters: .init(
         autoPlay: true,
         showControls: true,
@@ -178,6 +182,7 @@ let youTubePlayer = YouTubePlayer(
         startTime: .init(value: 5, unit: .minutes),
         // ...
     ),
+    // The configuration of the underlying web view
     configuration: .init(
         fullscreenMode: .system,
         allowsInlineMediaPlayback: true,
@@ -258,13 +263,11 @@ do {
 Additionally, several Publishers are available to react to changes of the player:
 
 ```swift
-// Observe fullscreen state
+// Observe playback metadata
 let cancellable = youTubePlayer
-    .fullscreenStatePublisher
-    .sink { fullscreenState in
-        if fullscreenState.isFullscreen {
-            // ...
-        }
+    .playbackMetadataPublisher
+    .sink { playbackMetadata in
+        // ...
     }
 ```
 
