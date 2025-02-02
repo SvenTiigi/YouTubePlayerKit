@@ -15,7 +15,7 @@ public extension YouTubePlayer {
         
         /// An OpenURLAction Handler typealias representing a closure
         /// which takes in a URL which should be opened
-        public typealias Handler = @MainActor (YouTubePlayer, URL) async -> Void
+        public typealias Handler = @MainActor (URL, YouTubePlayer) async -> Void
         
         // MARK: Properties
         
@@ -24,7 +24,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer.OpenURLAction``
+        /// Creates a new instance of ``YouTubePlayer/OpenURLAction``
         /// - Parameter handler: The handler closure which takes in a URL which should be opened
         public init(
             handler: @escaping Handler
@@ -40,13 +40,15 @@ public extension YouTubePlayer {
 
 public extension YouTubePlayer.OpenURLAction {
     
-    /// Call OpenURLAction as function
-    /// - Parameter url: The URL which should be opened
+    /// Opens the URL.
+    /// - Parameters:
+    ///   - url: The URL to open.
+    ///   - player: The ``YouTubePlayer`` instance.
     func callAsFunction(
-        player: YouTubePlayer,
-        url: URL
+        url: URL,
+        player: YouTubePlayer
     ) async {
-        await self.handler(player, url)
+        await self.handler(url, player)
     }
     
 }
@@ -85,7 +87,7 @@ extension YouTubePlayer.OpenURLAction: Hashable {
 public extension YouTubePlayer.OpenURLAction {
     
     /// The default OpenURLAction
-    static let `default` = Self { player, url in
+    static let `default` = Self { url, player in
         // Check if YouTube player source can be initialize from url
         // and it was successfully loaded
         if let source = YouTubePlayer.Source(url: url),

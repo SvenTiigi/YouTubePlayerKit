@@ -30,7 +30,7 @@ extension YouTubePlayerWebView: WKUIDelegate {
                     return
                 }
                 // Open url
-                await player.configuration.openURLAction(player: player, url: url)
+                await player.configuration.openURLAction(url: url, player: player)
             }
         }
         // Return nil as the URL has already been handled

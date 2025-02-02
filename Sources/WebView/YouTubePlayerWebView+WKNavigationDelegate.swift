@@ -122,7 +122,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 return
             }
             // Open url
-            await player.configuration.openURLAction(player: player, url: url)
+            await player.configuration.openURLAction(url: url, player: player)
         }
         // Cancel navigation action
         return .cancel
