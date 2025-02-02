@@ -210,24 +210,21 @@ extension YouTubePlayerWebView {
         // Declare HTML string
         let htmlString: String
         do {
-            // Initialize JSON encoded JavaScript player options
-            let jsonEncodedJavaScriptPlayerOptions = String(
-                decoding: try YouTubePlayer.JavaScriptPlayerOptions(
-                    source: player.source,
-                    parameters: player.parameters
+            // Initialize JSON encoded player options string
+            let jsonEncodedPlayerOptionsString = try YouTubePlayer.Options(
+                source: player.source,
+                parameters: player.parameters
+            )
+            .jsonEncodedString(
+                configuration: .init(
+                    allowsInlineMediaPlayback: player.configuration.allowsInlineMediaPlayback
                 )
-                .jsonEncode(
-                    configuration: .init(
-                        allowsInlineMediaPlayback: player.configuration.allowsInlineMediaPlayback
-                    )
-                ),
-                as: UTF8.self
             )
             // Try to build HTML string.
             htmlString = try player
                 .configuration
                 .htmlBuilder(
-                    jsonEncodedYouTubePlayerOptions: jsonEncodedJavaScriptPlayerOptions
+                    jsonEncodedPlayerOptionsString: jsonEncodedPlayerOptionsString
                 )
             // Log player options
             player
@@ -235,7 +232,7 @@ extension YouTubePlayerWebView {
                 .debug(
                     """
                     Loading YouTube Player with options:
-                    \(jsonEncodedJavaScriptPlayerOptions)
+                    \(jsonEncodedPlayerOptionsString)
                     """
                 )
         } catch {

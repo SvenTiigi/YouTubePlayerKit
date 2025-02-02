@@ -9,11 +9,8 @@ public extension YouTubePlayer {
         
         // MARK: Typealias
         
-        /// The JSON encoded YouTube player options.
-        public typealias JSONEncodedYouTubePlayerOptions = String
-        
         /// A function type that provides the HTML content string based on builder configuration and the JSON encoded YouTube player options.
-        public typealias HTMLProvider = @Sendable (Self, JSONEncodedYouTubePlayerOptions) throws -> String
+        public typealias HTMLProvider = @Sendable (Self, YouTubePlayer.Options.JSONEncodedString) throws -> String
         
         // MARK: Properties
         
@@ -68,11 +65,11 @@ public extension YouTubePlayer.HTMLBuilder {
     /// Builds the HTML.
     /// - Parameter jsonEncodedYouTubePlayerOptions: The JSON encoded YouTube player options.
     func callAsFunction(
-        jsonEncodedYouTubePlayerOptions: JSONEncodedYouTubePlayerOptions
+        jsonEncodedPlayerOptionsString: YouTubePlayer.Options.JSONEncodedString
     ) throws -> String {
         return try self.htmlProvider(
             self,
-            jsonEncodedYouTubePlayerOptions
+            jsonEncodedPlayerOptionsString
         )
     }
     
@@ -162,7 +159,7 @@ public extension YouTubePlayer.HTMLBuilder {
     static func defaultHTMLProvider(
         excludedEventNames: Set<YouTubePlayer.Event.Name> = .init()
     ) -> HTMLProvider {
-        { htmlBuilder, jsonEncodedYouTubePlayerOptions in
+        { htmlBuilder, jsonEncodedPlayerOptionsString in
             """
             <!DOCTYPE html>
             <html>
@@ -207,7 +204,7 @@ public extension YouTubePlayer.HTMLBuilder {
                     function onYouTubeIframeAPIReady() {
                         \(htmlBuilder.youTubePlayerJavaScriptVariableName) = new YT.Player(
                             '\(htmlBuilder.youTubePlayerJavaScriptVariableName)',
-                            \(jsonEncodedYouTubePlayerOptions)
+                            \(jsonEncodedPlayerOptionsString)
                         );
                         \(htmlBuilder.youTubePlayerJavaScriptVariableName).setSize(
                             window.innerWidth,

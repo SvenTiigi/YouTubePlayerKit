@@ -1,11 +1,11 @@
 import Foundation
 
-// MARK: - YouTubePlayer+JavaScriptPlayerOptions
+// MARK: - YouTubePlayer+Options
 
 public extension YouTubePlayer {
     
-    /// The YouTube player JavaScript options.
-    struct JavaScriptPlayerOptions: Hashable, Sendable {
+    /// The YouTube player options.
+    struct Options: Hashable, Sendable {
         
         // MARK: Properties
         
@@ -17,7 +17,7 @@ public extension YouTubePlayer {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer/JavaScriptPlayerOptions``
+        /// Creates a new instance of ``YouTubePlayer/Options``
         /// - Parameters:
         ///   - source: The source. Default value `nil`
         ///   - parameters: The parameters.
@@ -35,7 +35,7 @@ public extension YouTubePlayer {
 
 // MARK: - EncodableWithConfiguration
 
-extension YouTubePlayer.JavaScriptPlayerOptions: EncodableWithConfiguration {
+extension YouTubePlayer.Options: EncodableWithConfiguration {
     
     /// The encoding configuration.
     public struct EncodingConfiguration: Codable, Hashable, Sendable {
@@ -47,7 +47,7 @@ extension YouTubePlayer.JavaScriptPlayerOptions: EncodableWithConfiguration {
         
         // MARK: Initializer
         
-        /// Creates a new instance of ``YouTubePlayer/JavaScriptPlayerOptions/EncodingConfiguration``
+        /// Creates a new instance of ``YouTubePlayer/Options/EncodingConfiguration``
         /// - Parameter allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
         public init(
             allowsInlineMediaPlayback: Bool
@@ -110,7 +110,34 @@ extension YouTubePlayer.JavaScriptPlayerOptions: EncodableWithConfiguration {
 
 // MARK: - JSON Encode
 
-public extension YouTubePlayer.JavaScriptPlayerOptions {
+public extension YouTubePlayer.Options {
+    
+    /// A JSON encoded string representation of the ``YouTubePlayer/Options``.
+    typealias JSONEncodedString = String
+    
+    /// Returns a JSON encoded string representation of this instance.
+    /// - Parameters:
+    ///   - configuration: The encoding configuration.
+    ///   - jsonEncoder: The JSON encoder.
+    func jsonEncodedString(
+        configuration: EncodingConfiguration,
+        jsonEncoder: JSONEncoder = {
+            let jsonEncoder = JSONEncoder()
+            jsonEncoder.outputFormatting = [
+                .sortedKeys,
+                .withoutEscapingSlashes
+            ]
+            return jsonEncoder
+        }()
+    ) throws -> JSONEncodedString {
+        .init(
+            decoding: try self.jsonEncode(
+                configuration: configuration,
+                jsonEncoder: jsonEncoder
+            ),
+            as: UTF8.self
+        )
+    }
     
     /// JSON encodes this instance.
     /// - Parameters:
@@ -138,10 +165,10 @@ public extension YouTubePlayer.JavaScriptPlayerOptions {
             /// An encoding container
             struct EncodingContainer: Encodable {
                 /// The JavaScript player options.
-                let options: YouTubePlayer.JavaScriptPlayerOptions
+                let options: YouTubePlayer.Options
                 
                 /// The JavaScript player options encoding configuration.
-                let encodingConfiguration: YouTubePlayer.JavaScriptPlayerOptions.EncodingConfiguration
+                let encodingConfiguration: YouTubePlayer.Options.EncodingConfiguration
                 
                 /// Encode.
                 /// - Parameter encoder: The encoder.
