@@ -215,7 +215,10 @@ public extension YouTubePlayer.HTMLBuilder {
                 function sendYouTubePlayerEvent(eventName, event) {
                     const url = new URL(`\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://${eventName}`);
                     if (event && event.data !== null) {
-                        url.searchParams.set('\(htmlBuilder.youTubePlayerEventCallbackDataParameterName)', event.data);
+                        url.searchParams.set(
+                            '\(htmlBuilder.youTubePlayerEventCallbackDataParameterName)',
+                            typeof event.data === 'object' ? JSON.stringify(event.data) : event.data
+                        );
                     }
                     window.location.href = url.toString();
                 }

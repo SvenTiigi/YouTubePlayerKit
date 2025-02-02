@@ -10,6 +10,8 @@ public extension YouTubePlayer {
         // MARK: Properties
         
         /// The fullscreen mode.
+        /// - Important: Setting the fullscreen mode to ``YouTubePlayer/FullscreenMode/web`` does not guarantee
+        /// the use of HTML5 fullscreen mode, as the decision ultimately depends on the underlying YouTube Player iFrame API.
         public let fullscreenMode: FullscreenMode
         
         /// A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.

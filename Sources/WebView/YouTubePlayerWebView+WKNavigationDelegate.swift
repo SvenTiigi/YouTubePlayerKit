@@ -80,9 +80,8 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                     resolvingAgainstBaseURL: true
                 )?
                 .queryItems?
-                .first { $0.name == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackDataParameterName }?
-                .value
-                .flatMap { $0 == "null" ? nil : $0 }
+                .first { $0.name == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackDataParameterName }
+                .flatMap(YouTubePlayer.JavaScriptEvent.Data.init)
             )
             // Log received JavaScript event
             self.player?

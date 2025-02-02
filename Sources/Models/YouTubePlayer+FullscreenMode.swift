@@ -8,7 +8,7 @@ public extension YouTubePlayer {
     enum FullscreenMode: String, Codable, Hashable, Sendable, CaseIterable {
         /// System fullscreen mode (AVPlayerViewController).
         case system
-        /// Web fullscreen mode (YouTube web player)
+        /// Web fullscreen mode (HTML5)
         case web
     }
     

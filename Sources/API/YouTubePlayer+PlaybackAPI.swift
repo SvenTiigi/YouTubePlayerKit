@@ -298,8 +298,21 @@ public extension YouTubePlayer {
         await self.webView.closeAllMediaPresentations()
     }
     
+    /// The current fullscreen state.
+    var fullscreenState: FullscreenState? {
+        self.fullscreenStateSubject.value
+    }
+    
+    /// A Publisher that emits the fullscreen state.
+    var fullscreenStatePublisher: some Publisher<FullscreenState, Never> {
+        self.fullscreenStateSubject
+            .compactMap { $0 }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+    }
+    
     /// Requests web fullscreen mode, applicable only if `configuration.fullscreenMode` is set to `.web`.
-    /// - Important: This function only executes if the configuration's ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
+    /// - Important: This function only executes if the configuration's ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// - Returns: A boolean value indicating whether the fullscreen request was successful:
     /// `true` if fullscreen mode was successfully requested.
     /// `false` if either the configuration doesn't allow web fullscreen or if the fullscreen API is not available
@@ -325,16 +338,18 @@ public extension YouTubePlayer {
     }
     
     /// The web fullscreen state of the underlying ``WKWebView`` instance.
-    /// - Important: This property only indicates the fullscreen state when the ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
+    /// - Important: This property only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
+    /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``
     @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
     var webFullscreenState: WebKit.WKWebView.FullscreenState {
         self.webView.fullscreenState
     }
     
     /// A Publisher that emits the web fullscreen state of the underlying ``WKWebView`` instance.
-    /// - Important: The value of this publisher only indicates the fullscreen state when the ``YouTubePlayer.FullscreenMode`` of the ``YouTubePlayer.Configuration`` is set to `.web`.
+    /// - Important: The value of this publisher only indicates the fullscreen state when the ``YouTubePlayer/FullscreenMode`` of the ``YouTubePlayer/Configuration`` is set to `.web`.
     /// **It does not reflect the fullscreen state when playing a video in fullscreen using the `.system` mode.**
+    /// - SeeAlso: ``YouTubePlayer/fullscreenState-swift.property``, ``YouTubePlayer/fullscreenStatePublisher``
     @available(iOS 16.0, macOS 13.0, visionOS 1.0, *)
     var webFullScreenStatePublisher: some Publisher<WebKit.WKWebView.FullscreenState, Never> {
         self.webView

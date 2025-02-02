@@ -82,6 +82,12 @@ public final class YouTubePlayer: ObservableObject {
     /// The state subject.
     private(set) lazy var stateSubject = CurrentValueSubject<State, Never>(.idle)
     
+    /// The modules subject.
+    private(set) lazy var modulesSubject: PassthroughSubject<[Module], Never> = .init()
+    
+    /// The autplay blocked subject.
+    private(set) lazy var autoplayBlockedSubject = PassthroughSubject<Void, Never>()
+    
     /// The playback state subject.
     private(set) lazy var playbackStateSubject = CurrentValueSubject<PlaybackState?, Never>(nil)
     
@@ -91,11 +97,8 @@ public final class YouTubePlayer: ObservableObject {
     /// The playback rate subject.
     private(set) lazy var playbackRateSubject = CurrentValueSubject<PlaybackRate?, Never>(nil)
     
-    /// The modules subject.
-    private(set) lazy var modulesSubject: PassthroughSubject<[Module], Never> = .init()
-    
-    /// The autplay blocked subject.
-    private(set) lazy var autoplayBlockedSubject = PassthroughSubject<Void, Never>()
+    /// The fullscree state subject.
+    private(set) lazy var fullscreenStateSubject = CurrentValueSubject<FullscreenState?, Never>(nil)
     
     /// The YouTube player web view.
     private(set) lazy var webView: YouTubePlayerWebView = {
@@ -400,6 +403,13 @@ private extension YouTubePlayer {
         case .onIframeApiFailedToLoad:
             // Send error state
             self.stateSubject.send(.error(.iFrameApiFailedToLoad))
+        case .onError:
+            // Send error state
+            javaScriptEvent
+                .data?
+                .value(as: Int.self)
+                .flatMap(YouTubePlayer.Error.init)
+                .map { self.stateSubject.send(.error($0)) }
         case .onReady:
             // Send ready state
             self.stateSubject.send(.ready)
@@ -424,11 +434,22 @@ private extension YouTubePlayer {
                 }
                 self?.playbackRateSubject.send(playbackRate)
             }
+        case .onApiChange:
+            // Send loaded/unloaded modules
+            Task { [weak self] in
+                guard let modules = try? await self?.getModules() else {
+                    return
+                }
+                self?.modulesSubject.send(modules)
+            }
+        case .onAutoplayBlocked:
+            // Send auto play blocked event
+            self.autoplayBlockedSubject.send(())
         case .onStateChange:
             // Verify YouTubePlayer PlaybackState is available
             guard let playbackState = javaScriptEvent
-                .data
-                .flatMap(Int.init)
+                .data?
+                .value(as: Int.self)
                 .flatMap(PlaybackState.init(value:)) else {
                 // Otherwise return out of function
                 return
@@ -444,33 +465,21 @@ private extension YouTubePlayer {
             // Send PlaybackQuality
             javaScriptEvent
                 .data
+                .flatMap(\.value)
                 .flatMap(YouTubePlayer.PlaybackQuality.init(name:))
                 .map { self.playbackQualitySubject.send($0) }
         case .onPlaybackRateChange:
             // Send PlaybackRate
             javaScriptEvent
-                .data
-                .flatMap(Double.init)
+                .data?
+                .value(as: Double.self)
                 .flatMap(YouTubePlayer.PlaybackRate.init(value:))
                 .map { self.playbackRateSubject.send($0) }
-        case .onError:
-            // Send error state
-            javaScriptEvent
-                .data
-                .flatMap(Int.init)
-                .flatMap(YouTubePlayer.Error.init)
-                .map { self.stateSubject.send(.error($0)) }
-        case .onApiChange:
-            // Send loaded/unloaded modules
-            Task { [weak self] in
-                guard let modules = try? await self?.getModules() else {
-                    return
-                }
-                self?.modulesSubject.send(modules)
+        case .onFullscreenChange:
+            guard let fullscreenState = try? javaScriptEvent.data?.jsonValue(as: FullscreenState.self) else {
+                return
             }
-        case .onAutoplayBlocked:
-            // Send auto play blocked event
-            self.autoplayBlockedSubject.send(())
+            self.fullscreenStateSubject.send(fullscreenState)
         }
     }
     
