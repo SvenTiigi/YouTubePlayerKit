@@ -74,16 +74,23 @@ extension YouTubePlayer.JavaScriptEvent.Data: Codable {
     
 }
 
+// MARK: - CustomStringConvertible
+
 extension YouTubePlayer.JavaScriptEvent.Data: CustomStringConvertible {
     
+    /// A textual representation of this instance.
     public var description: String {
         self.value
     }
     
 }
 
+// MARK: - LosslessStringConvertible Value
+
 public extension YouTubePlayer.JavaScriptEvent.Data {
     
+    /// Returns the value as the given `LosslessStringConvertible` type.
+    /// - Parameter type: The type.
     func value<T: LosslessStringConvertible>(
         as type: T.Type
     ) -> T? {
@@ -92,8 +99,14 @@ public extension YouTubePlayer.JavaScriptEvent.Data {
     
 }
 
+// MARK: - JSON Value
+
 public extension YouTubePlayer.JavaScriptEvent.Data {
     
+    /// Decodes the value into the specified `Decodable` type using the provided `JSONDecoder`.
+    /// - Parameters:
+    ///   - type: The `Decodable` type.
+    ///   - jsonDecoder: The `JSONDecoder`. Default value `.init()`
     func jsonValue<D: Decodable>(
         as type: D.Type,
         jsonDecoder: JSONDecoder = .init()
