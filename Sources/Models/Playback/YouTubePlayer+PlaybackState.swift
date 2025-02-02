@@ -68,6 +68,32 @@ extension YouTubePlayer.PlaybackState: ExpressibleByIntegerLiteral {
     
 }
 
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.PlaybackState: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        switch self {
+        case .unstarted:
+            return "Unstarted"
+        case .ended:
+            return "Ended"
+        case .playing:
+            return "Playing"
+        case .paused:
+            return "Paused"
+        case .buffering:
+            return "Buffering"
+        case .cued:
+            return "Cued"
+        default:
+            return "Unknown: \(self.value)"
+        }
+    }
+    
+}
+
 // MARK: - CaseIterable
 
 extension YouTubePlayer.PlaybackState: CaseIterable {
@@ -99,31 +125,5 @@ extension YouTubePlayer.PlaybackState: CaseIterable {
     
     /// Video cued.
     public static let cued: Self = 5
-    
-}
-
-// MARK: - CustomStringConvertible
-
-extension YouTubePlayer.PlaybackState: CustomStringConvertible {
-    
-    /// A textual representation of this instance.
-    public var description: String {
-        switch self {
-        case .unstarted:
-            return "Unstarted"
-        case .ended:
-            return "Ended"
-        case .playing:
-            return "Playing"
-        case .paused:
-            return "Paused"
-        case .buffering:
-            return "Buffering"
-        case .cued:
-            return "Cued"
-        default:
-            return "Unknown: \(self.value)"
-        }
-    }
     
 }

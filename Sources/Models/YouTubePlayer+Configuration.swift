@@ -93,3 +93,52 @@ extension YouTubePlayer.Configuration: ExpressibleByURL {
     }
     
 }
+
+// MARK: - Codable
+
+extension YouTubePlayer.Configuration: Codable {
+    
+    /// The coding keys.
+    private enum CodingKeys: CodingKey {
+        case fullscreenMode
+        case allowsInlineMediaPlayback
+        case allowsPictureInPictureMediaPlayback
+        case useNonPersistentWebsiteDataStore
+        case automaticallyAdjustsContentInsets
+        case customUserAgent
+        case htmlBuilder
+    }
+    
+    /// Creates a new instance of ``YouTubePlayer.Configuration``
+    /// - Parameter decoder: The decoder.
+    public init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(
+            fullscreenMode: container.decode(YouTubePlayer.FullscreenMode.self, forKey: .fullscreenMode),
+            allowsInlineMediaPlayback: container.decode(Bool.self, forKey: .allowsInlineMediaPlayback),
+            allowsPictureInPictureMediaPlayback: container.decode(Bool.self, forKey: .allowsPictureInPictureMediaPlayback),
+            useNonPersistentWebsiteDataStore: container.decode(Bool.self, forKey: .useNonPersistentWebsiteDataStore),
+            automaticallyAdjustsContentInsets: container.decode(Bool.self, forKey: .automaticallyAdjustsContentInsets),
+            customUserAgent: container.decodeIfPresent(String.self, forKey: .customUserAgent),
+            htmlBuilder: container.decode(YouTubePlayer.HTMLBuilder.self, forKey: .htmlBuilder)
+        )
+    }
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    public func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.fullscreenMode, forKey: .fullscreenMode)
+        try container.encode(self.allowsInlineMediaPlayback, forKey: .allowsInlineMediaPlayback)
+        try container.encode(self.allowsPictureInPictureMediaPlayback, forKey: .allowsPictureInPictureMediaPlayback)
+        try container.encode(self.useNonPersistentWebsiteDataStore, forKey: .useNonPersistentWebsiteDataStore)
+        try container.encode(self.automaticallyAdjustsContentInsets, forKey: .automaticallyAdjustsContentInsets)
+        try container.encode(self.customUserAgent, forKey: .customUserAgent)
+        try container.encode(self.htmlBuilder, forKey: .htmlBuilder)
+    }
+    
+}

@@ -55,7 +55,6 @@ public extension YouTubePlayer {
         ///
         /// Specifies the color that will be used in the player's video progress bar
         /// to highlight the amount of the video that the viewer has already watched.
-        /// - SeeAlso: `ProgressBarColor`
         public var progressBarColor: ProgressBarColor?
         
         /// Prevents the player from responding to keyboard controls.

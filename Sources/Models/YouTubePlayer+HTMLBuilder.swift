@@ -113,6 +113,46 @@ extension YouTubePlayer.HTMLBuilder: Hashable {
     
 }
 
+// MARK: - Codable
+
+extension YouTubePlayer.HTMLBuilder: Codable {
+    
+    /// The coding keys.
+    private enum CodingKeys: CodingKey {
+        case youTubePlayerJavaScriptVariableName
+        case youTubePlayerEventCallbackURLScheme
+        case youTubePlayerEventCallbackDataParameterName
+        case youTubePlayerIframeAPISourceURL
+    }
+    
+    /// Creates a new instance of ``YouTubePlayer.HTMLBuilder``
+    /// - Parameter decoder: The decoder.
+    public init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(
+            youTubePlayerJavaScriptVariableName: container.decode(String.self, forKey: .youTubePlayerJavaScriptVariableName),
+            youTubePlayerEventCallbackURLScheme: container.decode(String.self, forKey: .youTubePlayerEventCallbackURLScheme),
+            youTubePlayerEventCallbackDataParameterName: container.decode(String.self, forKey: .youTubePlayerEventCallbackDataParameterName),
+            youTubePlayerIframeAPISourceURL: container.decode(URL.self, forKey: .youTubePlayerIframeAPISourceURL)
+        )
+    }
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    public func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.youTubePlayerJavaScriptVariableName, forKey: .youTubePlayerJavaScriptVariableName)
+        try container.encode(self.youTubePlayerEventCallbackURLScheme, forKey: .youTubePlayerEventCallbackURLScheme)
+        try container.encode(self.youTubePlayerEventCallbackDataParameterName, forKey: .youTubePlayerEventCallbackDataParameterName)
+        try container.encode(self.youTubePlayerIframeAPISourceURL, forKey: .youTubePlayerIframeAPISourceURL)
+    }
+    
+}
+
 // MARK: - Default HTML Provider
 
 public extension YouTubePlayer.HTMLBuilder {

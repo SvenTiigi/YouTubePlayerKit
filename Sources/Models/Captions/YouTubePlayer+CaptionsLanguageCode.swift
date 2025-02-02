@@ -68,6 +68,17 @@ extension YouTubePlayer.CaptionsLanguageCode: ExpressibleByStringLiteral {
     
 }
 
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.CaptionsLanguageCode: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        self.localizedString() ?? self.id
+    }
+    
+}
+
 // MARK: - Localized String
 
 public extension YouTubePlayer.CaptionsLanguageCode {

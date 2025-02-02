@@ -1,4 +1,5 @@
 import Foundation
+import struct WebKit.WKError
 
 // MARK: - YouTubePlayerAPIError
 
@@ -41,6 +42,75 @@ public extension YouTubePlayer {
             self.reason = reason
         }
         
+    }
+    
+}
+
+// MARK: - WebKit Error
+
+public extension YouTubePlayer.APIError {
+    
+    /// The web kit error code of the underlying error, if available.
+    var webKitErrorCode: WKError.Code? {
+        (self.underlyingError as? WKError)?.code
+    }
+    
+}
+
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.APIError: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = [
+            .sortedKeys,
+            .withoutEscapingSlashes,
+            .prettyPrinted
+        ]
+        guard let jsonData = try? jsonEncoder.encode(self) else {
+            return """
+            YouTubePlayer API Error:
+            JavaScript: \(self.javaScript ?? .init())
+            JavaScript Response: \(self.javaScriptResponse ?? .init())
+            Underyling Error: \(self.underlyingError.flatMap(String.init(describing:)) ?? .init())
+            Reason: \(self.reason ?? .init())
+            WebKit Error Code: \(self.webKitErrorCode.flatMap { String($0.rawValue) } ?? .init())
+            """
+        }
+        return .init(
+            decoding: jsonData,
+            as: UTF8.self
+        )
+    }
+    
+}
+
+// MARK: - Encodable
+
+extension YouTubePlayer.APIError: Encodable {
+    
+    /// The CodingKeys.
+    private enum CodingKeys: CodingKey {
+        case javaScript
+        case javaScriptResponse
+        case underlyingError
+        case reason
+        case webKitErrorCode
+    }
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    public func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.javaScript, forKey: .javaScript)
+        try container.encode(self.javaScriptResponse, forKey: .javaScriptResponse)
+        try container.encode(self.underlyingError.flatMap(String.init(describing:)), forKey: .underlyingError)
+        try container.encode(self.reason, forKey: .reason)
+        try container.encodeIfPresent(self.webKitErrorCode?.rawValue, forKey: .webKitErrorCode)
     }
     
 }

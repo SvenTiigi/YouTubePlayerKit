@@ -32,3 +32,14 @@ public extension YouTubePlayer {
     }
     
 }
+
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.CaptionsTranslationLanguage: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        self.languageCode.localizedString() ?? self.languageName
+    }
+    
+}

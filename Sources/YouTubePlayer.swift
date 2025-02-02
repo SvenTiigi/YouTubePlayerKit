@@ -184,6 +184,34 @@ extension YouTubePlayer: ExpressibleByStringLiteral {
     
 }
 
+// MARK: - Decodable
+
+extension YouTubePlayer: Decodable {
+    
+    /// The coding keys.
+    private enum CodingKeys: CodingKey {
+        case source
+        case parameters
+        case configuration
+        case isLoggingEnabled
+    }
+    
+    /// Creates a new instance of ``YouTubePlayer``
+    /// - Parameter decoder: The decoder.
+    nonisolated public convenience init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(
+            source: container.decodeIfPresent(Source.self, forKey: .source),
+            parameters: container.decodeIfPresent(Parameters.self, forKey: .parameters) ?? .init(),
+            configuration: container.decodeIfPresent(Configuration.self, forKey: .configuration) ?? .init(),
+            isLoggingEnabled: container.decodeIfPresent(Bool.self, forKey: .isLoggingEnabled) ?? false
+        )
+    }
+    
+}
+
 // MARK: - Identifiable
 
 extension YouTubePlayer: Identifiable {

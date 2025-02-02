@@ -4,7 +4,7 @@ import SwiftUI
 // MARK: - YouTubeVideoThumbnail
 
 /// A YouTube video thumbnail.
-public struct YouTubeVideoThumbnail: Hashable, Sendable {
+public struct YouTubeVideoThumbnail: Codable, Hashable, Sendable {
     
     // MARK: Properties
     

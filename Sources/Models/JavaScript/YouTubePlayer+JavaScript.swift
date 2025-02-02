@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// A YouTube player JavaScript.
-    struct JavaScript: Codable, Hashable, Sendable {
+    struct JavaScript: Hashable, Sendable {
         
         // MARK: Typealias
         
@@ -70,6 +70,32 @@ public extension YouTubePlayer.JavaScript {
             )
         }
         return content
+    }
+    
+}
+
+// MARK: - Codable
+
+extension YouTubePlayer.JavaScript: Codable {
+    
+    /// Creates a new instance of ``YouTubePlayer.JavaScript``
+    /// - Parameter decoder: The decoder.
+    public init(
+        from decoder: Decoder
+    ) throws {
+        let container = try decoder.singleValueContainer()
+        self.init(
+            try container.decode(String.self)
+        )
+    }
+    
+    /// Encode.
+    /// - Parameter encoder: The encoder.
+    public func encode(
+        to encoder: Encoder
+    ) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.content)
     }
     
 }

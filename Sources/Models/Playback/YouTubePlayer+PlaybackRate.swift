@@ -26,17 +26,6 @@ public extension YouTubePlayer {
     
 }
 
-// MARK: - CustomStringConvertible
-
-extension YouTubePlayer.PlaybackRate: CustomStringConvertible {
-    
-    /// A textual representation of this instance.
-    public var description: String {
-        "\(Decimal(self.value))x"
-    }
-    
-}
-
 // MARK: - Codable
 
 extension YouTubePlayer.PlaybackRate: Codable {
@@ -93,6 +82,17 @@ extension YouTubePlayer.PlaybackRate: Comparable {
         rhs: Self
     ) -> Bool {
         lhs.value < rhs.value
+    }
+    
+}
+
+// MARK: - CustomStringConvertible
+
+extension YouTubePlayer.PlaybackRate: CustomStringConvertible {
+    
+    /// A textual representation of this instance.
+    public var description: String {
+        "\(Decimal(self.value))x"
     }
     
 }
