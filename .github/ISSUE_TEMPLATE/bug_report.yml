@@ -16,7 +16,7 @@ body:
     attributes:
       label: What happened?
       description: Please describe the bug.
-      placeholder: Description of the bug.
+      placeholder: Please describe the bug and include any additional information, such as the setup of your YouTubePlayer instance or any errors that have occurred.
     validations:
       required: true
   - type: textarea
