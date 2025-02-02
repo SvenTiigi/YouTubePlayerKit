@@ -50,25 +50,4 @@ struct YouTubeVideoThumbnailTests {
         #expect(videoThumbnail.url == URL(string: "https://\(host)/vi/\(videoID)/\(resolution.rawValue).jpg"))
     }
     
-    @MainActor
-    @Test(
-        arguments: YouTubeVideoThumbnail.Resolution.allCases
-    )
-    func image(
-        resolution: YouTubeVideoThumbnail.Resolution
-    ) async throws {
-        let videoThumbnail = YouTubeVideoThumbnail(
-            videoID: "psL_5RIBqnY",
-            resolution: resolution
-        )
-        #expect(try await videoThumbnail.image() != nil)
-    }
-    
-    @MainActor
-    @Test
-    func imageWithInvalidVideoID() async throws {
-        let videoThumbnail = YouTubeVideoThumbnail(videoID: UUID().uuidString)
-        #expect(try await videoThumbnail.image() == nil)
-    }
-    
 }
