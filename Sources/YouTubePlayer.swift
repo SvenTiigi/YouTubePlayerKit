@@ -4,7 +4,7 @@ import OSLog
 
 // MARK: - YouTubePlayer
 
-/// A YouTube player that provides a native interface to the [YouTube IFrame Player API](https://developers.google.com/youtube/iframe_api_reference).
+/// A YouTube player that provides a native interface to the [YouTube iFrame Player API](https://developers.google.com/youtube/iframe_api_reference).
 ///
 /// Enables embedding and controlling YouTube videos in your app, including playback controls,
 /// playlist management, and video information retrieval.
