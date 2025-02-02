@@ -235,10 +235,10 @@ public extension YouTubePlayer.HTMLBuilder {
                             .filter { $0 != .iFrameApiReady && $0 != .iFrameApiFailedToLoad }
                             .filter { !excludedEventNames.contains($0) }
                             .map(\.rawValue)
-                            .map { javaScriptEventName in
+                            .map { eventName in
                                 """
-                                function \(javaScriptEventName)(event) {
-                                    sendYouTubePlayerEvent('\(javaScriptEventName)', event);
+                                function \(eventName)(event) {
+                                    sendYouTubePlayerEvent('\(eventName)', event);
                                 }
                                 """
                             }
