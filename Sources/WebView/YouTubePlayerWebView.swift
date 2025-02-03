@@ -23,7 +23,7 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Initializer
     
-    /// Creates a new instance of ``YouTubePlayer.WebView``
+    /// Creates a new instance of `YouTubePlayerWebView`
     /// - Parameter player: The YouTube player
     init(
         player: YouTubePlayer
