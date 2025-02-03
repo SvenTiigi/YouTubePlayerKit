@@ -34,10 +34,10 @@ public extension YouTubePlayer {
 
 // MARK: - Error+init(errorCode:)
 
-extension YouTubePlayer.Error {
+public extension YouTubePlayer.Error {
     
     /// The error codes dictionary.
-    private static let errorCodes: [Int: Self] = [
+    static let errorCodes: [Int: Self] = [
         2: .invalidSource,
         5: .html5NotSupported,
         100: .notFound,
@@ -45,9 +45,9 @@ extension YouTubePlayer.Error {
         150: .embeddedVideoPlayingNotAllowed
     ]
     
-    /// Creates a new instance of ``YouTubePlayer.Error``.
+    /// Creates a new instance of ``YouTubePlayer/Error``.
     /// - Parameters:
-    ///   - errorCode: The error code.,
+    ///   - errorCode: The error code.
     init?(
         errorCode: Int
     ) {
