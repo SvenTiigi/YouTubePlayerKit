@@ -43,6 +43,8 @@ final class YouTubePlayerWebView: WKWebView {
                 // Set allows picture in picture media playback
                 configuration.allowsPictureInPictureMediaPlayback = player.configuration.allowsPictureInPictureMediaPlayback
                 #endif
+                // Set airplay for media playback
+                configuration.allowsAirPlayForMediaPlayback = player.configuration.allowsAirPlayForMediaPlayback
                 // No media types requiring user action for playback
                 configuration.mediaTypesRequiringUserActionForPlayback = .init()
                 // Disable text interaction / selection

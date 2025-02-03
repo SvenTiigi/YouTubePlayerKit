@@ -17,6 +17,9 @@ public extension YouTubePlayer {
         /// A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller.
         public let allowsInlineMediaPlayback: Bool
         
+        /// A Boolean value that indicates whether the web view allows media playback over AirPlay.
+        public let allowsAirPlayForMediaPlayback: Bool
+        
         /// A Boolean value that indicates whether HTML5 videos can play Picture in Picture.
         /// - Important: Picture-in-Picture mode may not work in every situation or with every video. Its support and availability depend on the underlying YouTube Player iFrame API.
         /// - Precondition: Please enable the `Audio`, `AirPlay`, and `Picture in Picture` background modes in your app's capabilities.
@@ -44,6 +47,7 @@ public extension YouTubePlayer {
         /// - Parameters:
         ///   - fullscreenMode: The fullscreen mode. Default value `.preferred`
         ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
+        ///   - allowsAirPlayForMediaPlayback: A Boolean value that indicates whether the web view allows media playback over AirPlay. Default value `true`
         ///   - allowsPictureInPictureMediaPlayback: A Boolean value that indicates whether HTML5 videos can play Picture in Picture. Default value `false`
         ///   - useNonPersistentWebsiteDataStore: Boolean value indicating whether a non-persistent website data store should be used. Default value `true`
         ///   - automaticallyAdjustsContentInsets: A Boolean value indicating if safe area insets should be added automatically to content insets. Default value `true`
@@ -53,6 +57,7 @@ public extension YouTubePlayer {
         public init(
             fullscreenMode: FullscreenMode = .preferred,
             allowsInlineMediaPlayback: Bool = true,
+            allowsAirPlayForMediaPlayback: Bool = true,
             allowsPictureInPictureMediaPlayback: Bool = false,
             useNonPersistentWebsiteDataStore: Bool = true,
             automaticallyAdjustsContentInsets: Bool = true,
@@ -62,6 +67,7 @@ public extension YouTubePlayer {
         ) {
             self.fullscreenMode = fullscreenMode
             self.allowsInlineMediaPlayback = allowsInlineMediaPlayback
+            self.allowsAirPlayForMediaPlayback = allowsAirPlayForMediaPlayback
             self.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
             self.useNonPersistentWebsiteDataStore = useNonPersistentWebsiteDataStore
             self.automaticallyAdjustsContentInsets = automaticallyAdjustsContentInsets
@@ -104,6 +110,7 @@ extension YouTubePlayer.Configuration: Codable {
     private enum CodingKeys: CodingKey {
         case fullscreenMode
         case allowsInlineMediaPlayback
+        case allowsAirPlayForMediaPlayback
         case allowsPictureInPictureMediaPlayback
         case useNonPersistentWebsiteDataStore
         case automaticallyAdjustsContentInsets
@@ -120,6 +127,7 @@ extension YouTubePlayer.Configuration: Codable {
         try self.init(
             fullscreenMode: container.decode(YouTubePlayer.FullscreenMode.self, forKey: .fullscreenMode),
             allowsInlineMediaPlayback: container.decode(Bool.self, forKey: .allowsInlineMediaPlayback),
+            allowsAirPlayForMediaPlayback: container.decode(Bool.self, forKey: .allowsAirPlayForMediaPlayback),
             allowsPictureInPictureMediaPlayback: container.decode(Bool.self, forKey: .allowsPictureInPictureMediaPlayback),
             useNonPersistentWebsiteDataStore: container.decode(Bool.self, forKey: .useNonPersistentWebsiteDataStore),
             automaticallyAdjustsContentInsets: container.decode(Bool.self, forKey: .automaticallyAdjustsContentInsets),
@@ -136,6 +144,7 @@ extension YouTubePlayer.Configuration: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.fullscreenMode, forKey: .fullscreenMode)
         try container.encode(self.allowsInlineMediaPlayback, forKey: .allowsInlineMediaPlayback)
+        try container.encode(self.allowsAirPlayForMediaPlayback, forKey: .allowsAirPlayForMediaPlayback)
         try container.encode(self.allowsPictureInPictureMediaPlayback, forKey: .allowsPictureInPictureMediaPlayback)
         try container.encode(self.useNonPersistentWebsiteDataStore, forKey: .useNonPersistentWebsiteDataStore)
         try container.encode(self.automaticallyAdjustsContentInsets, forKey: .automaticallyAdjustsContentInsets)
