@@ -16,7 +16,7 @@ public struct YouTubePlayerView<Overlay: View> {
     /// A closure which constructs the `Overlay` for a given state.
     public let overlay: (YouTubePlayer.State) -> Overlay
     
-    /// The current ``YouTubePlayer.State``
+    /// The current ``YouTubePlayer/State``
     @State
     private var state: YouTubePlayer.State = .idle
     
