@@ -128,8 +128,8 @@ private extension YouTubePlayerWebView {
             with: self.frameChangesSubject
         )
         .map(\.size)
-        .removeDuplicates()
         .filter { $0 != .zero }
+        .removeDuplicates()
         .sink { size in
             // Set player size
             Task(priority: .userInitiated) { [weak self] in
