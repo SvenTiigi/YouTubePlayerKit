@@ -32,7 +32,6 @@ jobs:
             -scheme YouTubePlayerKit\
             -destination 'generic/platform=iOS'\
             -derivedDataPath ../DerivedData
-          | xcbeautify --renderer github-actions
       - name: Process Archive
         run: |
           mkdir _site
