@@ -63,7 +63,7 @@ public extension YouTubePlayer {
 public extension YouTubePlayer.HTMLBuilder {
     
     /// Builds the HTML.
-    /// - Parameter jsonEncodedYouTubePlayerOptions: The JSON encoded YouTube player options.
+    /// - Parameter jsonEncodedPlayerOptionsString: The JSON encoded YouTube player options string.
     func callAsFunction(
         jsonEncodedPlayerOptionsString: YouTubePlayer.Options.JSONEncodedString
     ) throws -> String {
