@@ -161,6 +161,12 @@ private extension YouTubePlayerWebView {
         self.allowsBackForwardNavigationGestures = false
         // Clear under page background color
         self.underPageBackgroundColor = .clear
+        // Enable Safari web inspection in debug
+        #if DEBUG
+        if #available(iOS 16.4, macOS 13.3, visionOS 1.0, *) {
+            self.isInspectable = true
+        }
+        #endif
         #if os(macOS)
         // Set clear layer background color
         self.layer?.backgroundColor = .clear
