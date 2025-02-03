@@ -205,6 +205,7 @@ extension YouTubePlayer: @preconcurrency Equatable {
         lhs.source == rhs.source
             && lhs.parameters == rhs.parameters
             && lhs.configuration == rhs.configuration
+            && lhs.isLoggingEnabled == rhs.isLoggingEnabled
     }
 
 }
@@ -221,6 +222,7 @@ extension YouTubePlayer: @preconcurrency Hashable {
         hasher.combine(self.source)
         hasher.combine(self.parameters)
         hasher.combine(self.configuration)
+        hasher.combine(self.isLoggingEnabled)
     }
     
 }
