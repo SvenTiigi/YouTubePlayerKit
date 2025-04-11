@@ -131,6 +131,34 @@ public extension YouTubePlayer {
             }
     }
     
+    /// A Publisher that emits the remaining time of the currently playing video.
+    /// The remaining time is calculated by subtracting the current time from the total duration.
+    var remainingTimePublisher: some Publisher<Measurement<UnitDuration>, Never> {
+        Publishers.CombineLatest(
+            self.currentTimePublisher,
+            self.durationPublisher
+        )
+        .map { currentTime, duration in
+            let remainingSeconds = duration.converted(to: .seconds).value - currentTime.converted(to: .seconds).value
+            return Measurement(value: max(0, remainingSeconds), unit: .seconds)
+        }
+        .share()
+    }
+    
+    /// Returns the remaining time of the currently playing video.
+    /// The remaining time is calculated by subtracting the current time from the total duration.
+    /// - Returns: A measurement representing the remaining time in the specified duration unit.
+    /// - Throws: An error if either the current time or duration cannot be retrieved.
+    func getRemainingTime() async throws -> Measurement<UnitDuration> {
+        async let duration = self.getDuration()
+        async let currentTime = self.getCurrentTime()
+        
+        let (totalDuration, current) = try await (duration, currentTime)
+        let remainingSeconds = totalDuration.converted(to: .seconds).value - current.converted(to: .seconds).value
+        
+        return Measurement(value: max(0, remainingSeconds), unit: .seconds)
+    }
+    
     /// Returns the current playback metadata.
     func getPlaybackMetadata() async throws(APIError) -> PlaybackMetadata {
         try await self.evaluate(

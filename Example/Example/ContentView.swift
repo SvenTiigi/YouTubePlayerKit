@@ -35,9 +35,20 @@ struct ContentView {
     @State
     private var playbackMetadata: YouTubePlayer.PlaybackMetadata?
     
-    // MARK: Initializer
+    /// The current playback time in seconds.
+    @State
+    private var sliderCurrentTime: Double = 0
     
+    /// The total duration of the video in seconds.
+    @State
+    private var durationSeconds: Double = 0
+    
+    /// The remaining playback time in seconds.
+    @State
+    private var remainingSeconds: Double = 0
+
     /// Creates a new instance of ``ContentView``
+    // MARK: Initializer
     /// - Parameter wwdcKeynote: The WWDC Keynote.
     init(
         wwdcKeynote: WWDCKeynote = .wwdc2024
@@ -61,6 +72,31 @@ extension ContentView: View {
             List {
                 self.playerSection
                 self.keynotePickerSection
+                Section("Video Progress") {
+                    Slider(
+                        value: $sliderCurrentTime,
+                        in: 0...max(durationSeconds, 1),
+                        onEditingChanged: { editing in
+                            if !editing {
+                                Task {
+                                    try? await self.youTubePlayer.seek(
+                                        to: .init(value: self.sliderCurrentTime, unit: .seconds),
+                                        allowSeekAhead: true
+                                    )
+                                }
+                            }
+                        }
+                    )
+                    HStack {
+                        Text(formattedTime(sliderCurrentTime))
+                            .font(.caption)
+                            .monospacedDigit()
+                        Spacer()
+                        Text(formattedTime(remainingSeconds))
+                            .font(.caption)
+                            .monospacedDigit()
+                    }
+                }
                 self.stateSection
                 self.metadataSection
                 self.parametersSection
@@ -94,11 +130,36 @@ extension ContentView: View {
         ) { playbackMetadata in
             self.playbackMetadata = playbackMetadata
         }
+        .onReceive(self.youTubePlayer.currentTimePublisher) { currentTime in
+            self.sliderCurrentTime = currentTime.converted(to: .seconds).value
+        }
+        .onReceive(self.youTubePlayer.durationPublisher) { duration in
+            self.durationSeconds = duration.converted(to: .seconds).value
+        }
+        .onReceive(self.youTubePlayer.remainingTimePublisher) { remainingTime in
+            self.remainingSeconds = remainingTime.converted(to: .seconds).value
+        }
         .animation(.snappy, value: self.state)
         .animation(.snappy, value: self.playbackState)
         .animation(.snappy, value: self.playbackQuality)
         .animation(.snappy, value: self.playbackRate)
         .animation(.snappy, value: self.playbackMetadata)
+    }
+    
+    private func formattedTime(_ seconds: Double) -> String {
+        guard seconds.isFinite, seconds >= 0 else {
+            return "--:--:--"
+        }
+        let totalSeconds = Int(seconds)
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let remainingSeconds = totalSeconds % 60
+        
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, remainingSeconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, remainingSeconds)
+        }
     }
     
 }
@@ -261,7 +322,7 @@ private extension ContentView {
                     }
                 } label: {
                     Text(
-                        self.youTubePlayer.isLoggingEnabled 
+                        self.youTubePlayer.isLoggingEnabled
                             ? "Enabled"
                             : "Disabled"
                     )
