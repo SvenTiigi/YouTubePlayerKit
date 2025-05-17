@@ -177,9 +177,9 @@ let youTubePlayer = YouTubePlayer(
     // The parameters of the player
     parameters: .init(
         autoPlay: true,
-        showControls: true,
         loopEnabled: true,
         startTime: .init(value: 5, unit: .minutes),
+        showControls: true),
         // ...
     ),
     // The configuration of the underlying web view
