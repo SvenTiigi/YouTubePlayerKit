@@ -1,7 +1,7 @@
 private class BundleFinder {}
 
 extension Foundation.Bundle {
-    static var module: Bundle = {
+    static let module: Bundle = {
         return Bundle(for: BundleFinder.self)
     }()
 }
