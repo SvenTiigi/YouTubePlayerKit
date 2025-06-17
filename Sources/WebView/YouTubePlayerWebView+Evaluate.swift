@@ -78,12 +78,6 @@ extension YouTubePlayerWebView {
                 Result: \(String(describing: javaScriptResponse ?? "nil"), privacy: .public)
                 """
             )
-        // Check if JavaScript response is nil and the generic Response type is an optional type
-        if javaScriptResponse == nil,
-           let responseNilValue = (Response.self as? ExpressibleByNilLiteral.Type)?.init(nilLiteral: ()) as? Response {
-            // Return nil
-            return responseNilValue
-        }
         do {
             // Return converted response
             return try converter(
