@@ -91,6 +91,7 @@ public extension YouTubePlayer.OpenURLAction {
         // Check if YouTube player source can be initialize from url
         // and it was successfully loaded
         if let source = YouTubePlayer.Source(url: url),
+           source.videoID != player.source?.videoID,
            (try? await player.load(source: source)) != nil  {
             // Return out of function
             return
