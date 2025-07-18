@@ -179,7 +179,7 @@ let youTubePlayer = YouTubePlayer(
         autoPlay: true,
         loopEnabled: true,
         startTime: .init(value: 5, unit: .minutes),
-        showControls: true),
+        showControls: true,
         // ...
     ),
     // The configuration of the underlying web view
