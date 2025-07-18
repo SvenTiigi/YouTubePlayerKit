@@ -49,7 +49,7 @@ public extension YouTubePlayer {
         ///   - allowsInlineMediaPlayback: A Boolean value that indicates whether HTML5 videos play inline or use the native full-screen controller. Default value `true`
         ///   - allowsAirPlayForMediaPlayback: A Boolean value that indicates whether the web view allows media playback over AirPlay. Default value `true`
         ///   - allowsPictureInPictureMediaPlayback: A Boolean value that indicates whether HTML5 videos can play Picture in Picture. Default value `false`
-        ///   - useNonPersistentWebsiteDataStore: Boolean value indicating whether a non-persistent website data store should be used. Default value `true`
+        ///   - useNonPersistentWebsiteDataStore: Boolean value indicating whether a non-persistent website data store should be used. Default value `false`
         ///   - automaticallyAdjustsContentInsets: A Boolean value indicating if safe area insets should be added automatically to content insets. Default value `true`
         ///   - customUserAgent: A custom user agent of the underlying web view. Default value `nil`
         ///   - htmlBuilder: The HTML builder. Default value `.init()`
@@ -59,7 +59,7 @@ public extension YouTubePlayer {
             allowsInlineMediaPlayback: Bool = true,
             allowsAirPlayForMediaPlayback: Bool = true,
             allowsPictureInPictureMediaPlayback: Bool = false,
-            useNonPersistentWebsiteDataStore: Bool = true,
+            useNonPersistentWebsiteDataStore: Bool = false,
             automaticallyAdjustsContentInsets: Bool = true,
             customUserAgent: String? = nil,
             htmlBuilder: HTMLBuilder = .init(),
