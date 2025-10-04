@@ -1,5 +1,11 @@
 import Foundation
 
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
+
 // MARK: - Video Thumbnail API
 
 public extension YouTubePlayer {
