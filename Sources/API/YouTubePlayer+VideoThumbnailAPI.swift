@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - Video Thumbnail API
 
