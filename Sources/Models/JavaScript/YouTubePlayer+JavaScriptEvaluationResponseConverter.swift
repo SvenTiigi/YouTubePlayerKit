@@ -106,7 +106,7 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
     /// - Parameters:
     ///   - type: The Decodable Type. Default value `.self`
     ///   - decoder: The JSONDecoder. Default value `.init()`
-    func decode<D: Decodable>(
+    func decode<D: Decodable & Sendable>(
         as type: D.Type = D.self,
         decoder: @Sendable @escaping @autoclosure () -> JSONDecoder = .init()
     ) -> YouTubePlayer.JavaScriptEvaluationResponseConverter<D> {
