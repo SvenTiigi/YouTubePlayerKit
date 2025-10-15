@@ -33,10 +33,6 @@ jobs:
             xcode: 16.4
             destination: iPhone 16 Pro
             os: "18.5"
-          - runner: macos-14
-            xcode: 15.4
-            destination: iPhone 15 Pro
-            os: "17.5"
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode ${{ matrix.xcode }}
