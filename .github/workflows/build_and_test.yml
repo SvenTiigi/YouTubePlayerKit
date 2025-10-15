@@ -25,12 +25,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: 16.1
+          - xcode: 26.0.1
             destination: iPhone 16 Pro
-            os: 18.1
-          - xcode: 16.1
-            destination: iPhone 15 Pro
-            os: 17.5
+            os: "26.0"
+          - xcode: 16.4
+            destination: iPhone 16 Pro
+            os: "18.5"
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode version
@@ -59,7 +59,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: 16.1
+          - xcode: 26.0.1
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode version

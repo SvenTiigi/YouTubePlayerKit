@@ -24,9 +24,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: 16.1
+          - xcode: 26.0.1
             destination: iPhone 16 Pro
-            os: 18.1
+            os: "26.0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
