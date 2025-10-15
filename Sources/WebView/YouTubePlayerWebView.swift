@@ -132,9 +132,9 @@ private extension YouTubePlayerWebView {
         .map(\.size)
         .filter { $0 != .zero }
         .removeDuplicates()
-        .sink { size in
+        .sink { [weak self] size in
             // Set player size
-            Task(priority: .userInitiated) { [weak self] in
+            Task(priority: .userInitiated) {
                 try? await self?.evaluate(
                     javaScript: .youTubePlayer(
                         functionName: "setSize",
