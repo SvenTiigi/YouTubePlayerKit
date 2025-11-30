@@ -233,7 +233,12 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
 public extension YouTubePlayer.Parameters {
     
     /// The default origin URL.
-    static let defaultOriginURL = URL(string: "https://youtubeplayer")
+    static let defaultOriginURL: URL? = {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = Bundle.main.bundleIdentifier?.lowercased() ?? "youtubeplayer"
+        return urlComponents.url
+    }()
     
 }
 
