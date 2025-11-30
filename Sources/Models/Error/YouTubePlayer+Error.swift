@@ -28,6 +28,8 @@ public extension YouTubePlayer {
         case notFound
         /// The owner of the requested video does not allow it to be played in embedded players.
         case embeddedVideoPlayingNotAllowed
+        /// The request does not include the `HTTP Referer` header or equivalent API Client identification.
+        case missingAPIClientIdentification
     }
     
 }
@@ -42,7 +44,8 @@ public extension YouTubePlayer.Error {
         5: .html5NotSupported,
         100: .notFound,
         101: .embeddedVideoPlayingNotAllowed,
-        150: .embeddedVideoPlayingNotAllowed
+        150: .embeddedVideoPlayingNotAllowed,
+        153: .missingAPIClientIdentification
     ]
     
     /// Creates a new instance of ``YouTubePlayer/Error``.
