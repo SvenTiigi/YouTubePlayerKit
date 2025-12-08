@@ -59,10 +59,10 @@ public final class YouTubePlayer: ObservableObject {
     }
     
     /// The state subject.
-    private(set) lazy var stateSubject = CurrentValueSubject<State, Never>(.idle)
+    public private(set) lazy var stateSubject = CurrentValueSubject<State, Never>(.idle)
     
     /// The playback state subject.
-    private(set) lazy var playbackStateSubject = CurrentValueSubject<PlaybackState?, Never>(nil)
+    public private(set) lazy var playbackStateSubject = CurrentValueSubject<PlaybackState?, Never>(nil)
     
     /// The YouTube player web view.
     private(set) lazy var webView: YouTubePlayerWebView = {
