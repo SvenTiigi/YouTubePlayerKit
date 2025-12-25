@@ -26,9 +26,9 @@ jobs:
       matrix:
         include:
           - runner: macos-latest
-            xcode: 26.0.1
+            xcode: 26.1.1
             destination: iPhone 16 Pro
-            os: "26.0"
+            os: "26.1"
           - runner: macos-latest
             xcode: 16.4
             destination: iPhone 16 Pro
