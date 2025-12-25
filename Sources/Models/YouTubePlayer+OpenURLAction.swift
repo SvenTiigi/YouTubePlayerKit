@@ -44,10 +44,20 @@ public extension YouTubePlayer.OpenURLAction {
     /// - Parameters:
     ///   - url: The URL to open.
     ///   - player: The ``YouTubePlayer`` instance.
+    @MainActor
     func callAsFunction(
         url: URL,
         player: YouTubePlayer
     ) async {
+        // Check if the url is a YouTube video url and can be loaded
+        if let source = YouTubePlayer.Source(url: url),
+           source.videoID != player.source?.videoID,
+           (try? await player.load(source: source)) != nil  {
+            // Return out of function as the url is a video
+            // which is now loaded in the player
+            return
+        }
+        // Invoke the handler
         await self.handler(url, player)
     }
     
@@ -88,14 +98,6 @@ public extension YouTubePlayer.OpenURLAction {
     
     /// The default OpenURLAction
     static let `default` = Self { url, player in
-        // Check if YouTube player source can be initialize from url
-        // and it was successfully loaded
-        if let source = YouTubePlayer.Source(url: url),
-           source.videoID != player.source?.videoID,
-           (try? await player.load(source: source)) != nil  {
-            // Return out of function
-            return
-        }
         // Open url externally
         #if os(macOS)
         _ = try? await NSWorkspace
