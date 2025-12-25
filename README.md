@@ -120,7 +120,7 @@ struct ContentView: View {
                 ContentUnavailableView(
                     "Error",
                     systemImage: "exclamationmark.triangle.fill",
-                    description: Text("YouTube player couldn't be loaded: \(error)")
+                    description: Text("YouTube player couldn't be loaded")
                 )
             }
         }
