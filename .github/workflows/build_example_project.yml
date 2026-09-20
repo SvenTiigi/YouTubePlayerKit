@@ -6,38 +6,62 @@ on:
     paths:
       - "Example/**"
       - "Sources/**"
+      - "Package.swift"
+      - ".github/workflows/build_example_project.yml"
       - "!Sources/Documentation.docc/**"
   pull_request:
     paths:
       - "Example/**"
       - "Sources/**"
+      - "Package.swift"
+      - ".github/workflows/build_example_project.yml"
       - "!Sources/Documentation.docc/**"
 
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build example project (Xcode ${{ matrix.xcode }})
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        include:
-          - xcode: 26.1.1
-            destination: iPhone 16 Pro
-            os: "26.1"
+    name: Build example project (Xcode 26.6)
+    runs-on: macos-26
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Record toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/example-logs"
+          xcodebuild -version | tee "$RUNNER_TEMP/example-logs/environment.log"
+          xcodebuild -showsdks | tee -a "$RUNNER_TEMP/example-logs/environment.log"
       - name: Build
         run: |
-          set -o pipefail &&\
-          xcodebuild build\
-            -project Example/Example.xcodeproj\
-            -scheme Example\
-            -sdk iphonesimulator\
-            -destination "platform=iOS Simulator,name=${{ matrix.destination }},OS=${{ matrix.os }}"\
-          | xcbeautify --renderer github-actions
+          xcodebuild build \
+            -project Example/Example.xcodeproj \
+            -scheme Example \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/ExampleDerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/Example.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee "$RUNNER_TEMP/example-logs/build.log" | xcbeautify --renderer github-actions
+      - name: Upload build diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: example-ios-build
+          path: |
+            ${{ runner.temp }}/example-logs
+            ${{ runner.temp }}/Example.xcresult
+          retention-days: 14
+          if-no-files-found: warn
