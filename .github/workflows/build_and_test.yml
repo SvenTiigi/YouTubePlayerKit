@@ -2,11 +2,6 @@ name: Build and Test
 
 on:
   workflow_dispatch:
-    inputs:
-      run_ios17:
-        description: "Also test iOS 17 (legacy runner retires November 2, 2026)"
-        type: boolean
-        default: false
   push:
     branches: [main, develop]
   pull_request:
@@ -71,26 +66,6 @@ jobs:
           os: "27.0"
           device: iPhone 18 Pro
           artifact-name: ios-27-preview
-
-  iOS-legacy:
-    name: iOS 17 compatibility (manual)
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ios17 }}
-    # Never make this retiring runner a required PR check. Replace its runtime
-    # provisioning before November 2, 2026, or remove this manual job.
-    # https://github.com/actions/runner-images/issues/13518
-    runs-on: macos-14
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/test-ios
-        with:
-          # Xcode 15 cannot build this Swift 6 package, even for an iOS 17 runtime.
-          xcode: "16.2"
-          os: "17.5"
-          device: iPhone 15 Pro
-          artifact-name: ios-17-legacy
 
   macOS:
     name: macOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})

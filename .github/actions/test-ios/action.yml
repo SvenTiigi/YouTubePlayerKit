@@ -44,6 +44,16 @@ runs:
         xcrun simctl bootstatus "$simulator_id" -b \
           2>&1 | tee "$RUNNER_TEMP/test-logs/simulator-boot.log"
         echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
+    - name: Initialize simulator WebKit services
+      shell: bash
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+        SIMULATOR_ID: ${{ steps.simulator.outputs.id }}
+      run: |
+        # bootstatus can finish before WebKit's Launch Services database is ready.
+        # Start WebKit in an application before building the hostless package tests.
+        xcrun simctl launch "$SIMULATOR_ID" com.apple.mobilesafari \
+          2>&1 | tee "$RUNNER_TEMP/test-logs/webkit-startup.log"
     - name: Build and test
       shell: bash
       env:
