@@ -1,61 +1,70 @@
-import Testing
 import Foundation
+import Testing
 @testable import YouTubePlayerKit
+
+// MARK: - YouTubePlayerTests
 
 @MainActor
 struct YouTubePlayerTests {
-    
-    @Test
-    func customInitialization() async {
-        let source: YouTubePlayer.Source = .video(id: UUID().uuidString)
+
+    @Test(
+        "Initialization applies explicit playback settings across fullscreen modes",
+        arguments: [false, true],
+        YouTubePlayer.FullscreenMode.allCases
+    )
+    func customInitialization(
+        isEnabled: Bool,
+        fullscreenMode: YouTubePlayer.FullscreenMode
+    ) {
+        let source = YouTubePlayer.Source.video(id: UUID().uuidString)
         let parameters = YouTubePlayer.Parameters(
-            autoPlay: .random(),
-            loopEnabled: .random(),
-            startTime: Bool.random() ? .init(value: .random(in: 1...10), unit: .seconds) : nil,
-            endTime: Bool.random() ? .init(value: .random(in: 40...60), unit: .seconds) : nil,
-            showControls: .random(),
-            showFullscreenButton: .random(),
-            progressBarColor: YouTubePlayer.Parameters.ProgressBarColor.allCases.randomElement(),
-            keyboardControlsDisabled: .random(),
-            language: UUID().uuidString,
-            captionLanguage: UUID().uuidString,
-            showCaptions: .random(),
-            restrictRelatedVideosToSameChannel: .random(),
-            originURL: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil,
-            referrerURL: Bool.random() ? .init(string: "https://\(UUID().uuidString)") : nil
+            autoPlay: isEnabled,
+            loopEnabled: isEnabled,
+            startTime: isEnabled ? .init(value: 10, unit: .seconds) : nil,
+            endTime: isEnabled ? .init(value: 60, unit: .seconds) : nil,
+            showControls: isEnabled,
+            showFullscreenButton: isEnabled,
+            progressBarColor: isEnabled ? .white : .red,
+            keyboardControlsDisabled: isEnabled,
+            language: "de",
+            captionLanguage: "en",
+            showCaptions: isEnabled,
+            restrictRelatedVideosToSameChannel: isEnabled,
+            originURL: nil,
+            referrerURL: nil
         )
         let configuration = YouTubePlayer.Configuration(
-            fullscreenMode: YouTubePlayer.FullscreenMode.allCases.randomElement() ?? .system,
-            allowsInlineMediaPlayback: .random(),
-            allowsPictureInPictureMediaPlayback: .random(),
-            useNonPersistentWebsiteDataStore: .random(),
-            automaticallyAdjustsContentInsets: .random(),
-            customUserAgent: UUID().uuidString,
-            openURLAction: .default
+            fullscreenMode: fullscreenMode,
+            allowsInlineMediaPlayback: isEnabled,
+            allowsAirPlayForMediaPlayback: isEnabled,
+            allowsPictureInPictureMediaPlayback: isEnabled,
+            useNonPersistentWebsiteDataStore: isEnabled,
+            automaticallyAdjustsContentInsets: isEnabled,
+            customUserAgent: "YouTubePlayerKitTests"
         )
-        let isLoggingEnabled: Bool = .random()
-        let youTubePlayer = YouTubePlayer(
+        let player = YouTubePlayer(
             source: source,
             parameters: parameters,
             configuration: configuration,
-            isLoggingEnabled: isLoggingEnabled
+            isLoggingEnabled: isEnabled
         )
-        #expect(youTubePlayer.source == source)
-        #expect(youTubePlayer.parameters == parameters)
-        #expect(youTubePlayer.configuration == configuration)
-        #expect(youTubePlayer.isLoggingEnabled == isLoggingEnabled)
-        #expect(youTubePlayer.state == .idle)
-        #expect(youTubePlayer.playbackState == nil)
+        #expect(player.source == source)
+        #expect(player.parameters == parameters)
+        #expect(player.configuration == configuration)
+        #expect(player.isLoggingEnabled == isEnabled)
+        #expect(player.state == .idle)
+        #expect(player.playbackState == nil)
     }
-    
-    @Test
-    func stringLiteralInitialization() async {
-        let videoID = UUID().uuidString
-        let youTubePlayer = YouTubePlayer(stringLiteral: "https://youtube.com/watch?v=\(videoID)")
-        #expect(youTubePlayer.source == .video(id: videoID))
-        #expect(youTubePlayer.parameters == .init())
-        #expect(youTubePlayer.configuration == .init())
-        #expect(!youTubePlayer.isLoggingEnabled)
+
+    @Test("String initialization parses the source, player parameters, and inline configuration together")
+    func parsesCompletePlayerURL() {
+        let player: YouTubePlayer = "https://youtube.com/watch?v=video-id&autoplay=1&start=15&playsinline=0"
+        #expect(player.source == .video(id: "video-id"))
+        #expect(player.parameters.autoPlay == true)
+        #expect(player.parameters.startTime == .init(value: 15, unit: .seconds))
+        #expect(!player.configuration.allowsInlineMediaPlayback)
+        #expect(!player.isLoggingEnabled)
+        #expect(player.state == .idle)
     }
-    
+
 }

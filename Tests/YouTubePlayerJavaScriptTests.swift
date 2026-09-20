@@ -4,14 +4,14 @@ import Foundation
 
 struct YouTubePlayerJavaScriptTests {
     
-    @Test
+    @Test("Empty JavaScript has no content or description")
     func emptyInitializer() {
         let javaScript = YouTubePlayer.JavaScript()
         #expect(javaScript.content().isEmpty)
         #expect(javaScript.description.isEmpty)
     }
     
-    @Test
+    @Test("JavaScript initialization preserves the supplied code")
     func designatedInitializer() {
         let javaScriptCode = "const x = 1;"
         let javaScript = YouTubePlayer.JavaScript(javaScriptCode)
@@ -19,7 +19,7 @@ struct YouTubePlayerJavaScriptTests {
         #expect(javaScript.description == javaScriptCode)
     }
     
-    @Test
+    @Test("JavaScript statements end with exactly one semicolon")
     func statementTerminatorNormalization() {
         #expect(
             YouTubePlayer.JavaScript("const x = 1").content() == "const x = 1;"
@@ -35,7 +35,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Variable interpolation uses the configured player variable name")
     func variableInterpolation() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -47,7 +47,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Every player variable interpolation uses the same configured name")
     func multipleVariableInterpolations() {
         let youTubePlayerVariableName = UUID().uuidString
         let javaScript: YouTubePlayer.JavaScript = """
@@ -64,7 +64,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Player operators are appended to the configured player variable")
     func youTubePlayerOperator() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -78,7 +78,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Player function calls without parameters use empty parentheses")
     func youTubePlayerFunctionWithoutParameters() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -92,7 +92,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Player function calls preserve their supplied JavaScript argument")
     func youTubePlayerFunctionWithParameters() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -107,11 +107,16 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
-    func youTubePlayerFunctionWithMultipleParameters() {
+    @Test(
+        "Player function calls separate multiple arguments with commas in their original order",
+        arguments: [2, 3, 5]
+    )
+    func youTubePlayerFunctionWithMultipleParameters(
+        count: Int
+    ) {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
-        let parameters = [String](repeating: UUID().uuidString, count: .random(in: 2...5))
+        let parameters = (0..<count).map { "argument\($0)" }
         #expect(
             YouTubePlayer
                 .JavaScript
@@ -122,11 +127,17 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
-    func youTubePlayerFunctionWithEncodableParameter() throws {
+    @Test(
+        "Player function calls encode structured arguments with the supplied JSON encoder",
+        arguments: [(false, false), (false, true), (true, false), (true, true)]
+    )
+    func youTubePlayerFunctionWithEncodableParameter(
+        first: Bool,
+        second: Bool
+    ) throws {
         struct Parameter: Encodable {
-            var example1: Bool = .random()
-            var example2: Bool = .random()
+            var example1: Bool
+            var example2: Bool
         }
         let jsonEncoder: JSONEncoder = {
             let jsonEncoder = JSONEncoder()
@@ -134,7 +145,10 @@ struct YouTubePlayerJavaScriptTests {
             return jsonEncoder
         }()
         let functionName = UUID().uuidString
-        let parameter = Parameter()
+        let parameter = Parameter(
+            example1: first,
+            example2: second
+        )
         let parameterJSONString = String(
             decoding: try jsonEncoder.encode(parameter),
             as: UTF8.self
@@ -154,7 +168,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Ignoring a JavaScript return value appends a null expression")
     func ignoreReturnValue() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -171,7 +185,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("JavaScript can be wrapped in an immediately invoked function expression")
     func immediatelyInvokedFunctionExpression() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -190,7 +204,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Function wrapping preserves player arguments and return-value suppression")
     func combinedFeatures() {
         let youTubePlayerVariableName = UUID().uuidString
         let functionName = UUID().uuidString
@@ -211,7 +225,7 @@ struct YouTubePlayerJavaScriptTests {
         )
     }
     
-    @Test
+    @Test("Descriptions retain variable placeholders while content uses default variable names")
     func emptyVariableNames() {
         let functionName = UUID().uuidString
         let javaScript = YouTubePlayer
