@@ -344,7 +344,7 @@ let cancellable = youTubePlayer
 ```
 
 > [!IMPORTANT]
-> The YouTubePlayerKit supports both official as well as unofficial/undocumented events. Please see the [`YouTubePlayer.Event.Name`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/Event/YouTubePlayer%2BEvent%2BName.swift) enumeration for more details.
+> The YouTubePlayerKit supports both official as well as unofficial/undocumented events. Please see the [`YouTubePlayer.Event.Name`](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/Event/YouTubePlayer%2BEvent%2BName.swift) type for more details.
 
 To run [custom JavaScript](https://github.com/SvenTiigi/YouTubePlayerKit/blob/main/Sources/Models/JavaScript/YouTubePlayer%2BJavaScript.swift) on the YouTube player JavaScript instance:
 
@@ -378,8 +378,8 @@ let youTubePlayer = YouTubePlayer(
     configuration: .init(
         htmlBuilder: .init(
             youTubePlayerJavaScriptVariableName: "youtubePlayer",
-            youTubePlayerEventCallbackURLScheme: "youtubeplayer",
-            youTubePlayerEventCallbackDataParameterName: "data",
+            youTubePlayerScriptMessageHandlerName: "youtubePlayerScriptMessageHandler",
+            additionalEventNames: [],
             youTubePlayerIframeAPISourceURL: .init(string: "https://www.youtube.com/iframe_api")!,
             htmlProvider: { htmlBuilder, jsonEncodedYouTubePlayerOptions in
                 // TODO: Return custom HTML string

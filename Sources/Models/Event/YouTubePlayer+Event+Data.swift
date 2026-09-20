@@ -5,6 +5,9 @@ import Foundation
 public extension YouTubePlayer.Event {
     
     /// A YouTube player event data payload.
+    ///
+    /// Strings are preserved exactly. Numbers and booleans use their string representation,
+    /// and objects and arrays contain JSON. Missing, undefined, and null payloads have no data.
     struct Data: Hashable, Sendable {
         
         // MARK: Properties
@@ -22,28 +25,6 @@ public extension YouTubePlayer.Event {
             self.value = value
         }
         
-    }
-    
-}
-
-// MARK: - Convenience Initializer
-
-public extension YouTubePlayer.Event.Data {
-    
-    /// Creates a new instance of ``YouTubePlayer/Event/Data``
-    /// - Parameter urlQueryItem: The url query item.
-    init?(
-        urlQueryItem: URLQueryItem
-    ) {
-        // Verify value of query item is available and is not empty and not equal to "null"
-        guard let value = urlQueryItem.value?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !value.isEmpty,
-              value.lowercased() != "null" else {
-            // Otherwise return out of function
-            return nil
-        }
-        // Initialize with value
-        self.init(value: value)
     }
     
 }
@@ -117,4 +98,32 @@ public extension YouTubePlayer.Event.Data {
         )
     }
     
+}
+
+// MARK: - JavaScript Value
+
+extension YouTubePlayer.Event.Data {
+
+    /// Converts a WebKit message payload without restricting it to known event schemas.
+    /// - Parameter javaScriptValue: A string, JSON value, null, or missing payload.
+    init?(
+        javaScriptValue: Any?
+    ) {
+        guard let javaScriptValue, !(javaScriptValue is NSNull) else {
+            return nil
+        }
+        if let value = javaScriptValue as? String {
+            self.init(value: value)
+            return
+        }
+        guard JSONSerialization.isValidJSONObject([javaScriptValue]),
+              let data = try? JSONSerialization.data(
+                withJSONObject: javaScriptValue,
+                options: [.fragmentsAllowed, .sortedKeys]
+              ) else {
+            return nil
+        }
+        self.init(value: String(decoding: data, as: UTF8.self))
+    }
+
 }

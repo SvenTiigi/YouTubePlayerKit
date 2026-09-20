@@ -5,7 +5,7 @@ import Foundation
 public extension YouTubePlayer {
     
     /// A YouTubePlayer event.
-    struct Event: Codable, Hashable, Sendable {
+    struct Event: Hashable, Sendable {
         
         // MARK: Properties
         
@@ -45,4 +45,18 @@ extension YouTubePlayer.Event: CustomStringConvertible {
         """
     }
     
+}
+
+// MARK: - Codable
+
+extension YouTubePlayer.Event: Codable {
+
+    /// The coding keys.
+    public enum CodingKeys: CodingKey {
+        /// The event name, including names introduced by future YouTube API versions.
+        case name
+        /// The optional event payload.
+        case data
+    }
+
 }

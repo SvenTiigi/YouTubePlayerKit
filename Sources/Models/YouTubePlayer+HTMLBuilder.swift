@@ -17,12 +17,13 @@ public extension YouTubePlayer {
         /// The YouTube player JavaScrpt variable name.
         public var youTubePlayerJavaScriptVariableName: String
         
-        /// The YouTube player event callback url scheme.
-        public var youTubePlayerEventCallbackURLScheme: String
+        /// The nonempty YouTube player script message handler name.
+        public var youTubePlayerScriptMessageHandlerName: String
         
-        /// The YouTube player event callback data parameter name.
-        public var youTubePlayerEventCallbackDataParameterName: String
-        
+        /// Additional event names to subscribe to alongside the well-known events.
+        /// - Note: The default HTML provider forwards these events through the event publisher.
+        public var additionalEventNames: Set<YouTubePlayer.Event.Name>
+
         /// The YouTube player iFrame API source URL.
         public var youTubePlayerIframeAPISourceURL: URL
         
@@ -35,21 +36,21 @@ public extension YouTubePlayer {
         /// Creates a new instance of ``YouTubePlayer/HTMLBuilder``
         /// - Parameters:
         ///   - youTubePlayerJavaScriptVariableName: The YouTube player JavaScrpt variable name. Default value `youtubePlayer`
-        ///   - youTubePlayerEventCallbackURLScheme: The YouTube player event callback url scheme. Default value `youtubeplayer`
-        ///   - youTubePlayerEventCallbackDataParameterName: The YouTube player event callback data parameter name. Default value `data`
+        ///   - youTubePlayerScriptMessageHandlerName: The YouTube player script message handler name. Default value `youtubePlayerScriptMessageHandler`
+        ///   - additionalEventNames: Additional YouTube IFrame API events to subscribe to. Default value `.init()`
         ///   - youTubePlayerIframeAPISourceURL: The YouTube player iFrame API source URL. Default value `https://www.youtube.com/iframe_api`
         ///   - htmlProvider: A closure which provides the HTML for the YouTube player. Default value `Self.defaultHTMLProvider()`
         ///  - Important: Please be cautious when providing a custom `HTMLProvider`. It is recommended to stick with the default implementation. However, if you want full control, you can provide a custom implementation.
         public init(
             youTubePlayerJavaScriptVariableName: String = "youtubePlayer",
-            youTubePlayerEventCallbackURLScheme: String = "youtubeplayer",
-            youTubePlayerEventCallbackDataParameterName: String = "data",
+            youTubePlayerScriptMessageHandlerName: String = "youtubePlayerScriptMessageHandler",
+            additionalEventNames: Set<YouTubePlayer.Event.Name> = .init(),
             youTubePlayerIframeAPISourceURL: URL = .init(string: "https://www.youtube.com/iframe_api")!,
             htmlProvider: @escaping HTMLProvider = Self.defaultHTMLProvider()
         ) {
             self.youTubePlayerJavaScriptVariableName = youTubePlayerJavaScriptVariableName
-            self.youTubePlayerEventCallbackURLScheme = youTubePlayerEventCallbackURLScheme
-            self.youTubePlayerEventCallbackDataParameterName = youTubePlayerEventCallbackDataParameterName
+            self.youTubePlayerScriptMessageHandlerName = youTubePlayerScriptMessageHandlerName
+            self.additionalEventNames = additionalEventNames
             self.youTubePlayerIframeAPISourceURL = youTubePlayerIframeAPISourceURL
             self.htmlProvider = htmlProvider
         }
@@ -64,9 +65,11 @@ public extension YouTubePlayer.HTMLBuilder {
     
     /// Builds the HTML.
     /// - Parameter jsonEncodedPlayerOptionsString: The JSON encoded YouTube player options string.
+    /// - Throws: An error if the handler name is empty or the HTML provider fails.
     func callAsFunction(
         jsonEncodedPlayerOptionsString: YouTubePlayer.Options.JSONEncodedString
     ) throws -> String {
+        try self.validate()
         return try self.htmlProvider(
             self,
             jsonEncodedPlayerOptionsString
@@ -88,8 +91,8 @@ extension YouTubePlayer.HTMLBuilder: Equatable {
         rhs: Self
     ) -> Bool {
         lhs.youTubePlayerJavaScriptVariableName == rhs.youTubePlayerJavaScriptVariableName
-            && lhs.youTubePlayerEventCallbackURLScheme == rhs.youTubePlayerEventCallbackURLScheme
-            && lhs.youTubePlayerEventCallbackDataParameterName == rhs.youTubePlayerEventCallbackDataParameterName
+            && lhs.youTubePlayerScriptMessageHandlerName == rhs.youTubePlayerScriptMessageHandlerName
+            && lhs.additionalEventNames == rhs.additionalEventNames
             && lhs.youTubePlayerIframeAPISourceURL == rhs.youTubePlayerIframeAPISourceURL
     }
     
@@ -103,8 +106,8 @@ extension YouTubePlayer.HTMLBuilder: Hashable {
     /// - Parameter hasher: The hasher to use when combining the components of this instance.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.youTubePlayerJavaScriptVariableName)
-        hasher.combine(self.youTubePlayerEventCallbackURLScheme)
-        hasher.combine(self.youTubePlayerEventCallbackDataParameterName)
+        hasher.combine(self.youTubePlayerScriptMessageHandlerName)
+        hasher.combine(self.additionalEventNames)
         hasher.combine(self.youTubePlayerIframeAPISourceURL)
     }
     
@@ -117,8 +120,8 @@ extension YouTubePlayer.HTMLBuilder: Codable {
     /// The coding keys.
     private enum CodingKeys: CodingKey {
         case youTubePlayerJavaScriptVariableName
-        case youTubePlayerEventCallbackURLScheme
-        case youTubePlayerEventCallbackDataParameterName
+        case youTubePlayerScriptMessageHandlerName
+        case additionalEventNames
         case youTubePlayerIframeAPISourceURL
     }
     
@@ -130,8 +133,8 @@ extension YouTubePlayer.HTMLBuilder: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         try self.init(
             youTubePlayerJavaScriptVariableName: container.decode(String.self, forKey: .youTubePlayerJavaScriptVariableName),
-            youTubePlayerEventCallbackURLScheme: container.decode(String.self, forKey: .youTubePlayerEventCallbackURLScheme),
-            youTubePlayerEventCallbackDataParameterName: container.decode(String.self, forKey: .youTubePlayerEventCallbackDataParameterName),
+            youTubePlayerScriptMessageHandlerName: container.decode(String.self, forKey: .youTubePlayerScriptMessageHandlerName),
+            additionalEventNames: container.decode(Set<YouTubePlayer.Event.Name>.self, forKey: .additionalEventNames),
             youTubePlayerIframeAPISourceURL: container.decode(URL.self, forKey: .youTubePlayerIframeAPISourceURL)
         )
     }
@@ -143,8 +146,8 @@ extension YouTubePlayer.HTMLBuilder: Codable {
     ) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.youTubePlayerJavaScriptVariableName, forKey: .youTubePlayerJavaScriptVariableName)
-        try container.encode(self.youTubePlayerEventCallbackURLScheme, forKey: .youTubePlayerEventCallbackURLScheme)
-        try container.encode(self.youTubePlayerEventCallbackDataParameterName, forKey: .youTubePlayerEventCallbackDataParameterName)
+        try container.encode(self.youTubePlayerScriptMessageHandlerName, forKey: .youTubePlayerScriptMessageHandlerName)
+        try container.encode(self.additionalEventNames, forKey: .additionalEventNames)
         try container.encode(self.youTubePlayerIframeAPISourceURL, forKey: .youTubePlayerIframeAPISourceURL)
     }
     
@@ -160,7 +163,17 @@ public extension YouTubePlayer.HTMLBuilder {
         excludedEventNames: Set<YouTubePlayer.Event.Name> = .init()
     ) -> HTMLProvider {
         { htmlBuilder, jsonEncodedPlayerOptionsString in
-            """
+            try htmlBuilder.validate()
+            let eventNames = Set(YouTubePlayer.Event.Name.allCases)
+                .union(htmlBuilder.additionalEventNames)
+                .subtracting(excludedEventNames)
+                .subtracting([.iFrameApiReady, .iFrameApiFailedToLoad])
+                .map(\.rawValue)
+                .sorted()
+            let messageHandlerName = try Self.javaScriptString(htmlBuilder.youTubePlayerScriptMessageHandlerName)
+            let eventNamesJSON = try Self.javaScriptString(eventNames)
+            let playerVariableName = try Self.javaScriptString(htmlBuilder.youTubePlayerJavaScriptVariableName)
+            return """
             <!DOCTYPE html>
             <html>
             <head>
@@ -194,19 +207,22 @@ public extension YouTubePlayer.HTMLBuilder {
                     <div id="\(htmlBuilder.youTubePlayerJavaScriptVariableName)"></div>
                 </div>
             
-                <script src="\(htmlBuilder.youTubePlayerIframeAPISourceURL)"
-                    onerror="window.location.href='\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://\(YouTubePlayer.Event.Name.iFrameApiFailedToLoad.rawValue)'">
-                </script>
-            
                 <script>
                     var \(htmlBuilder.youTubePlayerJavaScriptVariableName);
 
                     function onYouTubeIframeAPIReady() {
-                        \(htmlBuilder.youTubePlayerJavaScriptVariableName) = new YT.Player(
-                            '\(htmlBuilder.youTubePlayerJavaScriptVariableName)',
-                            \(jsonEncodedPlayerOptionsString)
+                        const playerOptions = \(jsonEncodedPlayerOptionsString);
+                        playerOptions.events = Object.fromEntries(
+                            \(eventNamesJSON).map(eventName => [
+                                eventName,
+                                event => sendYouTubePlayerEvent(eventName, event)
+                            ])
                         );
-                        \(htmlBuilder.youTubePlayerJavaScriptVariableName).setSize(
+                        window[\(playerVariableName)] = new YT.Player(
+                            \(playerVariableName),
+                            playerOptions
+                        );
+                        window[\(playerVariableName)].setSize(
                             window.innerWidth,
                             window.innerHeight
                         );
@@ -214,33 +230,17 @@ public extension YouTubePlayer.HTMLBuilder {
                     }
             
                     function sendYouTubePlayerEvent(eventName, event) {
-                        const url = new URL(`\(htmlBuilder.youTubePlayerEventCallbackURLScheme)://${eventName}`);
-                        if (event && event.data !== null) {
-                            url.searchParams.set(
-                                '\(htmlBuilder.youTubePlayerEventCallbackDataParameterName)',
-                                typeof event.data === 'object' ? JSON.stringify(event.data) : event.data
-                            );
-                        }
-                        window.location.href = url.toString();
+                        window.webkit.messageHandlers[\(messageHandlerName)].postMessage(
+                            {
+                                \(YouTubePlayer.Event.CodingKeys.name.stringValue): eventName,
+                                \(YouTubePlayer.Event.CodingKeys.data.stringValue): (event == null || event.data == null) ? null : (typeof event.data === 'object' ? JSON.stringify(event.data) : String(event.data))
+                            }
+                        );
                     }
 
-                    \(
-                        YouTubePlayer
-                            .Event
-                            .Name
-                            .allCases
-                            .filter { $0 != .iFrameApiReady && $0 != .iFrameApiFailedToLoad }
-                            .filter { !excludedEventNames.contains($0) }
-                            .map(\.rawValue)
-                            .map { eventName in
-                                """
-                                function \(eventName)(event) {
-                                    sendYouTubePlayerEvent('\(eventName)', event);
-                                }
-                                """
-                            }
-                            .joined(separator: "\n\n")
-                    )
+                </script>
+                <script src="\(htmlBuilder.youTubePlayerIframeAPISourceURL)"
+                    onerror="sendYouTubePlayerEvent('\(YouTubePlayer.Event.Name.iFrameApiFailedToLoad.rawValue)')">
                 </script>
             </body>
             </html>
@@ -248,4 +248,42 @@ public extension YouTubePlayer.HTMLBuilder {
         }
     }
     
+}
+
+// MARK: - Validation
+
+extension YouTubePlayer.HTMLBuilder {
+
+    /// Validates the message handler name before building HTML or registering with WebKit.
+    /// - Throws: An API error if the message handler name is empty.
+    func validate() throws(YouTubePlayer.APIError) {
+        guard !self.youTubePlayerScriptMessageHandlerName.isEmpty else {
+            throw .init(
+                reason: "The YouTube player script message handler name must not be empty."
+            )
+        }
+    }
+
+}
+
+// MARK: - JavaScript Encoding
+
+private extension YouTubePlayer.HTMLBuilder {
+
+    /// Encodes a value for use inside an HTML script element.
+    /// - Parameter value: The value to encode as JSON.
+    /// - Returns: JSON that cannot terminate the enclosing script element.
+    /// - Throws: An error if the value cannot be encoded.
+    static func javaScriptString(
+        _ value: some Encodable
+    ) throws -> String {
+        return String(
+            decoding: try JSONEncoder().encode(value),
+            as: UTF8.self
+        )
+        .replacingOccurrences(of: "<", with: "\\u003C")
+        .replacingOccurrences(of: "\u{2028}", with: "\\u2028")
+        .replacingOccurrences(of: "\u{2029}", with: "\\u2029")
+    }
+
 }

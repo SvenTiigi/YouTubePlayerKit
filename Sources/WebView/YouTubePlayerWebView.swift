@@ -9,6 +9,9 @@ final class YouTubePlayerWebView: WKWebView {
     
     // MARK: Properties
     
+    /// The script message publisher.
+    private let scriptMessagePublisher: ScriptMessagePublisher
+
     /// The YouTubePlayer.
     private(set) weak var player: YouTubePlayer?
     
@@ -18,8 +21,8 @@ final class YouTubePlayerWebView: WKWebView {
     /// The frame changes subject.
     private lazy var frameChangesSubject = PassthroughSubject<CGRect, Never>()
     
-    /// The frame changes cancellable.
-    private var frameChangesCancellable: AnyCancellable?
+    /// The cancellables.
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: Initializer
     
@@ -28,11 +31,27 @@ final class YouTubePlayerWebView: WKWebView {
     init(
         player: YouTubePlayer
     ) {
+        let scriptMessagePublisher = ScriptMessagePublisher()
+        self.scriptMessagePublisher = scriptMessagePublisher
         self.player = player
         super.init(
             frame: .zero,
             configuration: {
                 let configuration = WKWebViewConfiguration()
+                // Set the user content controller
+                configuration.userContentController = {
+                    let userContentController = WKUserContentController()
+                    // Invalid configuration is reported as a setup error by load().
+                    guard (try? player.configuration.htmlBuilder.validate()) != nil else {
+                        return userContentController
+                    }
+                    // Add the script message publisher
+                    userContentController.add(
+                        scriptMessagePublisher,
+                        name: player.configuration.htmlBuilder.youTubePlayerScriptMessageHandlerName
+                    )
+                    return userContentController
+                }()
                 // Do not persist cookies and website data storage to disk
                 configuration.websiteDataStore = player.configuration.useNonPersistentWebsiteDataStore
                     ? .nonPersistent()
@@ -120,8 +139,16 @@ private extension YouTubePlayerWebView {
     func setup(
         using player: YouTubePlayer
     ) {
+        // Subscribe to message publisher
+        self.scriptMessagePublisher
+            .sink { [weak self] scriptMessage in
+                self?.process(
+                    scriptMessage: scriptMessage
+                )
+            }
+            .store(in: &self.cancellables)
         // Setup frame observation
-        self.frameChangesCancellable = self.publisher(
+        self.publisher(
             for: \.frame,
             options: [.new]
         )
@@ -153,6 +180,7 @@ private extension YouTubePlayerWebView {
                 )
             }
         }
+        .store(in: &self.cancellables)
         // Set navigation delegate
         self.navigationDelegate = self
         // Set ui delegate
@@ -259,4 +287,49 @@ extension YouTubePlayerWebView {
         )
     }
     
+}
+
+// MARK: - Process Script Message
+
+private extension YouTubePlayerWebView {
+
+    /// Processes an incoming script message.
+    /// - Parameter scriptMessage: The WKScriptMessage received via the configured user content controller.
+    func process(
+        scriptMessage: WKScriptMessage
+    ) {
+        // Verify the frame is the web site’s main frame
+        guard scriptMessage.frameInfo.isMainFrame else {
+            // Otherwise return out of function
+            return
+        }
+        // Verify the body is a dictionary
+        guard let body = scriptMessage.body as? [String: Any],
+              let rawEventName = body[YouTubePlayer.Event.CodingKeys.name.stringValue] as? String else {
+            // Log error
+            self.player?
+                .logger()?
+                .error("Received bad YouTube Player Event\n\(.init(describing: scriptMessage.body), privacy: .public)")
+            // Return out of function
+            return
+        }
+        let youTubePlayerEventName = YouTubePlayer.Event.Name(rawValue: rawEventName)
+        // Initialize the YouTube player event
+        let youTubePlayerEvent = YouTubePlayer.Event(
+            name: youTubePlayerEventName,
+            data: .init(javaScriptValue: body[YouTubePlayer.Event.CodingKeys.data.stringValue])
+        )
+        // Check if the event is neither `videoProgress` nor `loadProgress`,
+        // as these two events are explicitly excluded from logging due to their high frequency.
+        if youTubePlayerEventName != .videoProgress && youTubePlayerEventName != .loadProgress {
+            // Log received JavaScript event
+            self.player?
+                .logger()?
+                .debug("Received YouTube Player Event\n\(youTubePlayerEvent, privacy: .public)")
+        }
+        // Send received player event
+        self.eventSubject
+            .send(.receivedPlayerEvent(youTubePlayerEvent))
+    }
+
 }

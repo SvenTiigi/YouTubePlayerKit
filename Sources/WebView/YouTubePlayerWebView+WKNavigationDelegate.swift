@@ -54,6 +54,10 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Otherwise cancel navigation action
             return .cancel
         }
+        // Log url
+        self.player?
+            .logger()?
+            .debug("WKWebView navigate to \(url, privacy: .public)")
         // Verify url is not about:blank
         guard url.absoluteString != "about:blank" else {
             // Otherwise allow navigation
@@ -64,38 +68,6 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
             // Allow navigation action
             return .allow
         }
-        // Check if the scheme matches the JavaScript event callback URL scheme and if the host is a known player event name
-        if url.scheme == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackURLScheme,
-           let playerEventName = url.host.flatMap(YouTubePlayer.Event.Name.init) {
-            // Initialize player event
-            let playerEvent = YouTubePlayer.Event(
-                name: playerEventName,
-                data: URLComponents(
-                    url: url,
-                    resolvingAgainstBaseURL: true
-                )?
-                .queryItems?
-                .first { $0.name == self.player?.configuration.htmlBuilder.youTubePlayerEventCallbackDataParameterName }
-                    .flatMap(YouTubePlayer.Event.Data.init)
-            )
-            // Check if a logger is available and ensure event name is not equal to `videoProgress` and `loadProgress`
-            // Those two events are explicitly excluded because they occur in a high frequency.
-            if let logger = self.player?.logger(),
-               playerEventName != .videoProgress && playerEventName != .loadProgress {
-                // Log received JavaScript event
-                logger.debug("Received YouTube Player Event\n\(playerEvent, privacy: .public)")
-            }
-            // Send received player event
-            self.eventSubject.send(
-                .receivedPlayerEvent(playerEvent)
-            )
-            // Cancel navigation action
-            return .cancel
-        }
-        // Log url
-        self.player?
-            .logger()?
-            .debug("WKWebView navigate to \(url, privacy: .public)")
         // Verify URL scheme is http or https
         guard url.scheme == "http" || url.scheme == "https" else {
             // Otherwise allow navigation action
@@ -117,6 +89,7 @@ extension YouTubePlayerWebView: WKNavigationDelegate {
                 return .allow
             }
         }
+        // Open the URL asynchronously on the inherited main actor.
         Task(priority: .userInitiated) { [weak self] in
             // Verify player is available
             guard let player = self?.player else {
