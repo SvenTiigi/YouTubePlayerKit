@@ -2,81 +2,206 @@ name: Build and Test
 
 on:
   workflow_dispatch:
+    inputs:
+      run_ios17:
+        description: "Also test iOS 17 (legacy runner retires November 2, 2026)"
+        type: boolean
+        default: false
   push:
-    paths:
-      - "Sources/**"
-      - "Tests/**"
-      - "Package.swift"
-      - ".github/workflows/build_and_test.yml"
-      - "!Sources/Documentation.docc/**"
+    branches: [main, develop]
   pull_request:
-    paths:
-      - "Sources/**"
-      - "Tests/**"
-      - "Package.swift"
-      - ".github/workflows/build_and_test.yml"
-      - "!Sources/Documentation.docc/**"
+  merge_group:
+  # Detect runner-image changes even when the package has not changed.
+  schedule:
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   iOS:
-    name: Build and test on iOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})
+    name: iOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
         include:
           - runner: macos-26
             xcode: "26.6"
-            destination: iPhone 17 Pro
+            device: iPhone 17 Pro
             os: "26.5"
           - runner: macos-15
             xcode: "16.4"
-            destination: iPhone 16 Pro
+            device: iPhone 16 Pro
             os: "18.5"
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode ${{ matrix.xcode }}
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
-      - name: Build
-        run: |
-          set -o pipefail &&\
-          xcodebuild build-for-testing\
-            -scheme YouTubePlayerKit\
-            -sdk iphonesimulator\
-            -destination "platform=iOS Simulator,name=${{ matrix.destination }},OS=${{ matrix.os }}"\
-          | xcbeautify --renderer github-actions
-      - name: Test
-        run: |
-          set -o pipefail &&\
-          xcodebuild test-without-building\
-            -scheme YouTubePlayerKit\
-            -sdk iphonesimulator\
-            -destination "platform=iOS Simulator,name=${{ matrix.destination }},OS=${{ matrix.os }}"\
-          | xcbeautify --renderer github-actions
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/test-ios
+        with:
+          xcode: ${{ matrix.xcode }}
+          os: ${{ matrix.os }}
+          device: ${{ matrix.device }}
+          artifact-name: ios-${{ matrix.os }}-xcode-${{ matrix.xcode }}
+
+  iOS-preview:
+    name: iOS 27 preview (advisory)
+    # Promote to the required iOS matrix once this runner image is stable.
+    # https://github.com/actions/runner-images/issues/14404
+    runs-on: xcode-27
+    continue-on-error: true
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/test-ios
+        with:
+          xcode: "27.0"
+          os: "27.0"
+          device: iPhone 18 Pro
+          artifact-name: ios-27-preview
+
+  iOS-legacy:
+    name: iOS 17 compatibility (manual)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ios17 }}
+    # Never make this retiring runner a required PR check. Replace its runtime
+    # provisioning before November 2, 2026, or remove this manual job.
+    # https://github.com/actions/runner-images/issues/13518
+    runs-on: macos-14
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/test-ios
+        with:
+          # Xcode 15 cannot build this Swift 6 package, even for an iOS 17 runtime.
+          xcode: "16.2"
+          os: "17.5"
+          device: iPhone 15 Pro
+          artifact-name: ios-17-legacy
+
   macOS:
-    name: Build and test on macOS (Xcode ${{ matrix.xcode }})
-    runs-on: macos-26
+    name: macOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - xcode: "26.6"
+          - runner: macos-26
+            os: "26"
+            xcode: "26.6"
+            coverage: true
+          - runner: macos-15
+            os: "15"
+            # Check the package's minimum Swift 6.0 toolchain separately.
+            xcode: "16.2"
+            coverage: false
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      COLLECT_COVERAGE: ${{ matrix.coverage }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
-      - name: Build
-        run: swift build -v
-      - name: Test
-        run: swift test -v --enable-code-coverage
-      - name: Report coverage
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Record toolchain
         run: |
-          build_path="$(swift build --show-bin-path)"
+          mkdir -p "$RUNNER_TEMP/test-logs"
+          xcodebuild -version | tee "$RUNNER_TEMP/test-logs/environment.log"
+          swift --version | tee -a "$RUNNER_TEMP/test-logs/environment.log"
+      - name: Build and test
+        run: |
+          arguments=(--scratch-path "$RUNNER_TEMP/swift-build")
+          if [[ "$COLLECT_COVERAGE" == "true" ]]; then
+            arguments+=(--enable-code-coverage)
+          fi
+          swift test "${arguments[@]}" 2>&1 | tee "$RUNNER_TEMP/test-logs/tests.log"
+      - name: Report source coverage
+        if: ${{ matrix.coverage }}
+        run: |
+          build_path="$(swift build --scratch-path "$RUNNER_TEMP/swift-build" --show-bin-path)"
           xcrun llvm-cov report \
             "$build_path/YouTubePlayerKitPackageTests.xctest/Contents/MacOS/YouTubePlayerKitPackageTests" \
             -instr-profile "$build_path/codecov/default.profdata" \
-            -ignore-filename-regex '/Tests/|\.derived/'
+            -ignore-filename-regex '/Tests/|\.derived/' \
+            | tee "$RUNNER_TEMP/test-logs/coverage.txt"
+          {
+            echo '### macOS source coverage'
+            echo '```text'
+            cat "$RUNNER_TEMP/test-logs/coverage.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-${{ matrix.os }}-xcode-${{ matrix.xcode }}
+          path: ${{ runner.temp }}/test-logs
+          retention-days: 14
+          if-no-files-found: warn
+
+  visionOS:
+    name: visionOS build and test compilation
+    runs-on: macos-26
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Record toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/test-logs"
+          xcodebuild -version | tee "$RUNNER_TEMP/test-logs/environment.log"
+          xcodebuild -showsdks | tee -a "$RUNNER_TEMP/test-logs/environment.log"
+      - name: Build for testing
+        run: |
+          xcodebuild build-for-testing \
+            -scheme YouTubePlayerKit \
+            -destination 'generic/platform=visionOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/VisionOS.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee "$RUNNER_TEMP/test-logs/build.log" | xcbeautify --renderer github-actions
+      - name: Upload build diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: visionos-build
+          path: |
+            ${{ runner.temp }}/test-logs
+            ${{ runner.temp }}/VisionOS.xcresult
+          retention-days: 14
+          if-no-files-found: warn
+
+  required-checks:
+    # Use this stable name in branch protection instead of individual matrix jobs.
+    name: Required checks
+    if: ${{ always() }}
+    needs: [iOS, macOS, visionOS]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      IOS_RESULT: ${{ needs.iOS.result }}
+      MACOS_RESULT: ${{ needs.macOS.result }}
+      VISIONOS_RESULT: ${{ needs.visionOS.result }}
+    steps:
+      - name: Require every supported-platform check to succeed
+        run: |
+          if [[ "$IOS_RESULT" != "success" || "$MACOS_RESULT" != "success" || "$VISIONOS_RESULT" != "success" ]]; then
+            echo "::error::Required checks failed: iOS=$IOS_RESULT, macOS=$MACOS_RESULT, visionOS=$VISIONOS_RESULT"
+            exit 1
+          fi

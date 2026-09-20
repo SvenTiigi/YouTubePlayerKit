@@ -1,0 +1,55 @@
+name: Test YouTubePlayerKit on iOS
+description: Run the Swift package tests on a selected simulator and retain diagnostics.
+
+inputs:
+  xcode:
+    description: Installed Xcode version, including any minor version.
+    required: true
+  os:
+    description: Installed iOS simulator runtime version.
+    required: true
+  device:
+    description: Installed simulator device name.
+    required: true
+  artifact-name:
+    description: Unique artifact name for this job.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Record selected Xcode and simulator availability
+      shell: bash
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+      run: |
+        mkdir -p "$RUNNER_TEMP/test-logs"
+        xcodebuild -version | tee "$RUNNER_TEMP/test-logs/environment.log"
+        swift --version | tee -a "$RUNNER_TEMP/test-logs/environment.log"
+        xcrun simctl list runtimes | tee -a "$RUNNER_TEMP/test-logs/environment.log"
+        xcrun simctl list devices available | tee -a "$RUNNER_TEMP/test-logs/environment.log"
+    - name: Build and test
+      shell: bash
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+        IOS_VERSION: ${{ inputs.os }}
+        DEVICE_NAME: ${{ inputs.device }}
+      run: |
+        xcodebuild test \
+          -scheme YouTubePlayerKit \
+          -destination "platform=iOS Simulator,name=${DEVICE_NAME},OS=${IOS_VERSION}" \
+          -destination-timeout 120 \
+          -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+          -resultBundlePath "$RUNNER_TEMP/Tests.xcresult" \
+          CODE_SIGNING_ALLOWED=NO \
+          2>&1 | tee "$RUNNER_TEMP/test-logs/tests.log" | xcbeautify --renderer github-actions
+    - name: Upload test diagnostics
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: |
+          ${{ runner.temp }}/test-logs
+          ${{ runner.temp }}/Tests.xcresult
+        retention-days: 14
+        if-no-files-found: warn
