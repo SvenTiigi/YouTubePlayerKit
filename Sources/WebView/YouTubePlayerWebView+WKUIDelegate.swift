@@ -23,6 +23,7 @@ extension YouTubePlayerWebView: WKUIDelegate {
             self.player?
                 .logger()?
                 .debug("Open URL \(url, privacy: .public)")
+            // Open the URL asynchronously on the inherited main actor.
             Task(priority: .userInitiated) { [weak self] in
                 // Verify player is available
                 guard let player = self?.player else {
