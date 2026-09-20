@@ -21,6 +21,7 @@ public extension YouTubePlayer {
 public extension YouTubePlayer {
     
     /// Evaluates the JavaScript and converts its response.
+    /// - Note: Cancellation is checked before dispatch. JavaScript already dispatched to WebKit may finish.
     /// - Parameters:
     ///   - javaScript: The JavaScript to evaluate.
     ///   - converter: The response converter.
@@ -52,32 +53,24 @@ public extension YouTubePlayer {
 public extension YouTubePlayer {
     
     /// Reloads the YouTube player.
+    /// - Note: Once destruction is dispatched, the document is replaced even if the task is cancelled.
+    /// - Throws: A setup, player, or cancellation error.
     func reload() async throws(Swift.Error) {
-        // Destroy the player and discard the error
-        try? await self.evaluate(
-            javaScript: .youTubePlayer(
-                functionName: "destroy"
+        try Task.checkCancellation()
+        // An idle player may never become ready; reloading must not wait for the old document.
+        if !self.state.isIdle {
+            try? await self.evaluate(
+                javaScript: .youTubePlayer(
+                    functionName: "destroy"
+                )
             )
-        )
+        }
+        // Once destruction is dispatched, replace the document even if cancellation arrives.
         // Send idle state
         self.stateSubject.send(.idle)
         // Reload
         try self.webView.load()
-        // Await new ready or error state
-        for await state in self.stateSubject.dropFirst().values {
-            // Swithc on state
-            switch state {
-            case .ready:
-                // Success return out of function
-                return
-            case .error(let error):
-                // Throw error
-                throw error
-            default:
-                // Continue with next state
-                continue
-            }
-        }
+        try await self.waitUntilReady()
     }
     
 }

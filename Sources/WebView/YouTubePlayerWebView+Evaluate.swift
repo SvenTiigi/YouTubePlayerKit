@@ -19,13 +19,19 @@ extension YouTubePlayerWebView {
                 reason: "YouTubePlayer deallocated"
             )
         }
-        // Check if the player state is currently set to idle
-        if player.state == .idle {
-            // Wait for the player to be non idle
-            for await state in player.stateSubject.values where !state.isIdle  {
-                // Break out of for-loop as state is either ready or error
-                break
+        do {
+            try Task.checkCancellation()
+            if player.state.isIdle {
+                try await player.waitUntilReady()
             }
+            try Task.checkCancellation()
+        } catch {
+            throw .init(
+                underlyingError: error,
+                reason: error is CancellationError
+                    ? "JavaScript evaluation was cancelled."
+                    : "The YouTube player failed to become ready."
+            )
         }
         // Ignore return value if response is void
         let javaScript = Response.self is Void.Type ? javaScript.ignoreReturnValue() : javaScript
@@ -120,7 +126,13 @@ private extension YouTubePlayerWebView {
         let javaScriptResponse: JavaScriptResponse = try await withCheckedThrowingContinuation { continuation in
             // Initialize evaluate JavaScript closure
             let evaluateJavaScript = { [weak self] in
-                self?.evaluateJavaScript(javaScriptString) { response, error in
+                guard let self else {
+                    continuation.resume(
+                        throwing: YouTubePlayer.APIError(reason: "YouTubePlayerWebView deallocated")
+                    )
+                    return
+                }
+                self.evaluateJavaScript(javaScriptString) { response, error in
                     continuation.resume(
                         with: {
                             if let error {

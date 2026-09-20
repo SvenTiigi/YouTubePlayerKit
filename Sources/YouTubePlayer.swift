@@ -227,6 +227,33 @@ extension YouTubePlayer: @preconcurrency Hashable {
     
 }
 
+// MARK: - Readiness
+
+extension YouTubePlayer {
+
+    /// Waits for the current document to become ready, propagating failure and cancellation.
+    /// - Throws: The player error, a cancellation error, or an error if observation ends early.
+    func waitUntilReady() async throws {
+        try Task.checkCancellation()
+        for await state in self.stateSubject.values {
+            try Task.checkCancellation()
+            switch state {
+            case .idle:
+                continue
+            case .ready:
+                return
+            case .error(let error):
+                throw error
+            }
+        }
+        try Task.checkCancellation()
+        throw APIError(
+            reason: "Player state observation ended before the player became ready."
+        )
+    }
+
+}
+
 // MARK: - Handle Event
 
 private extension YouTubePlayer {
