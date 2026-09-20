@@ -29,7 +29,7 @@ extension YouTubePlayer.State: Equatable {
         rhs: Self
     ) -> Bool {
         switch (lhs, rhs) {
-        case (.idle, idle):
+        case (.idle, .idle):
             return true
         case (.ready, .ready):
             return true
