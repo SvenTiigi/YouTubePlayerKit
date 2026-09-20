@@ -15,6 +15,24 @@ enum WebKitTestSupport {
 
 }
 
+// MARK: - Offscreen Execution
+
+extension WebKitTestSupport {
+
+    /// Keeps JavaScript and callbacks running in fixtures that are not attached to a window.
+    /// - Parameter webView: The web view used by a local test fixture.
+    static func prepareForOffscreenUse(
+        _ webView: WKWebView
+    ) {
+        // WebKit may suspend detached views immediately when linking against newer SDKs.
+        // https://bugs.webkit.org/show_bug.cgi?id=283794#c4
+        if #available(iOS 17.0, macOS 14.0, visionOS 1.0, *) {
+            webView.configuration.preferences.inactiveSchedulingPolicy = .none
+        }
+    }
+
+}
+
 // MARK: - JavaScript Evaluation
 
 extension WebKitTestSupport {

@@ -92,7 +92,7 @@ final class YouTubePlayerTestFixture {
                 openURLAction: openURLAction
             )
         )
-        _ = self.player.webView
+        WebKitTestSupport.prepareForOffscreenUse(self.player.webView)
     }
 
 }

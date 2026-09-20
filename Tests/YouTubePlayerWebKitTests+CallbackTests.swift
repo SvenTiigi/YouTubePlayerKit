@@ -36,6 +36,25 @@ extension YouTubePlayerWebKitTests.CallbackTests {
         #expect(fixture.events.compactMap { $0.data?.value(as: Int.self) } == Array(0..<1000))
     }
 
+    @Test("Delivers delayed callbacks while the web view is detached from a window")
+    func deliversDelayedOffscreenCallbacks() async throws {
+        let fixture = CallbackFixture()
+        try await fixture.waitForPage()
+        #expect(fixture.player.webView.window == nil)
+        try await fixture.evaluate(
+            """
+            setTimeout(() => {
+                sendYouTubePlayerEvent('onFutureEvent', {data: 'delayed'});
+            }, 1000);
+            """
+        )
+        // Observe native messages without further JavaScript evaluations that could wake WebKit.
+        try await fixture.waitForEvents(count: 1)
+        #expect(fixture.events.count == 1)
+        #expect(fixture.events.first?.name.rawValue == "onFutureEvent")
+        #expect(fixture.events.first?.data?.value == "delayed")
+    }
+
     @Test("Preserves future event names and JavaScript payload semantics")
     func preservesGeneratedCallbackPayloads() async throws {
         let fixture = CallbackFixture()
@@ -337,6 +356,7 @@ private final class CallbackFixture {
         self.subscription = self.player.eventPublisher.sink { [weak self] event in
             self?.events.append(event)
         }
+        WebKitTestSupport.prepareForOffscreenUse(self.player.webView)
     }
 
 }
