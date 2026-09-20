@@ -174,19 +174,20 @@ extension YouTubePlayerTestFixture {
 
     /// Waits for the local page independently of the player's ready state.
     func waitForPage() async throws {
-        let deadline = Date().addingTimeInterval(10)
+        let deadline = Date().addingTimeInterval(WebKitTestSupport.pageLoadTimeout)
         while Date() < deadline {
-            if (try? await self.value(for: "window.testPlayerInstalled === true", as: Bool.self)) == true {
+            if !self.player.webView.isLoading,
+               (try? await self.value(for: "window.testPlayerInstalled === true", as: Bool.self)) == true {
                 return
             }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
-        try #require(Bool(false), "The local IFrame API page did not load within ten seconds")
+        try #require(Bool(false), "The local IFrame API page did not load within \(WebKitTestSupport.pageLoadTimeout) seconds")
     }
 
     /// Waits for the real bridge to transition the player into its ready state.
     func waitUntilReady() async throws {
-        let deadline = Date().addingTimeInterval(10)
+        let deadline = Date().addingTimeInterval(WebKitTestSupport.pageLoadTimeout)
         while self.player.state.isIdle, Date() < deadline {
             try await Task.sleep(nanoseconds: 10_000_000)
         }
@@ -298,23 +299,7 @@ private extension YouTubePlayerTestFixture {
     func evaluateJSON(
         _ script: String
     ) async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.player.webView.evaluateJavaScript(script) { value, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let value = value as? String {
-                    continuation.resume(returning: value)
-                } else {
-                    continuation.resume(
-                        throwing: NSError(
-                            domain: "YouTubePlayerTestFixture",
-                            code: 1,
-                            userInfo: [NSLocalizedDescriptionKey: "JavaScript did not return a JSON string"]
-                        )
-                    )
-                }
-            }
-        }
+        return try await WebKitTestSupport.evaluateJSON(script, in: self.player.webView)
     }
 
 }

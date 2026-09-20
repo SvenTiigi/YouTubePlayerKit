@@ -2,16 +2,19 @@ import Foundation
 import Testing
 @testable import YouTubePlayerKit
 
-// MARK: - YouTubePlayerCommandTests
+// MARK: - YouTubePlayerWebKitTests.CommandTests
 
-/// Verifies public Swift commands against the arguments received by a real JavaScript player.
-@MainActor
-@Suite(.serialized)
-struct YouTubePlayerCommandTests {}
+extension YouTubePlayerWebKitTests {
+
+    /// Verifies public Swift commands against the arguments received by a real JavaScript player.
+    @MainActor
+    struct CommandTests {}
+
+}
 
 // MARK: - Playback
 
-extension YouTubePlayerCommandTests {
+extension YouTubePlayerWebKitTests.CommandTests {
 
     @Test("Playback commands preserve order, time units, and seek-ahead policy")
     func controlsPlayback() async throws {
@@ -80,7 +83,7 @@ extension YouTubePlayerCommandTests {
 
 // MARK: - Player Information and Thumbnails
 
-extension YouTubePlayerCommandTests {
+extension YouTubePlayerWebKitTests.CommandTests {
 
     @Test("Player information preserves future playback values and nested metadata")
     func readsPlayerInformation() async throws {
@@ -183,7 +186,7 @@ extension YouTubePlayerCommandTests {
             return true
         }
         await #expect {
-            try await fixture.player.getVideoThumbnailImage()
+            _ = try await fixture.player.getVideoThumbnailImage()
         } throws: { error in
             guard let error = error as? YouTubePlayer.APIError else {
                 return false
@@ -199,7 +202,7 @@ extension YouTubePlayerCommandTests {
 
 // MARK: - Queueing and Playlists
 
-extension YouTubePlayerCommandTests {
+extension YouTubePlayerWebKitTests.CommandTests {
 
     @Test("Loading and cueing videos serialize identifiers safely and omit unspecified options")
     func loadsAndCuesVideo() async throws {
@@ -367,7 +370,7 @@ extension YouTubePlayerCommandTests {
 
 // MARK: - Volume, Captions, and Modules
 
-extension YouTubePlayerCommandTests {
+extension YouTubePlayerWebKitTests.CommandTests {
 
     @Test("Volume commands and getters preserve Boolean and numeric responses")
     func controlsVolume() async throws {
@@ -460,7 +463,7 @@ extension YouTubePlayerCommandTests {
 
 // MARK: - Evaluation and Errors
 
-extension YouTubePlayerCommandTests {
+extension YouTubePlayerWebKitTests.CommandTests {
 
     @Test("Public evaluation converts values, normalizes null, and discards unsupported void results")
     func evaluatesPublicJavaScript() async throws {

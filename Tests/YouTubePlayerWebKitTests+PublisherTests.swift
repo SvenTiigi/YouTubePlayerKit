@@ -3,11 +3,18 @@ import Foundation
 import Testing
 @testable import YouTubePlayerKit
 
-// MARK: - YouTubePlayerPublisherTests
+// MARK: - YouTubePlayerWebKitTests.PublisherTests
 
-@MainActor
-@Suite(.serialized)
-struct YouTubePlayerPublisherTests {
+extension YouTubePlayerWebKitTests {
+
+    @MainActor
+    struct PublisherTests {}
+
+}
+
+// MARK: - Tests
+
+extension YouTubePlayerWebKitTests.PublisherTests {
 
     @Test("State publishers deliver initial values and suppress consecutive duplicates")
     func publishesDistinctStateTransitions() async throws {
@@ -395,7 +402,7 @@ struct YouTubePlayerPublisherTests {
 
 // MARK: - Fixtures
 
-private extension YouTubePlayerPublisherTests {
+private extension YouTubePlayerWebKitTests.PublisherTests {
 
     /// Creates an idle player whose document never contacts the network.
     func makePlayer() -> YouTubePlayer {

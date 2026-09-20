@@ -3,11 +3,18 @@ import Testing
 import WebKit
 @testable import YouTubePlayerKit
 
-// MARK: - YouTubePlayerNavigationTests
+// MARK: - YouTubePlayerWebKitTests.NavigationTests
 
-@MainActor
-@Suite(.serialized)
-struct YouTubePlayerNavigationTests {
+extension YouTubePlayerWebKitTests {
+
+    @MainActor
+    struct NavigationTests {}
+
+}
+
+// MARK: - Tests
+
+extension YouTubePlayerWebKitTests.NavigationTests {
 
     @Test(
         "Internal and non-HTTP navigations remain inside WebKit",
@@ -135,7 +142,7 @@ struct YouTubePlayerNavigationTests {
 
 // MARK: - Async Observation
 
-private extension YouTubePlayerNavigationTests {
+private extension YouTubePlayerWebKitTests.NavigationTests {
 
     /// Waits for a delegate-created task to invoke the injected action.
     func waitUntil(

@@ -4,16 +4,19 @@ import Testing
 import WebKit
 @testable import YouTubePlayerKit
 
-// MARK: - YouTubePlayerCallbackTests
+// MARK: - YouTubePlayerWebKitTests.CallbackTests
 
-/// Exercises the production HTML and WebKit bridge without contacting YouTube.
-@MainActor
-@Suite(.serialized)
-struct YouTubePlayerCallbackTests {}
+extension YouTubePlayerWebKitTests {
+
+    /// Exercises the production HTML and WebKit bridge without contacting YouTube.
+    @MainActor
+    struct CallbackTests {}
+
+}
 
 // MARK: - Callback Delivery
 
-extension YouTubePlayerCallbackTests {
+extension YouTubePlayerWebKitTests.CallbackTests {
 
     @Test("Delivers a burst of progress callbacks in order through the public publisher")
     func deliversOrderedProgressCallbacks() async throws {
@@ -365,17 +368,17 @@ private extension CallbackFixture {
     func waitForPage(
         additionalCondition: String = "true"
     ) async throws {
-        let deadline = Date().addingTimeInterval(10)
+        let deadline = Date().addingTimeInterval(WebKitTestSupport.pageLoadTimeout)
         while Date() < deadline {
-            let isReady = try? await self.evaluateCondition(
-                "document.readyState === 'complete' && typeof sendYouTubePlayerEvent === 'function' && (\(additionalCondition))"
-            )
-            if isReady == true {
+            if !self.player.webView.isLoading,
+               (try? await self.evaluateCondition(
+                   "document.readyState === 'complete' && typeof sendYouTubePlayerEvent === 'function' && (\(additionalCondition))"
+               )) == true {
                 return
             }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
-        try #require(Bool(false), "The local callback page did not become ready within ten seconds")
+        try #require(Bool(false), "The local callback page did not become ready within \(WebKitTestSupport.pageLoadTimeout) seconds")
     }
 
     /// Waits for a known event or completion sentinel, with a bounded timeout.
@@ -395,15 +398,10 @@ private extension CallbackFixture {
     func evaluate(
         _ script: String
     ) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-            self.player.webView.evaluateJavaScript(script + "\nvoid 0;") { _, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
-                }
-            }
-        }
+        _ = try await WebKitTestSupport.evaluateJSON(
+            script + "\n; JSON.stringify(null);",
+            in: self.player.webView
+        )
     }
 
     /// Evaluates a Boolean JavaScript condition without transferring untyped values across actors.
@@ -411,15 +409,10 @@ private extension CallbackFixture {
     private func evaluateCondition(
         _ condition: String
     ) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.player.webView.evaluateJavaScript(condition) { value, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: value as? Bool ?? false)
-                }
-            }
-        }
+        return try await WebKitTestSupport.evaluateJSON(
+            "JSON.stringify(Boolean(\(condition)))",
+            in: self.player.webView
+        ) == "true"
     }
 
 }

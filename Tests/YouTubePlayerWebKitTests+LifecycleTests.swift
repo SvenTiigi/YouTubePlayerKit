@@ -3,11 +3,18 @@ import Foundation
 import Testing
 @testable import YouTubePlayerKit
 
-// MARK: - YouTubePlayerLifecycleTests
+// MARK: - YouTubePlayerWebKitTests.LifecycleTests
 
-@MainActor
-@Suite(.serialized)
-struct YouTubePlayerLifecycleTests {
+extension YouTubePlayerWebKitTests {
+
+    @MainActor
+    struct LifecycleTests {}
+
+}
+
+// MARK: - Tests
+
+extension YouTubePlayerWebKitTests.LifecycleTests {
 
     @Test("Commands wait for readiness and execute exactly once")
     func waitsBeforeExecutingCommands() async throws {
@@ -306,7 +313,7 @@ struct YouTubePlayerLifecycleTests {
 
 // MARK: - Waiting
 
-private extension YouTubePlayerLifecycleTests {
+private extension YouTubePlayerWebKitTests.LifecycleTests {
 
     /// Waits for a main-actor condition without leaving failed operations suspended indefinitely.
     /// - Parameter condition: The condition to observe.
@@ -325,7 +332,7 @@ private extension YouTubePlayerLifecycleTests {
     func waitForReplacementDocument(
         _ fixture: YouTubePlayerTestFixture
     ) async throws {
-        let deadline = Date().addingTimeInterval(5)
+        let deadline = Date().addingTimeInterval(WebKitTestSupport.pageLoadTimeout)
         while Date() < deadline {
             let replaced = try? await fixture.value(
                 for: "document.readyState === 'complete' && window.previousDocument !== true && typeof youtubePlayer === 'object'",
@@ -336,7 +343,7 @@ private extension YouTubePlayerLifecycleTests {
             }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
-        try #require(Bool(false), "Reload did not replace the old document within five seconds")
+        try #require(Bool(false), "Reload did not replace the old document within \(WebKitTestSupport.pageLoadTimeout) seconds")
     }
 
 }
