@@ -159,15 +159,15 @@ public extension YouTubePlayer {
                     .filter { $0.name == .videoDataChange }
                     .map { _ in }
             )
-            .flatMap { _ in
-                Future { promise in
-                    Task { [weak self] in
-                        guard let playbackMetadata = try? await self?.getPlaybackMetadata() else {
-                            return
-                        }
-                        promise(.success(playbackMetadata))
-                    }
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] _ -> AnyPublisher<PlaybackMetadata, Never> in
+                guard let self else {
+                    return Empty().eraseToAnyPublisher()
                 }
+                return self.valuePublisher { player in
+                    try await player.getPlaybackMetadata()
+                }
+                .eraseToAnyPublisher()
             }
             .share()
     }
@@ -352,13 +352,8 @@ public extension YouTubePlayer {
     
     /// A Publisher that emits the current YouTube player playback rate.
     var playbackRatePublisher: some Publisher<PlaybackRate, Never> {
-        Future { promise in
-            Task { [weak self] in
-                guard let playbackRate = try? await self?.getPlaybackRate() else {
-                    return
-                }
-                promise(.success(playbackRate))
-            }
+        self.valuePublisher { player in
+            try await player.getPlaybackRate()
         }
         .merge(
             with: self.eventPublisher
@@ -487,15 +482,15 @@ public extension YouTubePlayer {
                     .filter { $0.name == .apiChange }
                     .map { _ in }
             )
-            .flatMap { _ in
-                Future { promise in
-                    Task { [weak self] in
-                        guard let duration = try? await self?.getDuration() else {
-                            return
-                        }
-                        promise(.success(duration))
-                    }
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] _ -> AnyPublisher<Measurement<UnitDuration>, Never> in
+                guard let self else {
+                    return Empty().eraseToAnyPublisher()
                 }
+                return self.valuePublisher { player in
+                    try await player.getDuration()
+                }
+                .eraseToAnyPublisher()
             }
             .share()
     }
@@ -531,4 +526,40 @@ public extension YouTubePlayer {
         }
     }
     
+}
+
+// MARK: - Asynchronous Values
+
+private extension YouTubePlayer {
+
+    /// Starts an asynchronous getter on subscription and cancels it with its subscription.
+    /// - Parameter operation: The getter to perform while the player is available.
+    /// - Returns: A publisher that completes without a value when the getter fails.
+    /// - Note: Subscription and delivery run on the main queue to preserve actor isolation.
+    func valuePublisher<Output: Sendable>(
+        operation: @escaping @MainActor @Sendable (YouTubePlayer) async throws -> Output
+    ) -> some Publisher<Output, Never> {
+        Deferred { [weak self] in
+            var task: Task<Void, Never>?
+            let future = Future<Output?, Never> { promise in
+                task = Task { @MainActor [weak self] in
+                    guard let self, !Task.isCancelled else {
+                        promise(.success(nil))
+                        return
+                    }
+                    let value = try? await operation(self)
+                    promise(.success(Task.isCancelled ? nil : value))
+                }
+            }
+            let pendingTask = task
+            return future
+                .compactMap { $0 }
+                .handleEvents(receiveCancel: { @Sendable in
+                    pendingTask?.cancel()
+                })
+                .receive(on: DispatchQueue.main)
+        }
+        .subscribe(on: DispatchQueue.main)
+    }
+
 }
