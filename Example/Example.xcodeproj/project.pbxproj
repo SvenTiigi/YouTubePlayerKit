@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10000000000000000000001 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3D1B6A622D44D5BF002FE4BF /* YouTubePlayerKit */; };
 		3D1B6A632D44D5BF002FE4BF /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3D1B6A622D44D5BF002FE4BF /* YouTubePlayerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A10000000000000000000007 /* YouTubePlayerKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YouTubePlayerKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D1B6A402D44D3EB002FE4BF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -25,6 +27,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A10000000000000000000009 /* Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ../Tests;
+			sourceTree = "<group>";
+		};
 		3D1B6A422D44D3EB002FE4BF /* Example */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -36,6 +43,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A1000000000000000000000A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* YouTubePlayerKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D1B6A3D2D44D3EB002FE4BF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -51,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				3D1B6A422D44D3EB002FE4BF /* Example */,
+				A10000000000000000000009 /* Tests */,
 				3D1B6A412D44D3EB002FE4BF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				3D1B6A402D44D3EB002FE4BF /* Example.app */,
+				A10000000000000000000007 /* YouTubePlayerKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,6 +83,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A1000000000000000000000F /* YouTubePlayerKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000010;
+			buildPhases = (
+				A10000000000000000000011 /* Sources */,
+				A1000000000000000000000A /* Frameworks */,
+			);
+			buildRules = ();
+			dependencies = (
+				A10000000000000000000012 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000009 /* Tests */,
+			);
+			name = YouTubePlayerKitTests;
+			packageProductDependencies = (
+				3D1B6A622D44D5BF002FE4BF /* YouTubePlayerKit */,
+			);
+			productName = YouTubePlayerKitTests;
+			productReference = A10000000000000000000007 /* YouTubePlayerKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3D1B6A3F2D44D3EB002FE4BF /* Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3D1B6A4E2D44D3ED002FE4BF /* Build configuration list for PBXNativeTarget "Example" */;
@@ -99,6 +138,10 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					A1000000000000000000000F = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 3D1B6A3F2D44D3EB002FE4BF;
+					};
 					3D1B6A3F2D44D3EB002FE4BF = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -122,6 +165,7 @@
 			projectRoot = "";
 			targets = (
 				3D1B6A3F2D44D3EB002FE4BF /* Example */,
+				A1000000000000000000000F /* YouTubePlayerKitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -137,6 +181,12 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D1B6A3C2D44D3EB002FE4BF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,7 +196,44 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A10000000000000000000012 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D1B6A3F2D44D3EB002FE4BF /* Example */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A10000000000000000000019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.Example.YouTubePlayerKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Example.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Example";
+			};
+			name = Debug;
+		};
+		A1000000000000000000001A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.Example.YouTubePlayerKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Example.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Example";
+			};
+			name = Release;
+		};
 		3D1B6A4C2D44D3ED002FE4BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -347,6 +434,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A10000000000000000000010 /* Build configuration list for PBXNativeTarget "YouTubePlayerKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000019 /* Debug */,
+				A1000000000000000000001A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3D1B6A3B2D44D3EB002FE4BF /* Build configuration list for PBXProject "Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
