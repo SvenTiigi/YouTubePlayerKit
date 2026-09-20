@@ -40,7 +40,7 @@ struct ContentView {
     /// Creates a new instance of ``ContentView``
     /// - Parameter wwdcKeynote: The WWDC Keynote.
     init(
-        wwdcKeynote: WWDCKeynote = .wwdc2025
+        wwdcKeynote: WWDCKeynote = .wwdc2026
     ) {
         self.youTubePlayer = .init(
             source: .init(urlString: wwdcKeynote.youTubeURL),

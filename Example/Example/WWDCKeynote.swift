@@ -59,7 +59,8 @@ extension WWDCKeynote: CaseIterable {
         .wwdc2022,
         .wwdc2023,
         .wwdc2024,
-        .wwdc2025
+        .wwdc2025,
+        .wwdc2026
     ]
     
     static let wwdc2014: Self = .init(
@@ -120,6 +121,11 @@ extension WWDCKeynote: CaseIterable {
     static let wwdc2025: Self = .init(
         year: 2025,
         youTubeURL: "https://www.youtube.com/watch?v=0_DjDdfqtUE"
+    )
+    
+    static let wwdc2026: Self = .init(
+        year: 2026,
+        youTubeURL: "https://www.youtube.com/watch?v=hF8swzNR1-o"
     )
     
 }
