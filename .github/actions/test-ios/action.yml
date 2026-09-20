@@ -28,17 +28,33 @@ runs:
         swift --version | tee -a "$RUNNER_TEMP/test-logs/environment.log"
         xcrun simctl list runtimes | tee -a "$RUNNER_TEMP/test-logs/environment.log"
         xcrun simctl list devices available | tee -a "$RUNNER_TEMP/test-logs/environment.log"
-    - name: Build and test
+    - name: Boot selected simulator
+      id: simulator
       shell: bash
       env:
         DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
         IOS_VERSION: ${{ inputs.os }}
         DEVICE_NAME: ${{ inputs.device }}
       run: |
+        runtime="com.apple.CoreSimulator.SimRuntime.iOS-${IOS_VERSION//./-}"
+        simulator_id="$(xcrun simctl list devices available --json | jq -er \
+          --arg runtime "$runtime" --arg name "$DEVICE_NAME" \
+          '[.devices[$runtime][]? | select(.name == $name and .isAvailable)] |
+           if length == 1 then .[0].udid else error("Expected exactly one matching simulator") end')"
+        xcrun simctl bootstatus "$simulator_id" -b \
+          2>&1 | tee "$RUNNER_TEMP/test-logs/simulator-boot.log"
+        echo "id=$simulator_id" >> "$GITHUB_OUTPUT"
+    - name: Build and test
+      shell: bash
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+        SIMULATOR_ID: ${{ steps.simulator.outputs.id }}
+      run: |
         xcodebuild test \
           -scheme YouTubePlayerKit \
-          -destination "platform=iOS Simulator,name=${DEVICE_NAME},OS=${IOS_VERSION}" \
+          -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
           -destination-timeout 120 \
+          -parallel-testing-enabled NO \
           -derivedDataPath "$RUNNER_TEMP/DerivedData" \
           -resultBundlePath "$RUNNER_TEMP/Tests.xcresult" \
           CODE_SIGNING_ALLOWED=NO \
