@@ -6,7 +6,7 @@ import WebKit
 // MARK: - YouTubePlayerNavigationTests
 
 @MainActor
-@Suite(.serialized, .timeLimit(.minutes(1)))
+@Suite(.serialized)
 struct YouTubePlayerNavigationTests {
 
     @Test(

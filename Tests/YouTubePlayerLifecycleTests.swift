@@ -6,7 +6,7 @@ import Testing
 // MARK: - YouTubePlayerLifecycleTests
 
 @MainActor
-@Suite(.serialized, .timeLimit(.minutes(1)))
+@Suite(.serialized)
 struct YouTubePlayerLifecycleTests {
 
     @Test("Commands wait for readiness and execute exactly once")

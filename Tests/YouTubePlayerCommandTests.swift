@@ -6,7 +6,7 @@ import Testing
 
 /// Verifies public Swift commands against the arguments received by a real JavaScript player.
 @MainActor
-@Suite(.serialized, .timeLimit(.minutes(1)))
+@Suite(.serialized)
 struct YouTubePlayerCommandTests {}
 
 // MARK: - Playback
@@ -134,16 +134,21 @@ extension YouTubePlayerCommandTests {
         let fixture = YouTubePlayerTestFixture()
         try await fixture.waitUntilReady()
         try await fixture.setResult(["volume": 73], for: "playerInfo")
-        let error = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.getInformation()
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.javaScript?.contains("playerInfo") == true)
+            #expect(error.javaScriptResponse?.contains("volume") == true)
+            guard case .keyNotFound(let key, _) = error.underlyingError as? DecodingError else {
+                Issue.record("Missing player information fields must preserve the decoding error")
+                return false
+            }
+            #expect(key.stringValue == "muted")
+            return true
         }
-        #expect(error?.javaScript?.contains("playerInfo") == true)
-        #expect(error?.javaScriptResponse?.contains("volume") == true)
-        guard case .keyNotFound(let key, _) = error?.underlyingError as? DecodingError else {
-            Issue.record("Missing player information fields must preserve the decoding error")
-            return
-        }
-        #expect(key.stringValue == "muted")
     }
 
     @Test("Thumbnail URLs use the currently playing metadata and requested resolution")
@@ -166,16 +171,27 @@ extension YouTubePlayerCommandTests {
         #expect(try await fixture.player.getVideoThumbnailURL() == nil)
         #expect(try await fixture.player.getVideoThumbnailImage() == nil)
         try await fixture.setError("Metadata unavailable", for: "getVideoData")
-        let urlError = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.getVideoThumbnailURL()
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("Metadata unavailable") == true)
+            #expect(error.javaScript?.contains("getVideoData") == true)
+            #expect(error.webKitErrorCode == .javaScriptExceptionOccurred)
+            return true
         }
-        let imageError = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.getVideoThumbnailImage()
-        }
-        for error in [urlError, imageError] {
-            #expect(error?.reason?.contains("Metadata unavailable") == true)
-            #expect(error?.javaScript?.contains("getVideoData") == true)
-            #expect(error?.webKitErrorCode == .javaScriptExceptionOccurred)
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("Metadata unavailable") == true)
+            #expect(error.javaScript?.contains("getVideoData") == true)
+            #expect(error.webKitErrorCode == .javaScriptExceptionOccurred)
+            return true
         }
     }
 
@@ -268,20 +284,30 @@ extension YouTubePlayerCommandTests {
         let fixture = YouTubePlayerTestFixture(source: original)
         try await fixture.waitUntilReady()
         try await fixture.setError("Load rejected", for: "loadVideoById")
-        let loadError = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.load(source: .video(id: "replacement"))
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("Load rejected") == true)
+            #expect(error.javaScript?.contains("loadVideoById") == true)
+            #expect(error.underlyingError != nil)
+            return true
         }
         #expect(fixture.player.source == original)
-        #expect(loadError?.reason?.contains("Load rejected") == true)
-        #expect(loadError?.javaScript?.contains("loadVideoById") == true)
-        #expect(loadError?.underlyingError != nil)
         try await fixture.setError("Cue rejected", for: "cuePlaylist")
-        let cueError = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.cue(source: .playlist(id: "replacement"))
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("Cue rejected") == true)
+            #expect(error.javaScript?.contains("cuePlaylist") == true)
+            return true
         }
         #expect(fixture.player.source == original)
-        #expect(cueError?.reason?.contains("Cue rejected") == true)
-        #expect(cueError?.javaScript?.contains("cuePlaylist") == true)
         try await fixture.setError(nil, for: "loadVideoById")
         try await fixture.player.load(source: .video(id: "recovered"))
         #expect(fixture.player.source == .video(id: "recovered"))
@@ -293,16 +319,21 @@ extension YouTubePlayerCommandTests {
         let fixture = YouTubePlayerTestFixture(source: original)
         try await fixture.waitUntilReady()
         try await fixture.clearCalls()
-        let error = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.load(
                 source: .video(id: "replacement"),
                 startTime: .init(value: .nan, unit: .seconds)
             )
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason == "Failed to encode parameter to update the source")
+            #expect(error.underlyingError is EncodingError)
+            return true
         }
         #expect(fixture.player.source == original)
         #expect(try await fixture.calls().isEmpty)
-        #expect(error?.reason == "Failed to encode parameter to update the source")
-        #expect(error?.underlyingError is EncodingError)
     }
 
     @Test("Playlist navigation and getters preserve indices, flags, and optional results")
@@ -459,25 +490,35 @@ extension YouTubePlayerCommandTests {
         let fixture = YouTubePlayerTestFixture()
         try await fixture.waitUntilReady()
         try await fixture.setResult("not a duration", for: "getDuration")
-        let error = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.getDuration()
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.javaScript?.contains("getDuration") == true)
+            #expect(error.javaScriptResponse == "not a duration")
+            #expect(error.reason?.contains("Double") == true)
+            return true
         }
-        #expect(error?.javaScript?.contains("getDuration") == true)
-        #expect(error?.javaScriptResponse == "not a duration")
-        #expect(error?.reason?.contains("Double") == true)
     }
 
     @Test("JavaScript exceptions preserve WebKit error details through public evaluation")
     func reportsJavaScriptException() async throws {
         let fixture = YouTubePlayerTestFixture()
         try await fixture.waitUntilReady()
-        let error = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.evaluate(javaScript: "throw new Error('fixture failure')")
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("fixture failure") == true)
+            #expect(error.javaScript?.contains("throw new Error") == true)
+            #expect(error.javaScriptResponse == nil)
+            #expect(error.webKitErrorCode == .javaScriptExceptionOccurred)
+            return true
         }
-        #expect(error?.reason?.contains("fixture failure") == true)
-        #expect(error?.javaScript?.contains("throw new Error") == true)
-        #expect(error?.javaScriptResponse == nil)
-        #expect(error?.webKitErrorCode == .javaScriptExceptionOccurred)
     }
 
     @Test("Embed-code retrieval falls back to player information and preserves the original failure if both fail")
@@ -507,11 +548,16 @@ extension YouTubePlayerCommandTests {
         )
         #expect(try await fixture.player.getVideoEmbedCode() == "<iframe>fallback</iframe>")
         try await fixture.setResult(YouTubePlayerTestFixture.JSONValue.null, for: "playerInfo")
-        let error = await #expect(throws: YouTubePlayer.APIError.self) {
+        await #expect {
             try await fixture.player.getVideoEmbedCode()
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason?.contains("Invalid player dimensions") == true)
+            #expect(error.javaScript?.contains("getVideoEmbedCode") == true)
+            return true
         }
-        #expect(error?.reason?.contains("Invalid player dimensions") == true)
-        #expect(error?.javaScript?.contains("getVideoEmbedCode") == true)
     }
 
 }

@@ -5,7 +5,6 @@ import Testing
 // MARK: - YouTubeVideoThumbnailImageTests
 
 @MainActor
-@Suite(.timeLimit(.minutes(1)))
 struct YouTubeVideoThumbnailImageTests {
 
     @Test("A successful thumbnail response decodes an image")

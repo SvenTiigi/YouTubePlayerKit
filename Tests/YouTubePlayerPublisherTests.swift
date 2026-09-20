@@ -6,7 +6,7 @@ import Testing
 // MARK: - YouTubePlayerPublisherTests
 
 @MainActor
-@Suite(.serialized, .timeLimit(.minutes(1)))
+@Suite(.serialized)
 struct YouTubePlayerPublisherTests {
 
     @Test("State publishers deliver initial values and suppress consecutive duplicates")

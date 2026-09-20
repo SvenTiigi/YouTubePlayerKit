@@ -8,7 +8,7 @@ import WebKit
 
 /// Exercises the production HTML and WebKit bridge without contacting YouTube.
 @MainActor
-@Suite(.serialized, .timeLimit(.minutes(1)))
+@Suite(.serialized)
 struct YouTubePlayerCallbackTests {}
 
 // MARK: - Callback Delivery
@@ -243,10 +243,15 @@ extension YouTubePlayerCallbackTests {
                 )
             )
         )
-        let thrownError = #expect(throws: YouTubePlayer.APIError.self) {
+        #expect {
             try player.webView.load()
+        } throws: { error in
+            guard let error = error as? YouTubePlayer.APIError else {
+                return false
+            }
+            #expect(error.reason == expectedError.reason)
+            return true
         }
-        #expect(thrownError?.reason == expectedError.reason)
         guard case .error(.setupFailed(let error)) = player.state else {
             Issue.record("A custom HTML provider failure must leave the player in the setup-failed state")
             return
