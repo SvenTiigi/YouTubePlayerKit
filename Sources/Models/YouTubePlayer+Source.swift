@@ -172,9 +172,21 @@ extension YouTubePlayer.Source: ExpressibleByURL {
     
     /// Creates a new instance of ``YouTubePlayer/Source``
     /// - Parameter url: The URL.
+    /// - Note: Accepts HTTP and HTTPS URLs on `youtube.com`, `youtube-nocookie.com`,
+    /// their subdomains, and the exact short-link host `youtu.be`.
     public init?(
         url: URL
     ) {
+        guard let scheme = url.scheme?.lowercased(),
+              scheme == "https" || scheme == "http",
+              let host = url.host?.lowercased(),
+              host == "youtu.be"
+                || host == "youtube.com"
+                || host.hasSuffix(".youtube.com")
+                || host == "youtube-nocookie.com"
+                || host.hasSuffix(".youtube-nocookie.com") else {
+            return nil
+        }
         // For each url extraction rule set
         for urlExtractionRuleSet in [
             Self.playlistExtractionRuleSet,
@@ -289,7 +301,7 @@ private extension URL {
         switch rule {
         case .firstPathComponent(let host):
             // Verify host matches and the first path component is available
-            guard self.host == host else {
+            guard self.host?.lowercased() == host else {
                 // Otherwise return nil
                 return nil
             }

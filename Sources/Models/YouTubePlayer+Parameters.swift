@@ -149,8 +149,6 @@ public extension YouTubePlayer {
             self.loopEnabled = loopEnabled
             self.startTime = startTime
             self.endTime = endTime
-            self.startTime = startTime
-            self.endTime = endTime
             self.showControls = showControls
             self.showFullscreenButton = showFullscreenButton
             self.progressBarColor = progressBarColor
@@ -173,6 +171,7 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
     
     /// Creates a new instance of ``YouTubePlayer/Parameters``
     /// - Parameter url: The URL.
+    /// - Note: Repeated query parameters use the first nonempty value.
     public init?(
         url: URL
     ) {
@@ -187,13 +186,14 @@ extension YouTubePlayer.Parameters: ExpressibleByURL {
         }
         // Map query items to dictionary
         let queryParameters = [String: String](
-            uniqueKeysWithValues: queryItems.compactMap { queryItem in
+            queryItems.compactMap { queryItem in
                 guard let value = queryItem.value?.trimmingCharacters(in: .whitespaces),
                       !value.isEmpty else {
                     return nil
                 }
                 return (queryItem.name, value)
-            }
+            },
+            uniquingKeysWith: { first, _ in first }
         )
         /// Returns the value of a query parameter for a given coding key.
         /// - Parameter codingKeys: A coding key.

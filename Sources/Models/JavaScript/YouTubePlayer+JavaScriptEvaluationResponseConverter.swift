@@ -116,6 +116,14 @@ public extension YouTubePlayer.JavaScriptEvaluationResponseConverter {
                 javaScript: javaScript,
                 javaScriptResponse: javaScriptResponse
             )
+            // Invalid objects can raise an Objective-C exception that Swift cannot catch.
+            guard JSONSerialization.isValidJSONObject(output) else {
+                throw .init(
+                    javaScript: javaScript,
+                    javaScriptResponse: .init(describing: output),
+                    reason: "Malformed JSON"
+                )
+            }
             // Declare output Data
             let outputData: Data
             do {
