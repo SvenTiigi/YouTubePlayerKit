@@ -6,11 +6,15 @@ on:
     paths:
       - "Sources/**"
       - "Tests/**"
+      - "Package.swift"
+      - ".github/workflows/build_and_test.yml"
       - "!Sources/Documentation.docc/**"
   pull_request:
     paths:
       - "Sources/**"
       - "Tests/**"
+      - "Package.swift"
+      - ".github/workflows/build_and_test.yml"
       - "!Sources/Documentation.docc/**"
 
 concurrency:
@@ -21,16 +25,16 @@ jobs:
   iOS:
     name: Build and test on iOS ${{ matrix.os }} (Xcode ${{ matrix.xcode }})
     runs-on: ${{ matrix.runner }}
-    continue-on-error: true
+    timeout-minutes: 20
     strategy:
       matrix:
         include:
-          - runner: macos-latest
-            xcode: 26.1.1
-            destination: iPhone 16 Pro
-            os: "26.1"
-          - runner: macos-latest
-            xcode: 16.4
+          - runner: macos-26
+            xcode: "26.6"
+            destination: iPhone 17 Pro
+            os: "26.5"
+          - runner: macos-15
+            xcode: "16.4"
             destination: iPhone 16 Pro
             os: "18.5"
     steps:
@@ -55,11 +59,12 @@ jobs:
           | xcbeautify --renderer github-actions
   macOS:
     name: Build and test on macOS (Xcode ${{ matrix.xcode }})
-    runs-on: macos-latest
+    runs-on: macos-26
+    timeout-minutes: 20
     strategy:
       matrix:
         include:
-          - xcode: 26.0.1
+          - xcode: "26.6"
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode version
@@ -67,4 +72,11 @@ jobs:
       - name: Build
         run: swift build -v
       - name: Test
-        run: swift test -v
+        run: swift test -v --enable-code-coverage
+      - name: Report coverage
+        run: |
+          build_path="$(swift build --show-bin-path)"
+          xcrun llvm-cov report \
+            "$build_path/YouTubePlayerKitPackageTests.xctest/Contents/MacOS/YouTubePlayerKitPackageTests" \
+            -instr-profile "$build_path/codecov/default.profdata" \
+            -ignore-filename-regex '/Tests/|\.derived/'
