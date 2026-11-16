@@ -25,7 +25,7 @@ extension YouTubePlayer.HTML {
     ///   - resource: The Resource. Default value `.default`
     init(
         options: YouTubePlayer.Options,
-        bundle: Bundle = .module,
+        bundle: Bundle = getBundle(),
         resource: Resource = .default
     ) throws {
         // Verify URL for Resource is available
@@ -53,4 +53,10 @@ extension YouTubePlayer.HTML {
         self.contents = htmlContents
     }
     
+}
+
+func getBundle() -> Bundle {
+  let myBundle = Bundle.main
+  let resourceBundleURL = myBundle.url(forResource: "YouTubePlayerKit", withExtension: "bundle")
+  return Bundle(url: resourceBundleURL!)!
 }
